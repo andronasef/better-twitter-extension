@@ -112,13 +112,75 @@ Which phases cover which requirements. Populated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (pending roadmap) | — | Pending |
+| FOUND-01 | Phase 1 | Pending |
+| FOUND-02 | Phase 1 | Pending |
+| FOUND-03 | Phase 1 | Pending |
+| FOUND-04 | Phase 1 | Pending |
+| FOUND-05 | Phase 1 | Pending |
+| FOUND-06 | Phase 1 | Pending |
+| FOUND-07 | Phase 1 | Pending |
+| FOUND-08 | Phase 1 | Pending |
+| FOUND-09 | Phase 1 | Pending |
+| UI-01 | Phase 1 | Pending |
+| UI-02 | Phase 1 | Pending |
+| UI-03 | Phase 1 | Pending |
+| UI-04 | Phase 1 | Pending |
+| UI-05 | Phase 1 | Pending |
+| CLEAN-01 | Phase 1 | Pending |
+| CLEAN-02 | Phase 2 | Pending |
+| CLEAN-03 | Phase 2 | Pending |
+| CLEAN-04 | Phase 2 | Pending |
+| CLEAN-05 | Phase 2 | Pending |
+| THEME-01 | Phase 2 | Pending |
+| THEME-02 | Phase 2 | Pending |
+| THEME-03 | Phase 2 | Pending |
+| THEME-04 | Phase 2 | Pending |
+| THEME-05 | Phase 2 | Pending |
+| THEME-06 | Phase 2 | Pending |
+| THEME-07 | Phase 2 | Pending |
+| BOOK-01 | Phase 3 | Pending |
+| BOOK-02 | Phase 3 | Pending |
+| BOOK-03 | Phase 3 | Pending |
+| BOOK-10 | Phase 3 | Pending |
+| BOOK-04 | Phase 4 | Pending |
+| BOOK-05 | Phase 4 | Pending |
+| BOOK-06 | Phase 4 | Pending |
+| BOOK-07 | Phase 4 | Pending |
+| BOOK-08 | Phase 4 | Pending |
+| BOOK-09 | Phase 4 | Pending |
+| REACT-01 | Phase 5 | Pending |
+| REACT-02 | Phase 5 | Pending |
+| REACT-03 | Phase 5 | Pending |
+| REACT-04 | Phase 5 | Pending |
+| REACT-05 | Phase 5 | Pending |
+| REACT-06 | Phase 5 | Pending |
+| STORE-01 | Phase 6 | Pending |
+| STORE-02 | Phase 6 | Pending |
+| STORE-03 | Phase 6 | Pending |
+| STORE-04 | Phase 6 | Pending |
+| STORE-05 | Phase 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 42 total
-- Mapped to phases: 0
-- Unmapped: 42 ⚠️
+- v1 requirements: 47 total
+- Mapped to phases: 47
+- Unmapped: 0 ✓
+
+> **Count correction (2026-09-13, during roadmap creation):** this section previously recorded
+> 42 v1 requirements. Counting the distinct IDs actually defined above gives 47
+> (FOUND 9, CLEAN 5, THEME 7, BOOK 10, REACT 6, UI 5, STORE 5). Nothing was added or removed —
+> the earlier total was simply miscounted. All 47 are mapped.
+
+**Per-phase distribution:**
+
+| Phase | Requirements | Count |
+|-------|--------------|-------|
+| 1 — Foundation & Settings Popup | FOUND-01…09, UI-01…05, CLEAN-01 | 15 |
+| 2 — Clean Timeline & Themes | CLEAN-02…05, THEME-01…07 | 11 |
+| 3 — Bookmark Capture | BOOK-01, BOOK-02, BOOK-03, BOOK-10 | 4 |
+| 4 — Bookmark Folders, Search & Resurfacing | BOOK-04…09 | 6 |
+| 5 — Twemoji Reactions | REACT-01…06 | 6 |
+| 6 — Chrome Web Store Packaging | STORE-01…05 | 5 |
 
 ---
 *Requirements defined: 2026-09-13*
-*Last updated: 2026-09-13 after initial definition*
+*Last updated: 2026-09-13 after roadmap creation (traceability populated, count corrected to 47)*
