@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-Better Twitter is a Chrome MV3 content-script extension that personalizes X/Twitter through five integrated feature areas: ad/clutter stripping, media downloader, local bookmarks with timeline resurfacing, community themes, and emoji-reply reactions.
+Better Twitter is a Chrome MV3 content-script extension that personalizes X/Twitter through four integrated feature areas: ad/clutter stripping, local bookmarks with timeline resurfacing, community themes, and emoji reactions that prefill a reply for the user to send.
 
 **Recommended stack:** WXT framework, React 19 + TypeScript + Tailwind v4 + shadcn/ui (Radix), chrome.storage.local (no backend).
 
@@ -16,7 +16,7 @@ Better Twitter is a Chrome MV3 content-script extension that personalizes X/Twit
 **Critical policy tensions:**
 1. CWS forbids sending messages without user confirmation — tensions with fire-immediately emoji reactions
 2. CWS single-purpose policy tensions with five-feature-area bundle
-3. Similar X media downloader was already removed from CWS — expect scrutiny
+3. Similar X media downloader was already removed from CWS — feature cut in response
 4. Radix portals escape shadow root by default (open upstream issues) — needs early portal-provider utility
 5. Feed injection should splice into GraphQL responses, not manipulate virtualized DOM
 
@@ -48,9 +48,9 @@ Better Twitter is a Chrome MV3 content-script extension that personalizes X/Twit
 ### From FEATURES.md
 
 **Feature scope (all five in v1):**
-- Table stakes: Ad/promoted hiding, media download, clutter hiding
+- Table stakes: Ad/promoted hiding, clutter hiding
 - Differentiators: Bookmark capture with folders/tags/search, timeline resurfacing, theme engine
-- Highest-risk: Emoji reactions with 5s undo (ship last)
+- Highest-risk: Emoji reactions, now prefill-only (ship last)
 
 **Anti-features to exclude:**
 - No bulk/automated actions beyond single emoji reactions
@@ -89,7 +89,7 @@ Better Twitter is a Chrome MV3 content-script extension that personalizes X/Twit
 4. Undo toast dishonesty — Wait for server ID; verify delete
 5. CWS single-purpose policy — Lock in coherent narrative early
 6. Remote code / eval — Audit production build
-7. Media downloader CWS precedent — Frame narrowly; scope to view-visible
+7. Media downloader CWS precedent — resolved by cutting the feature
 8. MV3 service worker dies mid-scrape — Persist progress; use chrome.alarms
 9. GraphQL query-id churn — Extract from live traffic; auto-fallback
 10. Background-tab throttling — Use chrome.alarms; check auth state
@@ -97,6 +97,11 @@ Better Twitter is a Chrome MV3 content-script extension that personalizes X/Twit
 12. Shadow DOM + Radix portal breakage — Redirect portals; test focus/scroll
 
 ---
+
+> **SCOPE REVISION (post-research, authoritative).** After reading this research the user cut two things.
+> **1. The media downloader is removed from the project entirely** — the CWS removal precedent this research surfaced was decisive. Ignore every media-download recommendation below; there is no Phase 2 and no `chrome.downloads` usage.
+> **2. Emoji reactions no longer post.** Picking a reaction prefills X's native reply composer with the emoji and the user presses Reply themselves. There is no programmatic reply, no reply endpoint call, and therefore no undo toast and no delete verification. This removes the automation/CWS-confirmation risk this research flagged.
+> PROJECT.md is the source of truth. Everything else below stands.
 
 ## Roadmap Implications
 
@@ -115,10 +120,7 @@ Better Twitter is a Chrome MV3 content-script extension that personalizes X/Twit
 - Requirements: Independent toggles, 60fps, no selector misses on A/B variants
 - Research flag: Test fallback selectors against 2+ real accounts
 
-**Phase 2: Action-Row Injection (1-2 weeks)**
-- Media downloader button, format picker, chrome.downloads integration
-- Requirements: Works on all images/videos, readable filenames
-- Research flag: Verify X video_info.variants response shape
+**Phase 2: Action-Row Injection (1-2 weeks)** — CUT (was the media downloader; feature removed from scope)
 
 **Phase 3: Bookmark Capture (3-4 weeks, highest complexity)**
 - Three-layer fallback: GraphQL intercept, DOM scrape, save button
@@ -133,9 +135,9 @@ Better Twitter is a Chrome MV3 content-script extension that personalizes X/Twit
 - Research flag: Cadence tuning
 
 **Phase 6: Emoji Reactions (2-3 weeks, highest-risk, isolated)**
-- Fixed palette, one-click reply, 5s undo with delete verification
-- Requirements: 1:1 click to request, explicit delete failure handling
-- Research flag: X reply endpoint contract
+- Fixed Twemoji palette, hover/long-press menu, prefills the native reply composer
+- Requirements: never posts on the user's behalf; menu survives virtualized-feed recycling
+- Research flag: how to reliably open and prefill X's reply composer (DraftJS/contenteditable input events)
 
 **Phase 7: Store Packaging (1-2 weeks)**
 - Privacy policy, listing copy, icons, manifest audit
