@@ -7,6 +7,7 @@ import { adStripper } from '@/features/ad-stripper';
 import { startBridge, onGraphqlShape } from './bridge-client';
 import { startRouteWatcher, onRouteChange } from './route-watcher';
 import { teardownPageScope, registerPageObserver } from '@/lib/observers';
+import { resetDiagnosticsForPage } from '@/lib/diagnostics';
 import { resolve } from '@/lib/selectors';
 
 export default defineContentScript({
@@ -73,6 +74,7 @@ export default defineContentScript({
 
       // 5. Wire route changes: teardown page scope, stop pipeline, and re-run setup
       onRouteChange(() => {
+        resetDiagnosticsForPage();
         teardownPageScope();
         stopPipeline();
         setupPage();

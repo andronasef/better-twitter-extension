@@ -1,5 +1,6 @@
 import { resolve } from '@/lib/selectors';
 import { registerPageObserver } from '@/lib/observers';
+import { recordTweetSeen, resetDiagnosticsForPage } from '@/lib/diagnostics';
 
 type TweetSeenCallback = (cell: Element, tweetId: string) => void;
 type TweetGoneCallback = (cell: Element) => void;
@@ -54,6 +55,7 @@ function processTimelineChildren(timeline: Element): void {
     // Set extension-owned mark carrying the tweet ID
     child.setAttribute('data-bt-seen', tweetId);
     seenNodes.add(child);
+    recordTweetSeen();
 
     // Track in knownTweets (replace if existing node recycled, or push)
     const existingIndex = knownTweets.findIndex((k) => k.cell === child);
@@ -170,6 +172,7 @@ export function stopPipeline(): void {
  */
 export function resetPipeline(): void {
   stopPipeline();
+  resetDiagnosticsForPage();
   seenCallbacks.clear();
   goneCallbacks.clear();
 }

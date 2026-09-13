@@ -10,6 +10,8 @@
  * - Class names are strictly prohibited.
  */
 
+import { recordHit, recordMiss } from '@/lib/diagnostics';
+
 export const SELECTORS = {
   // Justification: X leaves the virtualized timeline feed element unlabelled without a data-testid.
   // The structural combinators below traverse the documented DOM hierarchy (primary column section -> h1 heading
@@ -72,4 +74,30 @@ export function resolveAll(name: SelectorKey, root: ParentNode = document): Elem
     }
   }
   return [];
+}
+
+/**
+ * Creates a feature-scoped resolve/resolveAll interface that reports hits and misses.
+ */
+export function withFeature(featureId: string) {
+  return {
+    resolve: (name: SelectorKey, root: ParentNode = document): Element | null => {
+      const match = resolve(name, root);
+      if (match) {
+        recordHit(featureId, name);
+      } else {
+        recordMiss(featureId, name);
+      }
+      return match;
+    },
+    resolveAll: (name: SelectorKey, root: ParentNode = document): Element[] => {
+      const matches = resolveAll(name, root);
+      if (matches.length > 0) {
+        recordHit(featureId, name);
+      } else {
+        recordMiss(featureId, name);
+      }
+      return matches;
+    },
+  };
 }

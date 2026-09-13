@@ -1,12 +1,13 @@
-import { resolve } from '@/lib/selectors';
+import { withFeature } from '@/lib/selectors';
 import { onTweetSeen, replayKnownTweets } from '@/entrypoints/x.content/pipeline';
 import { hideTweetCell, clearAllHidden } from '@/lib/hide-style';
 
+const selectors = withFeature('hidePromotedTweets');
 let unsubscribe: (() => void) | null = null;
 
 function processTweet(cell: Element, _tweetId: string): void {
   // Check if cell contains the promoted indicator
-  const promoted = resolve('promotedContainer', cell);
+  const promoted = selectors.resolve('promotedContainer', cell);
   if (!promoted) {
     return;
   }

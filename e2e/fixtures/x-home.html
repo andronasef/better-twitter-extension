@@ -87,6 +87,47 @@
         container.replaceChildren(newTimeline);
       }
     }
+
+    // Handle query parameter for synthetic broken selector
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('break-promoted') === '1' || urlParams.get('break-selector') === '1') {
+      const trackingEl = document.querySelector('[data-testid="placementTracking"]');
+      if (trackingEl) {
+        trackingEl.setAttribute('data-testid', 'brokenPlacementTracking');
+      }
+    }
+
+    window.addTweetCell = function(isPromoted) {
+      const timeline = document.querySelector('[aria-label="Timeline: Your Home Timeline"] > div');
+      if (!timeline) return;
+      const id = Date.now() + Math.floor(Math.random() * 1000);
+      const cell = document.createElement('div');
+      cell.setAttribute('data-testid', 'cellInnerDiv');
+      const broken =
+        window.__promotedBroken !== undefined
+          ? window.__promotedBroken
+          : urlParams.get('break-promoted') === '1' ||
+            urlParams.get('break-selector') === '1';
+      if (isPromoted) {
+        cell.innerHTML = '<div><article data-testid="tweet"><div data-testid="' + (broken ? 'brokenPlacementTracking' : 'placementTracking') + '"><span>Promoted</span></div><a href="https://x.com/sponsor/status/' + id + '">Promoted ' + id + '</a><p>Ad</p></article></div>';
+      } else {
+        cell.innerHTML = '<div><article data-testid="tweet"><a href="https://x.com/user/status/' + id + '">Tweet ' + id + '</a><p>Content</p></article></div>';
+      }
+      timeline.appendChild(cell);
+    };
+
+    window.breakMarker = function() {
+      window.__promotedBroken = true;
+      const el = document.querySelector('[data-testid="placementTracking"]');
+      if (el) el.setAttribute('data-testid', 'brokenPlacementTracking');
+    };
+
+    window.restoreMarker = function() {
+      window.__promotedBroken = false;
+      const el = document.querySelector('[data-testid="brokenPlacementTracking"]');
+      if (el) el.setAttribute('data-testid', 'placementTracking');
+      window.addTweetCell(true);
+    };
   </script>
 </body>
 </html>
