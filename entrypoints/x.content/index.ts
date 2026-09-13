@@ -4,6 +4,8 @@ import type { Settings } from '@/lib/storage';
 import { startPipeline, stopPipeline } from './pipeline';
 import { createSettingsDispatcher } from './dispatcher';
 import { adStripper } from '@/features/ad-stripper';
+import { sidebarCleaner } from '@/features/sidebar-cleaner';
+import { metricsStripper, profileCountsStripper } from '@/features/metrics-stripper';
 import { startBridge, onGraphqlShape } from './bridge-client';
 import { startRouteWatcher, onRouteChange } from './route-watcher';
 import { teardownPageScope, registerPageObserver } from '@/lib/observers';
@@ -40,9 +42,29 @@ export default defineContentScript({
 
     const dispatcher = createSettingsDispatcher({
       [adStripper.id]: adStripper,
+      [sidebarCleaner.id]: sidebarCleaner,
+      [metricsStripper.id]: metricsStripper,
+      [profileCountsStripper.id]: profileCountsStripper,
     });
 
     let currentSettings: Settings | null = null;
+
+    // Early settings application to documentElement to prevent FOUC
+    settingsItem.getValue().then((settings) => {
+      currentSettings = settings;
+      if (typeof document !== 'undefined' && document.documentElement) {
+        if (settings.features?.cleanSidebar) {
+          document.documentElement.setAttribute('data-bt-clean-sidebar', 'true');
+        }
+        if (settings.features?.hideVanityMetrics) {
+          document.documentElement.setAttribute('data-bt-hide-metrics', 'true');
+        }
+        if (settings.features?.hideProfileCounts) {
+          document.documentElement.setAttribute('data-bt-hide-profile-counts', 'true');
+        }
+      }
+      dispatcher.dispatch(settings);
+    });
 
     const setupPage = () => {
       // Re-run pipeline and dispatch features

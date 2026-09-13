@@ -59,6 +59,21 @@ html[data-bt-hide-profile-counts="true"] a[href$="/followers"],
 html[data-bt-hide-profile-counts="true"] a[href$="/following"] {
   display: none !important;
 }
+
+/* Right sidebar declutter (CLEAN-02, CLEAN-03, D-08) */
+html[data-bt-clean-sidebar="true"] div[data-testid="sidebarColumn"] section:has([data-testid="trend"]),
+html[data-bt-clean-sidebar="true"] div[data-testid="sidebarColumn"] [aria-label*="Trending" i],
+html[data-bt-clean-sidebar="true"] div[data-testid="sidebarColumn"] [aria-label*="What’s happening" i],
+html[data-bt-clean-sidebar="true"] div[data-testid="sidebarColumn"] [aria-label*="What's happening" i],
+html[data-bt-clean-sidebar="true"] div[data-testid="sidebarColumn"] aside:has([data-testid="UserCell"]),
+html[data-bt-clean-sidebar="true"] div[data-testid="sidebarColumn"] section:has([data-testid="UserCell"]),
+html[data-bt-clean-sidebar="true"] div[data-testid="sidebarColumn"] [aria-label*="Who to follow" i],
+html[data-bt-clean-sidebar="true"] div[data-testid="sidebarColumn"] aside:has(a[href*="/i/premium_sign_up"]),
+html[data-bt-clean-sidebar="true"] div[data-testid="sidebarColumn"] aside:has(a[href*="/verified"]),
+html[data-bt-clean-sidebar="true"] div[data-testid="sidebarColumn"] section:has(a[href*="/i/premium_sign_up"]),
+html[data-bt-clean-sidebar="true"] div[data-testid="sidebarColumn"] section:has(a[href*="/verified"]) {
+  display: none !important;
+}
 `;
 
 /**

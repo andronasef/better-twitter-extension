@@ -77,6 +77,37 @@ export const SELECTORS = {
     '[role="tooltip"]',
     'div[role="tooltip"]',
   ],
+
+  // Right sidebar column container
+  sidebarColumn: [
+    'div[data-testid="sidebarColumn"]',
+    '[role="complementary"]',
+  ],
+
+  // "What's Happening" / Trends module
+  // Justification: Trends block is a section inside sidebarColumn containing trend items or matching aria labels
+  trendsModule: [
+    'div[data-testid="sidebarColumn"] section:has([data-testid="trend"])',
+    '[aria-label*="Trending" i]',
+    '[aria-label*="What’s happening" i]',
+    '[aria-label*="What\'s happening" i]',
+  ],
+
+  // "Who to Follow" module
+  // Justification: Who to Follow block is an aside or section containing UserCell items
+  whoToFollowModule: [
+    'div[data-testid="sidebarColumn"] aside:has([data-testid="UserCell"])',
+    'section:has([data-testid="UserCell"])',
+    '[aria-label*="Who to follow" i]',
+  ],
+
+  // Premium / Verified subscription module
+  premiumModule: [
+    'div[data-testid="sidebarColumn"] aside:has(a[href*="/i/premium_sign_up"])',
+    'div[data-testid="sidebarColumn"] aside:has(a[href*="/verified"])',
+    'div[data-testid="sidebarColumn"] section:has(a[href*="/i/premium_sign_up"])',
+    '[data-testid="flex-prompt"]',
+  ],
 } as const;
 
 export type SelectorKey = keyof typeof SELECTORS;
