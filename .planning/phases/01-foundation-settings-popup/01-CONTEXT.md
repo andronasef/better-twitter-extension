@@ -40,8 +40,16 @@ The user declined the interactive discussion and delegated the choices ("think o
 - **D-13:** The popup opened on a non-X tab renders normally and stays fully usable — toggles are storage writes and do not need a live X tab. No blocking "go to x.com" screen.
 - **D-14:** X's active theme is cached to storage by the content script whenever it is detected or changes; the popup reads that cached value. Off-site with no cached value, it falls back to the browser's `prefers-color-scheme`. — **Reversibility:** reversible.
 
+### Decisions taken directly by the user during plan review (2026-09-13)
+
+Unlike D-01…D-14 above, these two are **not** Claude's call under the delegation. The user was
+asked and answered. They are inputs to planning, not open questions.
+
+- **D-15:** The popup ships a bundled, openly-licensed typeface rather than X's Chirp face, and the extension makes **zero outbound network requests**. The user was offered three paths — cache X's live `@font-face` URL and fetch it from `abs.twimg.com` (one GET per install), declare no webfont and ride X's fallback stack only, or bundle an OFL substitute — and chose the bundled substitute explicitly in order to keep outbound requests at zero. The consequence is accepted and recorded: the popup is *near*-native rather than pixel-native. Chirp is proprietary and is never redistributed; shadow-root surfaces name the Chirp family so the page's own document-level declaration resolves it for free. This supersedes the literal wording of REQUIREMENTS.md UI-04 and ROADMAP Phase 1 SC-1. — **Reversibility:** reversible (one `@font-face` block in one stylesheet).
+- **D-16:** Where `.claude/CLAUDE.md`'s DOM-targeting constraint and X's real markup disagree, **the constraint bends to X's markup**, not the other way round. The user's words: *"do what x does actaully"*. Operative reading: selectors are `data-testid`-anchored wherever X exposes a testid for the target; where X exposes none (the scrolling timeline list is the known case), a structural-combinator candidate is permitted, but only inside `lib/selectors.ts`, only carrying a recorded justification naming the unlabelled target, and only when registered with the selector layer's miss reporting so it degrades loudly rather than silently (FOUND-04). Class-name selectors stay prohibited outright. Selector values are grounded by observation against live x.com, never by copying a research constant. The checked-in constraint is amended to say this, so the codebase does not stand in knowing violation of its own rule. — **Reversibility:** reversible (a constraint-text edit plus per-candidate annotations).
+
 ### Claude's Discretion
-The user delegated this entire discussion. Beyond the decisions above, researcher and planner retain full discretion on: exact popup dimensions and grid column count, the precise mechanism for reading X's active theme (open research question — `meta[name="theme-color"]`, computed body background, or a `data-*` signal), the consecutive-tick threshold in D-11, and the internal shape of the feature registry.
+The user delegated this entire discussion apart from D-15 and D-16. Beyond the decisions above, researcher and planner retain full discretion on: exact popup dimensions and grid column count, the precise mechanism for reading X's active theme (open research question — `meta[name="theme-color"]`, computed body background, or a `data-*` signal), the consecutive-tick threshold in D-11, and the internal shape of the feature registry.
 
 </decisions>
 

@@ -54,7 +54,7 @@ Every annoyance the author has with X is fixed by a toggle in one popup — and 
 - **Storage**: WXT storage API over `chrome.storage.local` — no backend, no network calls beyond X itself
 - **Platform**: Chrome / Manifest V3 only
 - **Distribution**: Chrome Web Store — permissions and listing must survive review
-- **DOM targeting**: `data-testid` selectors only; no class-name or structural-position selectors
+- **DOM targeting**: `data-testid` selectors wherever X provides one; structural combinators permitted only in `lib/selectors.ts` where X exposes no testid for that target (and registered with miss-reporting FOUND-04 so failures degrade loudly); class names prohibited. Selector values grounded empirically against live x.com, not unverified research constants. (D-16)
 
 ## Key Decisions
 

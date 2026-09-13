@@ -63,8 +63,8 @@
 
 - [ ] **UI-01**: Popup presents settings as a grid of categorical icon tiles with a footer
 - [ ] **UI-02**: Selecting a tile opens that category's settings panel within the popup
-- [ ] **UI-03**: Popup automatically matches the user's active X theme (Light, Dim, Lights Out)
-- [ ] **UI-04**: Popup uses X's Chirp font and native-feeling Radix/shadcn controls
+- [ ] **UI-03**: Popup automatically matches the user's active X theme (Light or Lights Out / Dark; Dim was removed from the web in Feb 2026, value map `light | dark | unknown`)
+- [ ] **UI-04**: Popup uses bundled openly-licensed font substitute (BTPopupSans / Inter) with zero outbound network requests (D-15), and native-feeling Radix/shadcn controls (shadow roots inherit page's document-level Chirp)
 - [ ] **UI-05**: Each feature toggle carries a tooltip explaining what it does
 
 ### Store Readiness

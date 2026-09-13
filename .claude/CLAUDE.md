@@ -17,7 +17,7 @@ Built by and for the author as a fun side project, with a public Chrome Web Stor
 - **Storage**: WXT storage API over `chrome.storage.local` — no backend, no network calls beyond X itself
 - **Platform**: Chrome / Manifest V3 only
 - **Distribution**: Chrome Web Store — permissions and listing must survive review
-- **DOM targeting**: `data-testid` selectors only; no class-name or structural-position selectors
+- **DOM targeting**: `data-testid` selectors wherever X provides one; structural combinators permitted only in `lib/selectors.ts` where X exposes no testid for that target (and registered with miss-reporting FOUND-04 so failures degrade loudly); class names prohibited. Selector values grounded empirically against live x.com, not unverified research constants. (D-16)
 
 <!-- GSD:project-end -->
 

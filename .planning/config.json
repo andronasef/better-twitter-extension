@@ -92,7 +92,6 @@
   "resolve_model_ids": "omit",
   "mode": "interactive",
   "granularity": "coarse",
-  "quick_branch_template": null,
   "intel": {
     "enabled": false
   },
