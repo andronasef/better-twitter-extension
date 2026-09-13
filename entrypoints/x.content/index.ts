@@ -9,6 +9,7 @@ import { startRouteWatcher, onRouteChange } from './route-watcher';
 import { teardownPageScope, registerPageObserver } from '@/lib/observers';
 import { resetDiagnosticsForPage } from '@/lib/diagnostics';
 import { resolve } from '@/lib/selectors';
+import { startThemeProbe } from './theme-probe';
 
 export default defineContentScript({
   matches: ['*://x.com/*', '*://twitter.com/*'],
@@ -20,6 +21,9 @@ export default defineContentScript({
 
     // 2. Start MAIN-world bridge
     startBridge();
+
+    // 3. Start theme observation probe
+    startThemeProbe();
 
     // Dev-only instrumentation for Spikes S1 and S2
     if (import.meta.env.DEV) {
