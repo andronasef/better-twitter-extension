@@ -7,14 +7,16 @@
   "scripts": {
     "dev": "wxt",
     "dev:firefox": "wxt -b firefox",
-    "build": "wxt build",
+    "build": "wxt build && node scripts/audit-build.mjs",
     "build:firefox": "wxt build -b firefox",
+    "audit-build": "node scripts/audit-build.mjs",
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",
     "compile": "tsc --noEmit",
     "postinstall": "wxt prepare",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "verify": "wxt build && node scripts/audit-build.mjs && vitest run"
   },
   "dependencies": {
     "@tailwindcss/vite": "4.3.3",

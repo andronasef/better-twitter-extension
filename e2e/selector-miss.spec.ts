@@ -8,7 +8,7 @@ test('Selector miss reporting: badge sets on 3-tick miss, persists to diagnostic
     throw new Error('.output directory does not exist. Run build first.');
   }
 
-  const matches = fs.readdirSync(outputDir).filter((d) => d.startsWith('chrome-mv3'));
+  const matches = fs.readdirSync(outputDir).filter((d) => d.startsWith('chrome-mv3') && !d.endsWith('-dev'));
   if (matches.length !== 1 || !matches[0]) {
     throw new Error(`Expected exactly one chrome-mv3 output dir, got ${matches.length}: ${JSON.stringify(matches)}`);
   }
