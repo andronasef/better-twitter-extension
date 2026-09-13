@@ -403,9 +403,15 @@ html[data-bt-theme="minimal"] header[role="banner"] nav {
   backdrop-filter: blur(20px) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 32px !important;
-  padding: 10px 4px !important;
-  margin-top: 12px !important;
+  padding: 8px 4px !important;
+  margin: 4px auto !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Suppress native separators and stray divider lines in Minimal mode */
+html[data-bt-theme="minimal"] [role="separator"],
+html[data-bt-theme="minimal"] hr {
+  display: none !important;
 }
 `;
 
@@ -438,6 +444,25 @@ export const MINIMAL_LAYOUT_CSS = `
 /* Hide sidebar column completely */
 html[data-bt-theme="minimal"] div[data-testid="sidebarColumn"] {
   display: none !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  flex: 0 0 0 !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Hide complementary sidebar wrappers */
+html[data-bt-theme="minimal"] [role="complementary"] {
+  display: none !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  flex: 0 0 0 !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* Center outer flex layout with zero gap blowout */
@@ -470,19 +495,77 @@ html[data-bt-theme="minimal"] header[role="banner"] {
   flex-shrink: 0 !important;
   align-items: center !important;
   border-right: none !important;
+  padding: 16px 0 !important;
+  overflow: visible !important;
 }
 
-html[data-bt-theme="minimal"] header[role="banner"] > div,
-html[data-bt-theme="minimal"] header[role="banner"] > div > div,
-html[data-bt-theme="minimal"] header[role="banner"] > div > div > div {
+/* X makes this wrapper position:fixed, so width:100% resolves against the VIEWPORT,
+   not the 68px rail - that is what painted a full-width horizontal scrollbar across
+   the page and a stray vertical one over the timeline. Pin it to the rail instead.
+   justify-content:center keeps the pill off the viewport top/bottom edges. */
+html[data-bt-theme="minimal"] header[role="banner"] > div {
+  width: 68px !important;
+  min-width: 68px !important;
+  max-width: 68px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 8px 0 !important;
+  overflow: hidden !important;
+}
+
+html[data-bt-theme="minimal"] header[role="banner"] > div > div {
   width: 100% !important;
   align-items: center !important;
   justify-content: center !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+/* No scrollbar anywhere in the rail subtree - the overflowing node is not always
+   the one we style, so cover the whole subtree. */
+html[data-bt-theme="minimal"] header[role="banner"],
+html[data-bt-theme="minimal"] header[role="banner"] * {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+html[data-bt-theme="minimal"] header[role="banner"]::-webkit-scrollbar,
+html[data-bt-theme="minimal"] header[role="banner"] *::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}
+
+html[data-bt-theme="minimal"] header[role="banner"] > div > div > div {
+  width: 100% !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+/* Minimal X Logo icon sizing and spacing */
+html[data-bt-theme="minimal"] header[role="banner"] h1 {
+  width: 44px !important;
+  height: 44px !important;
+  margin: 0 auto 6px auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+html[data-bt-theme="minimal"] header[role="banner"] h1 a {
+  width: 44px !important;
+  height: 44px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 9999px !important;
+  padding: 0 !important;
 }
 
 html[data-bt-theme="minimal"] header[role="banner"] nav {
   width: 100% !important;
   align-items: center !important;
+  margin-top: 0 !important;
 }
 
 html[data-bt-theme="minimal"] header[role="banner"] nav a span,
@@ -492,10 +575,10 @@ html[data-bt-theme="minimal"] header[role="banner"] nav [role="button"] span {
 
 html[data-bt-theme="minimal"] header[role="banner"] nav a,
 html[data-bt-theme="minimal"] header[role="banner"] nav [role="button"] {
-  width: 50px !important;
-  height: 50px !important;
+  width: 44px !important;
+  height: 44px !important;
   padding: 0 !important;
-  margin: 4px auto !important;
+  margin: 2px auto !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -526,12 +609,14 @@ html[data-bt-theme="minimal"] main[role="main"] {
   flex-grow: 0 !important;
   flex-shrink: 0 !important;
   margin: 0 0 0 16px !important;
+  overflow: visible !important;
 }
 
 html[data-bt-theme="minimal"] main[role="main"] > div {
   width: 100% !important;
   max-width: 100% !important;
   justify-content: center !important;
+  overflow: visible !important;
 }
 
 html[data-bt-theme="minimal"] div[data-testid="primaryColumn"] {
@@ -540,6 +625,7 @@ html[data-bt-theme="minimal"] div[data-testid="primaryColumn"] {
   width: 100% !important;
   border-left: 1px solid var(--bt-theme-border) !important;
   border-right: 1px solid var(--bt-theme-border) !important;
+  overflow: visible !important;
 }
 
 html[data-bt-theme="minimal"] div[data-testid="primaryColumn"] > div {
@@ -550,11 +636,11 @@ html[data-bt-theme="minimal"] div[data-testid="primaryColumn"] > div {
 
 /* Collapse Post button to 50x50 round circle button */
 html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"] {
-  width: 50px !important;
-  height: 50px !important;
-  min-width: 50px !important;
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
   padding: 0 !important;
-  margin: 12px auto !important;
+  margin: 8px auto !important;
   border-radius: 9999px !important;
   justify-content: center !important;
   align-items: center !important;
@@ -577,10 +663,10 @@ html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"] svg {
 
 /* Collapse Account Switcher to avatar-only */
 html[data-bt-theme="minimal"] [data-testid="SideNav_AccountSwitcher_Button"] {
-  width: 50px !important;
-  height: 50px !important;
+  width: 44px !important;
+  height: 44px !important;
   padding: 0 !important;
-  margin: 12px auto !important;
+  margin: 8px auto !important;
   justify-content: center !important;
   align-items: center !important;
 }
