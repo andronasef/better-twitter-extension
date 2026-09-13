@@ -19,8 +19,8 @@ test('Tracer: popup toggle -> storage -> live DOM hide/un-hide on x.com', async 
 
   // Find installed browser
   const possiblePaths = [
-    'C:\\Users\\A\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe',
-    'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
+    'C:\\\\Users\\\\A\\\\AppData\\\\Local\\\\ms-playwright\\\\chromium-1234\\\\chrome-win64\\\\chrome.exe',
+    'C:\\\\Program Files (x86)\\\\Microsoft\\\\Edge\\\\Application\\\\msedge.exe',
   ];
   const executablePath = possiblePaths.find((p) => fs.existsSync(p));
 
@@ -99,7 +99,7 @@ test('Tracer: popup toggle -> storage -> live DOM hide/un-hide on x.com', async 
     await timelineTile.click();
 
     // Toggle switch for "Hide promoted tweets"
-    const promoSwitch = popupPage.locator('[role="switch"]');
+    const promoSwitch = popupPage.locator('#hidePromotedTweets[role="switch"]');
     await expect(promoSwitch).toBeVisible();
     await expect(promoSwitch).toHaveAttribute('data-state', 'checked');
 

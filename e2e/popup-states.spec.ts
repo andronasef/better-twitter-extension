@@ -69,10 +69,11 @@ test.describe('Popup UI States & Interaction Contract', () => {
     await expect(reportLink).toHaveText('Report an issue');
     await expect(reportLink).toHaveAttribute('href', /github\.com/);
 
-    // 4. Assert single category tile top-left in 3-column grid
+    // 4. Assert category tiles in 3-column grid (Timeline, Themes)
     const tiles = page.locator('main button');
-    await expect(tiles).toHaveCount(1);
+    await expect(tiles).toHaveCount(2);
     await expect(tiles.first()).toContainText('Timeline');
+    await expect(tiles.nth(1)).toContainText('Themes');
 
     // 5. Click category tile -> navigation to category panel inside same 360x480 frame
     await tiles.first().click();
@@ -94,7 +95,7 @@ test.describe('Popup UI States & Interaction Contract', () => {
     // Click back chevron -> returns to grid view
     await backBtn.click();
     await expect(page.locator('header')).toHaveText('Better Twitter');
-    await expect(page.locator('main button')).toHaveCount(1);
+    await expect(page.locator('main button')).toHaveCount(2);
 
     await page.close();
   });
@@ -116,7 +117,7 @@ test.describe('Popup UI States & Interaction Contract', () => {
     await expect(tooltipContent).toContainText('Hides ads and promoted posts');
 
     // 2. Move to switch -> switch does not trigger any tooltip, and previous tooltip hides
-    const switchEl = page.locator('[role="switch"]');
+    const switchEl = page.locator('#hidePromotedTweets[role="switch"]');
     await switchEl.hover();
     await expect(tooltipContent).toBeHidden({ timeout: 5000 });
 
@@ -200,7 +201,7 @@ test.describe('Popup UI States & Interaction Contract', () => {
     await expect(warningBody).toBeVisible();
 
     // Switch stays interactive (not disabled)
-    const switchEl = page.locator('[role="switch"]');
+    const switchEl = page.locator('#hidePromotedTweets[role="switch"]');
     await expect(switchEl).toBeEnabled();
 
     // Clean up diagnostics in storage

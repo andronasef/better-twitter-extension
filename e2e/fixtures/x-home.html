@@ -10,10 +10,24 @@
   </style>
 </head>
 <body>
+  <header role="banner">
+    <nav>
+      <a href="/home" role="link"><span>Home</span></a>
+      <a href="/notifications" role="link"><span>Notifications</span></a>
+      <a href="/messages" role="link"><span>Messages</span></a>
+      <button role="button" data-testid="SideNav_NewTweet_Button"><span>Tweet</span></button>
+    </nav>
+  </header>
   <div data-testid="primaryColumn">
     <nav style="padding: 10px;">
       <button id="nav-profile" onclick="navigateToProfile()">Go to Profile</button>
+      <button id="nav-home" onclick="navigateToHome()">Go Home</button>
+      <button id="accent-test-btn" style="color: rgb(29, 155, 240);">Follow</button>
     </nav>
+    <div role="tablist">
+      <div><div role="tab" aria-selected="true"><span>For you</span></div></div>
+      <div><div role="tab" aria-selected="false"><span>Following</span></div></div>
+    </div>
     <section>
       <h1>Home Timeline</h1>
       <div aria-label="Timeline: Your Home Timeline">
@@ -52,8 +66,77 @@
         </div>
       </div>
     </section>
+    <!-- Standalone tweet fixture (not a virtualized cellInnerDiv) covering vanity-metric
+         action bars, analytics link, tweet-detail expanded stats row, and a classic avatar
+         container. Kept outside the timeline aria-label container so it does not affect
+         the organic/promoted cellInnerDiv counts asserted by e2e/tracer.spec.ts. -->
+    <section aria-label="Tweet detail (fixture-only, for metrics & avatar testing)">
+      <article data-testid="tweet" id="metrics-tweet">
+        <div data-testid="Tweet-User-Avatar">
+          <img src="avatar.png" alt="avatar" style="border-radius: 50%; width: 48px; height: 48px;" />
+        </div>
+        <a href="https://x.com/user3/status/1000000000000000005">Metrics Tweet</a>
+        <p>A tweet with engagement metrics</p>
+        <div role="group">
+          <button aria-label="Reply">
+            <span>Reply</span>
+            <span data-testid="app-text-transition-container"><span>123</span></span>
+          </button>
+          <button aria-label="Repost">
+            <span>Repost</span>
+            <span data-testid="app-text-transition-container"><span>456</span></span>
+          </button>
+          <button aria-label="Like">
+            <span>Like</span>
+            <span data-testid="app-text-transition-container"><span>789</span></span>
+          </button>
+          <a href="/user3/status/1000000000000000005/analytics" aria-label="View analytics">
+            <span data-testid="app-text-transition-container"><span>10K</span></span>
+          </a>
+        </div>
+        <div class="detail-stats-row">
+          <a href="/user3/status/1000000000000000005/retweets">254 Reposts</a>
+          <a href="/user3/status/1000000000000000005/likes">3.5K Likes</a>
+        </div>
+      </article>
+    </section>
+  </div>
+  <div data-testid="sidebarColumn">
+    <div data-testid="searchBox">
+      <input type="text" placeholder="Search" />
+    </div>
+    <section aria-label="Trends section">
+      <h2>What's happening</h2>
+      <div data-testid="trend">Trend One</div>
+      <div data-testid="trend">Trend Two</div>
+    </section>
+    <aside aria-label="Who to follow section">
+      <h2>Who to follow</h2>
+      <div data-testid="UserCell">User A</div>
+      <div data-testid="UserCell">User B</div>
+    </aside>
+    <aside aria-label="Premium upsell">
+      <a href="https://x.com/i/premium_sign_up">Subscribe to Premium</a>
+    </aside>
   </div>
   <script>
+    function navigateToHome() {
+      history.pushState({}, '', 'https://x.com/home');
+      document.title = 'Home / X';
+    }
+
+    // Simulates real tab-click behavior: selecting a tab flips aria-selected on it and
+    // clears aria-selected on its siblings, so autoSelectFollowingTab()'s .click() call
+    // is observable via the resulting aria-selected="true" state (CLEAN-04, D-05).
+    document.querySelectorAll('[role="tablist"] [role="tab"]').forEach((tab) => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('[role="tablist"] [role="tab"]').forEach((t) => {
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.setAttribute('aria-selected', 'true');
+      });
+    });
+
     function navigateToProfile() {
       history.pushState({}, '', 'https://x.com/someuser');
       document.title = 'User Profile / X';
