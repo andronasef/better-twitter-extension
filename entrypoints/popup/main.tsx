@@ -26,8 +26,18 @@ if (typeof browser !== 'undefined' && browser.runtime?.getURL) {
   }
 }
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-);
+const root = ReactDOM.createRoot(document.getElementById('root')!);
+
+function renderApp(props?: any) {
+  root.render(
+    <React.StrictMode>
+      <App key={props ? JSON.stringify(props) : 'default'} {...props} />
+    </React.StrictMode>,
+  );
+}
+
+renderApp();
+
+if (typeof window !== 'undefined') {
+  (window as any).__BT_RENDER__ = renderApp;
+}

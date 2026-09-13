@@ -53,15 +53,15 @@ test('Selector miss reporting: badge sets on 3-tick miss, persists to diagnostic
 
     // Trigger additional mutation ticks to reach the 3-tick threshold
     await page.waitForTimeout(200);
-    await page.evaluate(() => window.addTweetCell(false));
+    await page.evaluate(() => (window as any).addTweetCell(false));
     await page.waitForTimeout(200);
-    await page.evaluate(() => window.addTweetCell(false));
+    await page.evaluate(() => (window as any).addTweetCell(false));
     await page.waitForTimeout(200);
 
     // 2. Assert diagnostics contains hidePromotedTweets with selector promotedContainer
     await expect.poll(async () => {
       const stored = await background.evaluate(async () => {
-        return await (chrome.storage.local as any).get(null);
+        return await ((globalThis as any).chrome.storage.local as any).get(null);
       });
       return stored?.diagnostics?.hidePromotedTweets?.selector;
     }, { timeout: 10000 }).toBe('promotedContainer');
@@ -69,13 +69,13 @@ test('Selector miss reporting: badge sets on 3-tick miss, persists to diagnostic
     // 3. Assert badge text is set to '•'
     await expect.poll(async () => {
       return await background.evaluate(async () => {
-        return await chrome.action.getBadgeText({});
+        return await (globalThis as any).chrome.action.getBadgeText({});
       });
     }, { timeout: 5000 }).toBe('•');
 
     // 4. Assert settings is untouched (features are not modified or disabled by miss)
     const settings = await background.evaluate(async () => {
-      return await (chrome.storage.local as any).get('settings');
+      return await ((globalThis as any).chrome.storage.local as any).get('settings');
     });
     const hidePromoted = settings?.settings?.features?.hidePromotedTweets ?? true;
     expect(hidePromoted).toBe(true);
@@ -85,19 +85,19 @@ test('Selector miss reporting: badge sets on 3-tick miss, persists to diagnostic
     await expect(organicCell).not.toHaveCSS('display', 'none');
 
     // 6. Restore marker and trigger a hit
-    await page.evaluate(() => window.restoreMarker());
+    await page.evaluate(() => (window as any).restoreMarker());
 
     // 7. Assert diagnostics clears and badge clears
     await expect.poll(async () => {
       const stored = await background.evaluate(async () => {
-        return await (chrome.storage.local as any).get(null);
+        return await ((globalThis as any).chrome.storage.local as any).get(null);
       });
       return stored?.diagnostics?.hidePromotedTweets;
     }, { timeout: 10000 }).toBeUndefined();
 
     await expect.poll(async () => {
       return await background.evaluate(async () => {
-        return await chrome.action.getBadgeText({});
+        return await (globalThis as any).chrome.action.getBadgeText({});
       });
     }, { timeout: 5000 }).toBe('');
   } finally {
