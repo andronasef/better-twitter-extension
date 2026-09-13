@@ -150,7 +150,10 @@ const PRIMARY_CONTAINER_SELECTORS = [
   '[data-testid="primaryColumn"]',
   '[data-testid="sidebarColumn"]',
   'header[role="banner"]',
+  'main[role="main"]',
   '[data-testid="tweet"]',
+  '[data-testid="cellInnerDiv"]',
+  'article[data-testid="tweet"]',
 ];
 
 const htmlBgSelector = COLOR_ENGINE_THEME_IDS.map((id) => `html[data-bt-theme="${id}"]`).join(
@@ -159,6 +162,9 @@ const htmlBgSelector = COLOR_ENGINE_THEME_IDS.map((id) => `html[data-bt-theme="$
 const bodyRootSelector = COLOR_ENGINE_THEME_IDS.flatMap((id) => [
   `html[data-bt-theme="${id}"] body`,
   `html[data-bt-theme="${id}"] #react-root`,
+  `html[data-bt-theme="${id}"] #react-root > div`,
+  `html[data-bt-theme="${id}"] #react-root > div > div`,
+  `html[data-bt-theme="${id}"] #react-root > div > div > div`,
 ]).join(',\n');
 const primaryContainerSelector = COLOR_ENGINE_THEME_IDS.flatMap((id) =>
   PRIMARY_CONTAINER_SELECTORS.map((sel) => `html[data-bt-theme="${id}"] ${sel}`)
