@@ -246,13 +246,88 @@ html[data-bt-theme="minimal"] div[data-testid="primaryColumn"] {
 `;
 
 /**
+ * Theme IDs whose token block is emitted purely for CSS custom-property/color reference (e.g.
+ * Old Twitter's classic palette, so the `--bt-theme-*` tokens are available for anything that
+ * wants to read them) without being folded into the generic cross-theme surface application in
+ * APPLY_SURFACE_RULES. Old Twitter's structural layout transform below applies its own hardcoded
+ * classic hex values directly, since it is a full structural transform, not a surface recolor.
+ */
+const LAYOUT_TOKEN_ONLY_THEME_IDS: ThemeId[] = ['old-twitter'];
+
+const LAYOUT_PRESET_TOKEN_BLOCKS = LAYOUT_TOKEN_ONLY_THEME_IDS.map((id) =>
+  presetTokenBlock(THEME_PRESETS[id])
+).join('');
+
+/**
+ * Old Twitter 2015 layout transform rules (THEME-06, D-15): 3-column classic desktop layout,
+ * fixed 46px horizontal top navbar, discrete bordered tweet cards, rounded-square avatars, and
+ * a left-column mini profile card (mounted non-destructively by features/layout-engine, and
+ * gracefully collapsed under 1000px viewports).
+ */
+export const OLD_TWITTER_LAYOUT_CSS = `
+html[data-bt-theme="old-twitter"] body {
+  background-color: #e6ecf0 !important;
+}
+
+html[data-bt-theme="old-twitter"] header[role="banner"] {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 46px !important;
+  background-color: #ffffff !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15) !important;
+  z-index: 1000 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+html[data-bt-theme="old-twitter"] main[role="main"] {
+  padding-top: 56px !important;
+}
+
+html[data-bt-theme="old-twitter"] article[data-testid="tweet"] {
+  background-color: #ffffff !important;
+  border: 1px solid #e1e8ed !important;
+  border-radius: 5px !important;
+  margin-bottom: 10px !important;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) !important;
+}
+
+html[data-bt-theme="old-twitter"] [data-testid="Tweet-User-Avatar"] img,
+html[data-bt-theme="old-twitter"] [data-testid="Tweet-User-Avatar"] div,
+html[data-bt-theme="old-twitter"] [data-testid="UserAvatar-Container"] {
+  border-radius: 4px !important;
+}
+
+/* 3-column classic proportions (D-15): left mini profile card ~290px (mounted by
+   features/layout-engine), center timeline ~590px, right sidebar ~290px. */
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] {
+  max-width: 590px !important;
+  width: 590px !important;
+}
+html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] {
+  max-width: 290px !important;
+  width: 290px !important;
+}
+
+/* Responsive: collapse the injected left mini profile card under 1000px viewports */
+@media (max-width: 1000px) {
+  [data-bt-mini-profile-card] {
+    display: none !important;
+  }
+}
+`;
+
+/**
  * Generates the full master theme stylesheet: root custom properties, Dracula/Nord/Matrix
  * palette token blocks, surface recoloring rules, universal accent overrides, and the Minimal
- * (THEME-05) layout transform.
+ * (THEME-05) / Old Twitter (THEME-06) layout transforms.
  */
 export function generateThemeCss(): string {
   return [
-    '/* Better Twitter Master Theme Engine (THEME-01..05, THEME-07, D-09..D-14) */',
+    '/* Better Twitter Master Theme Engine (THEME-01..07, D-09..D-15) */',
     ROOT_TOKENS,
     '/* Theme Presets: Dracula (THEME-01), Nord (THEME-02), Matrix (THEME-03) */',
     THEME_PRESET_TOKEN_BLOCKS,
@@ -262,6 +337,10 @@ export function generateThemeCss(): string {
     ACCENT_OVERRIDE_RULES,
     '/* Minimal Layout (THEME-05, D-14) */',
     MINIMAL_LAYOUT_CSS,
+    '/* Old Twitter 2015 classic palette tokens (THEME-06, D-15) */',
+    LAYOUT_PRESET_TOKEN_BLOCKS,
+    '/* Old Twitter 2015 Layout (THEME-06, D-15) */',
+    OLD_TWITTER_LAYOUT_CSS,
   ].join('\n');
 }
 
