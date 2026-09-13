@@ -148,6 +148,7 @@ const THEME_PRESET_TOKEN_BLOCKS = COLOR_ENGINE_THEME_IDS.map((id) =>
 
 const PRIMARY_CONTAINER_SELECTORS = [
   '[data-testid="primaryColumn"]',
+  '[data-testid="primaryColumn"] > div',
   '[data-testid="sidebarColumn"]',
   'header[role="banner"]',
   'main[role="main"]',
@@ -188,6 +189,63 @@ ${bodyRootSelector} {
 ${primaryContainerSelector} {
   background-color: var(--bt-theme-surface) !important;
   border-color: var(--bt-theme-border) !important;
+}
+
+/* Ensure inner primary column containers, sections, and tweets inherit theme surface */
+html[data-bt-theme="dracula"] [data-testid="primaryColumn"] section,
+html[data-bt-theme="dracula"] [data-testid="primaryColumn"] section > div,
+html[data-bt-theme="dracula"] [data-testid="cellInnerDiv"],
+html[data-bt-theme="dracula"] article[data-testid="tweet"],
+html[data-bt-theme="dracula"] [data-testid="ScrollSnap-List"],
+html[data-bt-theme="dracula"] div[aria-label*="Timeline"] {
+  background-color: var(--bt-theme-surface) !important;
+  border-color: var(--bt-theme-border) !important;
+}
+
+html[data-bt-theme="dracula"] div[data-testid="primaryColumn"] > div > div:first-child {
+  background-color: rgba(40, 42, 54, 0.85) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+html[data-bt-theme="nord"] [data-testid="primaryColumn"] section,
+html[data-bt-theme="nord"] [data-testid="primaryColumn"] section > div,
+html[data-bt-theme="nord"] [data-testid="cellInnerDiv"],
+html[data-bt-theme="nord"] article[data-testid="tweet"],
+html[data-bt-theme="nord"] [data-testid="ScrollSnap-List"],
+html[data-bt-theme="nord"] div[aria-label*="Timeline"] {
+  background-color: var(--bt-theme-surface) !important;
+  border-color: var(--bt-theme-border) !important;
+}
+
+html[data-bt-theme="nord"] div[data-testid="primaryColumn"] > div > div:first-child {
+  background-color: rgba(46, 52, 64, 0.85) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+html[data-bt-theme="matrix"] [data-testid="primaryColumn"] section,
+html[data-bt-theme="matrix"] [data-testid="primaryColumn"] section > div,
+html[data-bt-theme="matrix"] [data-testid="cellInnerDiv"],
+html[data-bt-theme="matrix"] article[data-testid="tweet"],
+html[data-bt-theme="matrix"] [data-testid="ScrollSnap-List"],
+html[data-bt-theme="matrix"] div[aria-label*="Timeline"] {
+  background-color: var(--bt-theme-surface) !important;
+  border-color: var(--bt-theme-border) !important;
+}
+
+html[data-bt-theme="matrix"] div[data-testid="primaryColumn"] > div > div:first-child {
+  background-color: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+/* Ensure tweet texts, handles, and borders render cleanly */
+html[data-bt-theme="dracula"] article[data-testid="tweet"] [dir="auto"] {
+  color: var(--bt-theme-text) !important;
+}
+html[data-bt-theme="nord"] article[data-testid="tweet"] [dir="auto"] {
+  color: var(--bt-theme-text) !important;
+}
+html[data-bt-theme="matrix"] article[data-testid="tweet"] [dir="auto"] {
+  color: var(--bt-theme-text) !important;
 }
 `;
 
@@ -236,6 +294,11 @@ html[data-bt-theme="minimal"] header[role="banner"] nav [role="button"] span {
   display: none !important;
 }
 
+html[data-bt-theme="minimal"] header[role="banner"] nav a {
+  justify-content: center !important;
+  padding: 12px 0 !important;
+}
+
 html[data-bt-theme="minimal"] main[role="main"] {
   display: flex !important;
   justify-content: center !important;
@@ -248,6 +311,41 @@ html[data-bt-theme="minimal"] div[data-testid="primaryColumn"] {
   width: 100% !important;
   border-left: 1px solid var(--bt-theme-border) !important;
   border-right: 1px solid var(--bt-theme-border) !important;
+}
+
+/* Collapse Post button to 50x50 round icon button so it does not overflow across the feed */
+html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"] {
+  width: 50px !important;
+  height: 50px !important;
+  min-width: 50px !important;
+  padding: 0 !important;
+  margin: 12px auto !important;
+  border-radius: 9999px !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"] span {
+  display: none !important;
+}
+
+html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"] svg {
+  display: block !important;
+  margin: 0 auto !important;
+}
+
+/* Collapse Account Switcher to avatar-only to prevent bottom overlap */
+html[data-bt-theme="minimal"] [data-testid="SideNav_AccountSwitcher_Button"] {
+  width: 50px !important;
+  height: 50px !important;
+  padding: 0 !important;
+  margin: 12px auto !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+html[data-bt-theme="minimal"] [data-testid="SideNav_AccountSwitcher_Button"] > div:not(:first-child) {
+  display: none !important;
 }
 `;
 
@@ -273,8 +371,10 @@ const LAYOUT_PRESET_TOKEN_BLOCKS = LAYOUT_TOKEN_ONLY_THEME_IDS.map((id) =>
 export const OLD_TWITTER_LAYOUT_CSS = `
 html[data-bt-theme="old-twitter"] body {
   background-color: #e6ecf0 !important;
+  padding-top: 54px !important;
 }
 
+/* Native header keeps fixed 46px 100vw top banner contract, but hides inner vertical nav items */
 html[data-bt-theme="old-twitter"] header[role="banner"] {
   position: fixed !important;
   top: 0 !important;
@@ -289,8 +389,21 @@ html[data-bt-theme="old-twitter"] header[role="banner"] {
   align-items: center !important;
   justify-content: center !important;
 }
+
+/* Hide native vertical nav, Post button, and AccountSwitcher from header so they do NOT float over the feed */
+html[data-bt-theme="old-twitter"] header[role="banner"] nav,
+html[data-bt-theme="old-twitter"] header[role="banner"] [data-testid="SideNav_NewTweet_Button"],
+html[data-bt-theme="old-twitter"] header[role="banner"] [data-testid="SideNav_AccountSwitcher_Button"],
+html[data-bt-theme="old-twitter"] header[role="banner"] > div > div > div > div:not(:first-child) {
+  display: none !important;
+}
+
 html[data-bt-theme="old-twitter"] main[role="main"] {
-  padding-top: 56px !important;
+  padding-top: 10px !important;
+  display: flex !important;
+  justify-content: center !important;
+  background-color: #e6ecf0 !important;
+  width: 100% !important;
 }
 
 html[data-bt-theme="old-twitter"] article[data-testid="tweet"] {
@@ -301,9 +414,34 @@ html[data-bt-theme="old-twitter"] article[data-testid="tweet"] {
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) !important;
 }
 
+/* Force dark text on white cards for Old Twitter so text is never invisible */
+html[data-bt-theme="old-twitter"] [data-testid="primaryColumn"],
+html[data-bt-theme="old-twitter"] [data-testid="cellInnerDiv"],
+html[data-bt-theme="old-twitter"] article[data-testid="tweet"],
+html[data-bt-theme="old-twitter"] article[data-testid="tweet"] [dir="auto"],
+html[data-bt-theme="old-twitter"] article[data-testid="tweet"] span,
+html[data-bt-theme="old-twitter"] article[data-testid="tweet"] div {
+  color: #14171a !important;
+}
+
+html[data-bt-theme="old-twitter"] article[data-testid="tweet"] a {
+  color: #1da1f2 !important;
+}
+
+html[data-bt-theme="old-twitter"] article[data-testid="tweet"] time,
+html[data-bt-theme="old-twitter"] article[data-testid="tweet"] [data-testid="User-Name"] span:not(:first-child) {
+  color: #657786 !important;
+}
+
+html[data-bt-theme="old-twitter"] article[data-testid="tweet"] svg {
+  color: #657786 !important;
+  fill: #657786 !important;
+}
+
 html[data-bt-theme="old-twitter"] [data-testid="Tweet-User-Avatar"] img,
 html[data-bt-theme="old-twitter"] [data-testid="Tweet-User-Avatar"] div,
-html[data-bt-theme="old-twitter"] [data-testid="UserAvatar-Container"] {
+html[data-bt-theme="old-twitter"] [data-testid="UserAvatar-Container"],
+html[data-bt-theme="old-twitter"] article[data-testid="tweet"] img[src*="profile_images"] {
   border-radius: 4px !important;
 }
 
@@ -312,6 +450,8 @@ html[data-bt-theme="old-twitter"] [data-testid="UserAvatar-Container"] {
 html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] {
   max-width: 590px !important;
   width: 590px !important;
+  background-color: transparent !important;
+  border: none !important;
 }
 html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] {
   max-width: 290px !important;
@@ -320,7 +460,8 @@ html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] {
 
 /* Responsive: collapse the injected left mini profile card under 1000px viewports */
 @media (max-width: 1000px) {
-  [data-bt-mini-profile-card] {
+  [data-bt-mini-profile-card],
+  [data-bt-mini-profile-card-host] {
     display: none !important;
   }
 }

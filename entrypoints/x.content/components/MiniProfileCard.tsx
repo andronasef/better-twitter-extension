@@ -8,11 +8,6 @@ import { createRoot, type Root } from 'react-dom/client';
  * TWEETS / FOLLOWING / FOLLOWERS stats grid, matching the classic Old Twitter left-column
  * profile widget. Mounted non-destructively (as a sibling, never replacing X's own DOM) by
  * features/layout-engine's `layoutEngine.enableOldTwitter()`.
- *
- * Live user data (real avatar/banner/handle/counts) is a future enhancement — this component
- * currently renders placeholder content matching the exact dimensions/typography contract so
- * the layout is visually correct immediately; wiring it to X's real profile data is out of
- * scope for THEME-06 (layout engine), tracked as a known follow-up.
  */
 export interface MiniProfileCardProps {
   displayName?: string;
@@ -154,6 +149,25 @@ const HOST_ATTR = 'data-bt-mini-profile-card-host';
 let root: Root | null = null;
 let hostEl: HTMLDivElement | null = null;
 
+function scrapeUserProfile(): MiniProfileCardProps {
+  try {
+    const accountBtn = document.querySelector('[data-testid="SideNav_AccountSwitcher_Button"]');
+    if (!accountBtn) return {};
+    const avatarImg = accountBtn.querySelector('img') as HTMLImageElement | null;
+    const avatarUrl = avatarImg?.src || null;
+    const spans = Array.from(accountBtn.querySelectorAll('span')).map((s) => s.textContent?.trim()).filter(Boolean);
+    const handle = spans.find((t) => t?.startsWith('@'));
+    const displayName = spans.find((t) => t && !t.startsWith('@') && t.length > 0 && !t.includes('\n'));
+    return {
+      displayName: displayName || undefined,
+      handle: handle || undefined,
+      avatarUrl: avatarUrl || undefined,
+    };
+  } catch {
+    return {};
+  }
+}
+
 /**
  * Mounts the MiniProfileCard as a non-destructive sibling insert into `targetEl` (never
  * replacing or reparenting any of X's own DOM nodes). If `beforeEl` is a direct child of
@@ -173,8 +187,9 @@ export function mountMiniProfileCard(targetEl: Element, beforeEl?: Element | nul
     targetEl.insertBefore(hostEl, targetEl.firstChild);
   }
 
+  const userProfile = scrapeUserProfile();
   root = createRoot(hostEl);
-  root.render(<MiniProfileCard />);
+  root.render(<MiniProfileCard {...userProfile} />);
 }
 
 /**
