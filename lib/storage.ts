@@ -7,6 +7,8 @@ export interface Settings {
     cleanSidebar?: boolean;
     hideVanityMetrics?: boolean;
     hideProfileCounts?: boolean;
+    swapHomeTabs?: boolean;
+    hideForYouTab?: boolean;
     [key: string]: boolean | undefined;
   };
 }
@@ -34,6 +36,8 @@ export function migrateSettings(oldSettings: any): Settings {
       cleanSidebar: oldFeatures.cleanSidebar ?? false,
       hideVanityMetrics: oldFeatures.hideVanityMetrics ?? false,
       hideProfileCounts: oldFeatures.hideProfileCounts ?? false,
+      swapHomeTabs: oldFeatures.swapHomeTabs ?? false,
+      hideForYouTab: oldFeatures.hideForYouTab ?? false,
     },
   };
 }
@@ -46,6 +50,8 @@ export const settingsItem = storage.defineItem<Settings>('local:settings', {
       cleanSidebar: false,
       hideVanityMetrics: false,
       hideProfileCounts: false,
+      swapHomeTabs: false,
+      hideForYouTab: false,
     },
   },
   version: 2,

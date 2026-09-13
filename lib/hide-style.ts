@@ -74,6 +74,22 @@ html[data-bt-clean-sidebar="true"] div[data-testid="sidebarColumn"] section:has(
 html[data-bt-clean-sidebar="true"] div[data-testid="sidebarColumn"] section:has(a[href*="/verified"]) {
   display: none !important;
 }
+
+/* CLEAN-04 & D-05, D-07: Tab Reordering via CSS flex order */
+html[data-bt-swap-tabs="true"] div[data-testid="primaryColumn"] [role="tablist"] > :nth-child(1) {
+  order: 2 !important;
+}
+html[data-bt-swap-tabs="true"] div[data-testid="primaryColumn"] [role="tablist"] > :nth-child(2) {
+  order: 1 !important;
+}
+html[data-bt-swap-tabs="true"] div[data-testid="primaryColumn"] [role="tablist"] > :nth-child(n+3) {
+  order: 3 !important;
+}
+
+/* CLEAN-04 & D-06: Hide For You Tab Completely */
+html[data-bt-hide-for-you="true"] div[data-testid="primaryColumn"] [role="tablist"] > :nth-child(1) {
+  display: none !important;
+}
 `;
 
 /**

@@ -108,6 +108,30 @@ export const SELECTORS = {
     'div[data-testid="sidebarColumn"] section:has(a[href*="/i/premium_sign_up"])',
     '[data-testid="flex-prompt"]',
   ],
+
+  // Home feed tab list container (For You / Following / pinned Lists)
+  // Justification: X leaves the tablist wrapper unlabelled without a data-testid; role="tablist" is the
+  // documented ARIA contract for this structural container.
+  tabList: [
+    'div[data-testid="primaryColumn"] [role="tablist"]',
+    '[role="tablist"]',
+    'nav[role="tablist"]',
+  ],
+
+  // "For You" tab (first child of the home tablist, CLEAN-04, D-05)
+  // Justification: X's tab elements carry no data-testid; :nth-child positional targeting is the only
+  // way to distinguish "For You" (first) from "Following" (second) and pinned Lists (third+).
+  forYouTab: [
+    '[role="tablist"] > :nth-child(1) [role="tab"]',
+    '[role="tablist"] [role="tab"]:first-of-type',
+  ],
+
+  // "Following" tab (second child of the home tablist, CLEAN-04, D-05)
+  // Justification: same positional rationale as forYouTab above.
+  followingTab: [
+    '[role="tablist"] > :nth-child(2) [role="tab"]',
+    '[role="tablist"] [role="tab"]:nth-of-type(2)',
+  ],
 } as const;
 
 export type SelectorKey = keyof typeof SELECTORS;
