@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Home / X</title>
+  <style>
+    body { margin: 0; background: #000; color: #fff; font-family: sans-serif; }
+    [data-testid="cellInnerDiv"] { min-height: 120px; border-bottom: 1px solid #333; }
+    [role="separator"] { height: 1px; background: #222; }
+  </style>
+</head>
+<body>
+  <div data-testid="primaryColumn">
+    <section>
+      <h1>Home Timeline</h1>
+      <div aria-label="Timeline: Your Home Timeline">
+        <div style="position: relative; min-height: 1000px;">
+          <!-- Tweet Cell 1 (Organic) -->
+          <div data-testid="cellInnerDiv" style="transform: translateY(0px);">
+            <div>
+              <article data-testid="tweet">
+                <a href="https://x.com/user1/status/1000000000000000001">Organic Tweet 1</a>
+                <p>Hello world from regular tweet</p>
+              </article>
+            </div>
+          </div>
+          <!-- Tweet Cell 2 (Promoted) -->
+          <div data-testid="cellInnerDiv" style="transform: translateY(120px);">
+            <div>
+              <article data-testid="tweet">
+                <div data-testid="placementTracking">
+                  <span>Promoted</span>
+                </div>
+                <a href="https://x.com/sponsor/status/1000000000000000002">Promoted Tweet 2</a>
+                <p>Buy this amazing product today!</p>
+              </article>
+            </div>
+          </div>
+          <div role="separator"></div>
+          <!-- Tweet Cell 3 (Organic) -->
+          <div data-testid="cellInnerDiv" style="transform: translateY(240px);">
+            <div>
+              <article data-testid="tweet">
+                <a href="https://x.com/user2/status/1000000000000000003">Organic Tweet 3</a>
+                <p>Another regular tweet</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
