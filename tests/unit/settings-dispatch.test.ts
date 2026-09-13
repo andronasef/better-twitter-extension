@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createSettingsDispatcher } from '@/entrypoints/x.content/dispatcher';
+import { createSettingsDispatcher, type FeatureController } from '@/entrypoints/x.content/dispatcher';
 
 describe('Settings dispatch & convergence (FOUND-07)', () => {
-  let initFn: ReturnType<typeof vi.fn>;
-  let teardownFn: ReturnType<typeof vi.fn>;
+  let initFn: () => void;
+  let teardownFn: () => void;
 
   beforeEach(() => {
     initFn = vi.fn();
@@ -11,7 +11,7 @@ describe('Settings dispatch & convergence (FOUND-07)', () => {
   });
 
   it('Given the identical settings object is written twice: the dispatcher invokes zero further init/teardown calls on the second write', () => {
-    const registry = {
+    const registry: Record<string, FeatureController> = {
       hidePromotedTweets: { init: initFn, teardown: teardownFn },
     };
 
@@ -29,7 +29,7 @@ describe('Settings dispatch & convergence (FOUND-07)', () => {
   });
 
   it('Flipping false tears down, flipping true re-inits', () => {
-    const registry = {
+    const registry: Record<string, FeatureController> = {
       hidePromotedTweets: { init: initFn, teardown: teardownFn },
     };
 

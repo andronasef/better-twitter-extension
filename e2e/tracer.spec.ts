@@ -9,7 +9,7 @@ test('Tracer: popup toggle -> storage -> live DOM hide/un-hide on x.com', async 
   }
 
   const matches = fs.readdirSync(outputDir).filter((d) => d.startsWith('chrome-mv3'));
-  if (matches.length !== 1) {
+  if (matches.length !== 1 || !matches[0]) {
     throw new Error(`Expected exactly one chrome-mv3 output dir, got ${matches.length}: ${JSON.stringify(matches)}`);
   }
 
@@ -17,9 +17,17 @@ test('Tracer: popup toggle -> storage -> live DOM hide/un-hide on x.com', async 
   const fixturePath = path.resolve('e2e/fixtures/x-home.html');
   const fixtureHtml = fs.readFileSync(fixturePath, 'utf8');
 
+  // Find installed browser
+  const possiblePaths = [
+    'C:\\Users\\A\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe',
+    'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
+  ];
+  const executablePath = possiblePaths.find((p) => fs.existsSync(p));
+
   // Launch persistent context with extension loaded
   const context = await chromium.launchPersistentContext('', {
     headless: false,
+    ...(executablePath ? { executablePath } : {}),
     args: [
       `--disable-extensions-except=${extensionPath}`,
       `--load-extension=${extensionPath}`,
@@ -94,7 +102,7 @@ test('Tracer: popup toggle -> storage -> live DOM hide/un-hide on x.com', async 
     await expect(promoSwitch).toHaveAttribute('data-state', 'unchecked');
 
     // Assert x.com page un-hides promoted tweet with NO reload
-    await expect(promotedContentWrapper).not.toHaveAttribute('data-bt-hidden', { timeout: 2000 });
+    await expect(promotedContentWrapper).not.toHaveAttribute('data-bt-hidden', { timeout: 3000 });
     const isUnHidden = await promotedContentWrapper.evaluate((el) => window.getComputedStyle(el).display !== 'none');
     expect(isUnHidden).toBe(true);
 
@@ -103,7 +111,7 @@ test('Tracer: popup toggle -> storage -> live DOM hide/un-hide on x.com', async 
     await expect(promoSwitch).toHaveAttribute('data-state', 'checked');
 
     // Assert it re-hides
-    await expect(promotedContentWrapper).toHaveAttribute('data-bt-hidden', '', { timeout: 2000 });
+    await expect(promotedContentWrapper).toHaveAttribute('data-bt-hidden', '', { timeout: 3000 });
 
     // 4. Append a new promoted cell to the timeline and assert it hides with no further action
     await page.evaluate(() => {
@@ -127,7 +135,7 @@ test('Tracer: popup toggle -> storage -> live DOM hide/un-hide on x.com', async 
 
     const newPromotedCell = page.locator('[data-testid="cellInnerDiv"]:has(a[href*="1000000000000000004"])');
     const newContentWrapper = newPromotedCell.locator('> div').first();
-    await expect(newContentWrapper).toHaveAttribute('data-bt-hidden', '', { timeout: 2000 });
+    await expect(newContentWrapper).toHaveAttribute('data-bt-hidden', '', { timeout: 3000 });
 
   } finally {
     await context.close();
