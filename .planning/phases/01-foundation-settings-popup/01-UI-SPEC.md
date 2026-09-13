@@ -1,7 +1,7 @@
 ---
 phase: "01"
 slug: "foundation-settings-popup"
-status: draft
+status: approved
 shadcn_initialized: false
 preset: "shadcn init -b radix (scaffolded by this phase — see Design System)"
 created: "2026-09-13"
@@ -27,7 +27,7 @@ created: "2026-09-13"
 | Preset | `npx shadcn@latest init -b radix` — no marketplace preset. `--base radix` is **mandatory**, not decorative: shadcn's default base flipped to Base UI in the July 2026 changelog, so omitting `-b radix` installs `@base-ui/react` and silently violates project constraint C-4 |
 | Component library | `radix-ui` unified package `1.6.7` (never individual `@radix-ui/react-*`) |
 | Icon library | `lucide-react` `1.45.0`, per-icon named imports only |
-| Font | `TwitterChirp` — see **Typography → Font resolution** below. Two different mechanisms for popup vs shadow root |
+| Font | `TwitterChirp` in shadow roots (inherited from the page); bundled `BTPopupSans` (Inter, OFL) in the popup — see **Typography → Font resolution** below. Zero outbound requests |
 | Styling | Tailwind CSS v4 `4.3.3`, CSS-first `@theme`. No `tailwind.config.js`. No top-level `vite.config.ts` |
 | CSS variables | `--css-variables` (the CLI default) — required, because UI-03 re-points every token at runtime from X's live theme |
 
@@ -115,32 +115,44 @@ Role assignment, unambiguously:
 
 The "Display" role is the smallest size, not the largest. The popup has no display type; the row is spent on footer metadata so the scale stays at four declared sizes rather than three plus an undeclared one.
 
-### Font resolution — two mechanisms, one family name
+### Font resolution — two mechanisms, two families, one fallback chain
 
-Every surface declares the identical stack:
+Both surfaces share X's own fallback chain, copied verbatim, so every degraded case matches X's degraded case. They differ only in the first family named:
 
 ```css
+/* shadow-root surfaces — real Chirp, inherited from the page */
 font-family: "TwitterChirp", -apple-system, BlinkMacSystemFont, "Segoe UI",
+             Roboto, Helvetica, Arial, sans-serif;
+
+/* popup — bundled substitute, no network */
+font-family: "BTPopupSans", -apple-system, BlinkMacSystemFont, "Segoe UI",
              Roboto, Helvetica, Arial, sans-serif;
 ```
 
-That fallback chain is X's own, copied verbatim, so the degraded case still matches X's degraded case.
-
 **Shadow-root surfaces (Phase 1 probe; Phases 2–5 real UI): free.** x.com declares `@font-face` for `TwitterChirp` at document level, and document-level font faces *do* pierce into shadow roots. Only `@font-face` declared **inside** a shadow root is ignored by Chromium (`issues.chromium.org/issues/41085401`) — so never declare one there; just name the family.
 
-**Popup: requires the cached-URL mechanism.** The popup is a separate document on the extension origin with no access to x.com's font faces. The contract:
+**Popup: bundled metric substitute, zero network.** The popup is a separate document on the extension origin with no access to x.com's font faces. **User decision (2026-09-13): the extension makes no outbound requests at all.** The popup therefore ships its own font rather than fetching X's. The contract:
 
-1. The content script reads the `TwitterChirp` `@font-face` `src` URL out of the page's own stylesheets / `document.fonts` and caches it into `local:xTheme` alongside the theme values.
-2. The popup, on mount, injects its own `@font-face { font-family: "TwitterChirp"; src: url(<cached>) format("woff2"); font-weight: 400 700; font-display: swap; }`.
-3. With no cached URL (fresh install, popup opened before ever visiting x.com), the fallback stack renders and nothing else changes. `font-display: swap` guarantees text is readable throughout; there is **no** blocking state and **no** spinner for font load.
+1. Vendor **Inter** (SIL Open Font License 1.1) as `public/fonts/inter-400.woff2` and `public/fonts/inter-700.woff2` — static 400 and 700 cuts, `latin` subset only. Not the variable font, not the full Unicode range: two static Latin cuts land around 25–35KB each, a variable full-range file is 300KB+ for weights this contract never uses.
+2. The popup declares `@font-face { font-family: "BTPopupSans"; src: url(...) format("woff2"); font-weight: 400; font-display: block; }` and the matching 700 face, referencing them via `browser.runtime.getURL(...)`.
+3. The popup's stack becomes:
+
+```css
+font-family: "BTPopupSans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+             Roboto, Helvetica, Arial, sans-serif;
+```
+
+`font-display: block` is correct **here specifically** and is the one place this contract departs from `swap`: the font is local, so the "block" window is a disk read measured in single-digit milliseconds, and blocking briefly beats a visible reflow from fallback metrics to Inter in a 360px popup.
+
+**The two mechanisms now differ on purpose.** Shadow-root surfaces render in real Chirp (free, as above) because they sit inline against X's own text, where any mismatch is directly visible. The popup renders in Inter because it is a standalone surface with no X text beside it to be compared against. This is the accepted cost of the zero-network decision — the popup is *near*-native rather than pixel-native.
 
 Three constraints this mechanism must respect:
 
-- **Do not bundle a Chirp file.** Chirp is proprietary (commissioned from Grilli Type). Shipping the binary inside a Chrome Web Store package is a licensing exposure with no upside.
-- **Do not add an `extension_pages` CSP override to make this work.** Chrome's default MV3 extension-page CSP constrains `script-src`/`object-src` only, so a remote font loads without any manifest change. A CSP override in the manifest is a review flag for zero benefit — if this appears to be needed, the diagnosis is wrong.
-- **Phase 6 must carry this in the privacy narrative.** The request is a font asset fetched from X's own CDN (`abs.twimg.com`), carrying no user data, to a domain the user is already on. STORE-03's claim — *no user data is transmitted* — stays true. But it is the **one** outbound request this extension makes, and the privacy policy must name it rather than let a reviewer find it.
+- **Do not bundle a Chirp file.** Chirp is proprietary (commissioned from Grilli Type). Shipping the binary inside a Chrome Web Store package is a licensing exposure with no upside. Inter is substituted precisely because it is openly licensed; its OFL text ships in the package.
+- **Do not fetch a font at runtime from any origin, including `abs.twimg.com`.** The zero-outbound-request property is now a deliberate, user-chosen invariant, not an accident — it is what lets STORE-03's privacy claim be unqualified. A later phase reintroducing a font fetch would silently spend that.
+- **Do not add an `extension_pages` CSP override.** Chrome's default MV3 extension-page CSP constrains `script-src`/`object-src` only; an extension-origin font needs no manifest change. A CSP override is a store-review flag for zero benefit — if it appears necessary, the diagnosis is wrong.
 
-> ⚠️ **Flagged for user sign-off.** `01-RESEARCH.md` § "X's Chirp Font (UI-04)" escalated this as the single point in the phase where "feels native" trades against a network request, and asked for explicit confirmation. This contract picks the option that actually satisfies UI-04 and success criterion 1 ("rendered in X's Chirp font"). **If the user prefers zero outbound requests, drop steps 1–3 and keep the fallback stack alone** — the popup then matches X's *fallback* rendering exactly, which is a defensible but literal-miss reading of UI-04. Nothing else in this spec changes.
+> **Reversal path.** To go back to real Chirp in the popup: cache the `TwitterChirp` `@font-face` `src` URL from the page into `local:xTheme` from the content script, declare it in the popup, and keep the same fallback chain. That reintroduces one outbound GET to `abs.twimg.com` which Phase 6's privacy narrative must then name. Nothing else in this spec depends on which path is taken — no color, spacing, or layout value changes.
 
 ---
 
@@ -302,12 +314,22 @@ No third-party registry was declared, so the `shadcn view` vetting gate did not 
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
-- [ ] Dimension 7 Inventory Provenance: PASS
+- [x] Dimension 1 Copywriting: PASS
+- [x] Dimension 2 Visuals: PASS
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: PASS
+- [x] Dimension 5 Spacing: PASS
+- [x] Dimension 6 Registry Safety: FLAG — non-blocking; no third-party registry declared, so the vetting gate correctly did not run. Clears when `shadcn init -b radix` runs in this phase's scaffold task
+- [x] Dimension 7 Inventory Provenance: FLAG — non-blocking; `Could not enumerate` carries a verifiable reason (no `package.json` / `components.json` / `node_modules` yet). Clears via the recorded executor obligation
 
-**Approval:** pending
+**Approval:** approved (gsd-ui-checker, 2026-09-13) — 5 PASS, 2 FLAG, 0 BLOCK
+
+### Post-approval amendments
+
+- **2026-09-13 — Popup font strategy reversed by user decision.** The approved spec fetched X's Chirp `@font-face` URL from `abs.twimg.com`. The user chose zero outbound requests instead, so the popup now ships a bundled open substitute (Inter, OFL, as `BTPopupSans`). See **Typography → Font resolution**. Scope of change: the popup's first-named font family and the `font-display` value on that face. No color, spacing, layout, or copy value changes, and the checker's two binding guardrails are preserved (no Chirp binary shipped; no `extension_pages` CSP override). Phase 6 no longer needs a privacy-narrative line for an outbound font request — STORE-03's claim is now unqualified.
+
+### Executor obligations carried from checker review
+
+1. **Rewrite the Component Inventory provenance line** immediately after `shadcn init -b radix` — record the command, the component count, the resolved `radix-ui@<version>`, and the date, replacing `Could not enumerate:`. The planner must carry this as an explicit task line in the scaffold plan; the § Design System copy of this obligation is prose and will otherwise be skipped.
+2. **`-b radix` is mandatory, not decorative.** shadcn's default base flipped to Base UI in the July 2026 changelog; omitting the flag installs `@base-ui/react` and silently breaks project constraint C-4.
+3. **Pin exact versions and commit the lockfile** — this is the control for the six `SUS (too-new)` packages, not per-package review.
