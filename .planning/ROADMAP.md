@@ -38,7 +38,15 @@ Decimal phases appear between their surrounding integers in numeric order.
   - Does x.com's client-side routing fire the Navigation API `navigate` event, or must `history.pushState`/`replaceState` be patched? Research proposes Navigation API primary with a history patch fallback; neither path was verified against the live site. Settles the route watcher's design (FOUND-03).
   - What do X's live GraphQL operations actually look like on the wire — operation names, URL shape, response envelope? The MAIN-world bridge proves itself here by capturing and reporting them; the captured shapes are the input Phase 3 and Phase 4 build against, so running this now rather than later de-risks both (FOUND-05).
   - Do Radix portals, focus trap, and scroll lock behave inside the shadow root against real X overlay states? First Radix-in-shadow-root usage — the pattern set here is inherited by the reaction palette and resurfaced card, so it must be right once (FOUND-06).
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Walking Skeleton: scaffold the WXT/React/Tailwind/Radix project and prove the popup → storage → pipeline → DOM → live-toggle chain end to end on promoted-tweet hiding
+- [ ] 01-02-PLAN.md — MAIN-world bridge (fetch + XHR + history), layered route watcher, named observer registry with page-scoped teardown, and spikes S1 + S2
+- [ ] 01-03-PLAN.md — Selector-resolution layer with per-feature miss reporting to the action badge, pipeline hardening for 60fps scroll, and spike S4
+- [ ] 01-04-PLAN.md — X theme probe and cached theme, bundled popup typeface, and the full UI-SPEC popup shell with tooltips and every declared state
+- [ ] 01-05-PLAN.md — Radix shadow-root portal provider, dev-only probe with spike S3, and the standing build/permission audit plus the locked single-purpose narrative
+
 **UI hint**: yes
 
 ### Phase 2: Clean Timeline & Themes
@@ -131,7 +139,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Settings Popup | 0/TBD | Not started | - |
+| 1. Foundation & Settings Popup | 0/5 | Planned | - |
 | 2. Clean Timeline & Themes | 0/TBD | Not started | - |
 | 3. Bookmark Capture | 0/TBD | Not started | - |
 | 4. Bookmark Folders, Search & Resurfacing | 0/TBD | Not started | - |
