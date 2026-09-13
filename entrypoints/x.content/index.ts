@@ -1,4 +1,5 @@
 import { injectHideStylesheet } from '@/lib/hide-style';
+import { injectThemeStylesheet, applyThemeAttributes } from '@/lib/theme-engine';
 import { settingsItem } from '@/lib/storage';
 import type { Settings } from '@/lib/storage';
 import { startPipeline, stopPipeline } from './pipeline';
@@ -21,6 +22,9 @@ export default defineContentScript({
   main(ctx) {
     // 1. Inject hide stylesheet synchronously before any content paints
     injectHideStylesheet();
+
+    // 1b. Inject master theme stylesheet synchronously before any content paints (THEME-07, D-13)
+    injectThemeStylesheet();
 
     // 2. Start MAIN-world bridge
     startBridge();
@@ -72,6 +76,8 @@ export default defineContentScript({
           document.documentElement.setAttribute('data-bt-hide-for-you', 'true');
         }
       }
+      // Apply theme + custom accent synchronously to prevent FOUC (THEME-07, D-13)
+      applyThemeAttributes(settings.theme ?? 'default', settings.customAccent ?? null);
       dispatcher.dispatch(settings);
     });
 
@@ -121,6 +127,8 @@ export default defineContentScript({
       // 7. Watch for settings updates
       settingsItem.watch((newSettings) => {
         currentSettings = newSettings;
+        // Update theme + custom accent live, synchronously, without a page reload (THEME-07, D-13)
+        applyThemeAttributes(newSettings.theme ?? 'default', newSettings.customAccent ?? null);
         dispatcher.dispatch(newSettings);
       });
     };
