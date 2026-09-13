@@ -14,5 +14,11 @@ export default defineConfig({
     action: {
       default_popup: 'popup.html',
     },
+    web_accessible_resources: [
+      {
+        resources: ['bridge.js'],
+        matches: ['*://x.com/*', '*://twitter.com/*'],
+      },
+    ],
   },
 });

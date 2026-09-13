@@ -3,6 +3,7 @@ import { settingsItem } from '@/lib/storage';
 import { startPipeline } from './pipeline';
 import { createSettingsDispatcher } from './dispatcher';
 import { adStripper } from '@/features/ad-stripper';
+import { startBridge } from './bridge-client';
 
 export default defineContentScript({
   matches: ['*://x.com/*', '*://twitter.com/*'],
@@ -11,6 +12,9 @@ export default defineContentScript({
   main() {
     // 1. Inject hide stylesheet synchronously before any content paints
     injectHideStylesheet();
+
+    // 2. Start MAIN-world bridge
+    startBridge();
 
     const dispatcher = createSettingsDispatcher({
       [adStripper.id]: adStripper,

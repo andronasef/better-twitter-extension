@@ -5,6 +5,7 @@
     "paths": {
       "@/*": ["./*"]
     },
+    "types": ["vite/client"],
     "allowImportingTsExtensions": true,
     "jsx": "react-jsx"
   },
