@@ -131,7 +131,12 @@ export function startPipeline(): void {
   timelineObserver?.disconnect();
 
   // ChildList-only observer: strictly childList only, no recursive subtree watching
-  timelineObserver = new MutationObserver(() => {
+  timelineObserver = new MutationObserver((mutations) => {
+    // Early exit if the batch contains zero added nodes (e.g. removal-only batch)
+    const hasAddedNodes = mutations.some((m) => m.addedNodes.length > 0);
+    if (!hasAddedNodes) {
+      return;
+    }
     if (activeTimeline) {
       processTimelineChildren(activeTimeline);
     }
@@ -140,6 +145,7 @@ export function startPipeline(): void {
   timelineObserver.observe(timeline, {
     childList: true,
   });
+  registerPageObserver('pipeline:timeline', timelineObserver);
 
   // Process any existing items immediately
   processTimelineChildren(timeline);

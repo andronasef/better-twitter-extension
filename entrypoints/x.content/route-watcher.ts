@@ -131,7 +131,7 @@ export function startRouteWatcher(options?: RouteWatcherOptions): void {
 
   if (titleEl) {
     const titleObserver = new MutationObserver(() => checkTitle());
-    titleObserver.observe(titleEl, { childList: true, characterData: true, subtree: true });
+    titleObserver.observe(titleEl, { childList: true });
     registerGlobalObserver('route-watcher:title', titleObserver);
   } else {
     // If <title> not present yet, watch document.head
@@ -140,7 +140,7 @@ export function startRouteWatcher(options?: RouteWatcherOptions): void {
       if (headTitle) {
         headObserver.disconnect();
         const titleObserver = new MutationObserver(() => checkTitle());
-        titleObserver.observe(headTitle, { childList: true, characterData: true, subtree: true });
+        titleObserver.observe(headTitle, { childList: true });
         registerGlobalObserver('route-watcher:title', titleObserver);
       }
     });

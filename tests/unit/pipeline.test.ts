@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { startPipeline, onTweetSeen, replayKnownTweets, resetPipeline } from '@/entrypoints/x.content/pipeline';
+import { registerGlobalObserver, teardownPageScope, getPageAbortSignal } from '@/lib/observers';
 
 describe('Tweet observation pipeline (FOUND-01, FOUND-02)', () => {
   let timeline: HTMLDivElement;
@@ -132,5 +133,80 @@ describe('Tweet observation pipeline (FOUND-01, FOUND-02)', () => {
 
     const marked = cell.getAttribute('data-bt-seen');
     expect(marked).toBe('501');
+  });
+
+  it('adding twenty cells in one batch invokes the observer callback once', async () => {
+    let callbackCount = 0;
+    // Intercept MutationObserver to count callback invocations
+    const OriginalMO = window.MutationObserver;
+    vi.stubGlobal(
+      'MutationObserver',
+      class extends OriginalMO {
+        constructor(cb: MutationCallback) {
+          super((mutations, observer) => {
+            callbackCount++;
+            cb(mutations, observer);
+          });
+        }
+      }
+    );
+
+    try {
+      startPipeline();
+      // Add 20 cells in one synchronous execution block
+      for (let i = 0; i < 20; i++) {
+        timeline.appendChild(createCell(`batch-${i}`));
+      }
+
+      await new Promise((r) => setTimeout(r, 20));
+      expect(callbackCount).toBe(1);
+    } finally {
+      vi.stubGlobal('MutationObserver', OriginalMO);
+    }
+  });
+
+  it('a removal-only batch performs zero selector resolutions and zero tweet-seen emissions', async () => {
+    const seen = vi.fn();
+    onTweetSeen(seen);
+    startPipeline();
+
+    const cell = createCell('601');
+    timeline.appendChild(cell);
+    await new Promise((r) => setTimeout(r, 15));
+    expect(seen).toHaveBeenCalledTimes(1);
+    seen.mockClear();
+
+    // Now remove the cell: removal-only batch
+    timeline.removeChild(cell);
+    await new Promise((r) => setTimeout(r, 15));
+
+    // Zero new tweet-seen emissions
+    expect(seen).not.toHaveBeenCalled();
+  });
+
+  it('long session of route changes and timeline replacements cleans up page observers', () => {
+    const globalDisconnect = vi.fn();
+    registerGlobalObserver('global-probe', { disconnect: globalDisconnect });
+
+    for (let i = 0; i < 10; i++) {
+      startPipeline();
+      teardownPageScope();
+    }
+
+    expect(globalDisconnect).not.toHaveBeenCalled();
+  });
+
+  it('page-scoped listener registered with page abort signal is removed when page scope tears down', () => {
+    const target = document.createElement('button');
+    const clickHandler = vi.fn();
+
+    target.addEventListener('click', clickHandler, { signal: getPageAbortSignal() });
+    target.click();
+    expect(clickHandler).toHaveBeenCalledTimes(1);
+
+    teardownPageScope();
+
+    target.click();
+    expect(clickHandler).toHaveBeenCalledTimes(1); // Not called after teardown
   });
 });
