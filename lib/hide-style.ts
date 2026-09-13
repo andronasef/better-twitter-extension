@@ -1,4 +1,22 @@
+/**
+ * Spike S4 fallback: Zero the cell container's height and hide overflow
+ * if hiding firstElementChild alone leaves residual virtualizer slot gaps on live x.com.
+ * Off by default; if live testing reveals gaps, toggle to true.
+ * Reference: .planning/phases/01-foundation-settings-popup/spikes/S4-virtualizer-gap.md
+ */
+export const ENABLE_S4_COLLAPSE_FALLBACK = false;
+
 const HIDE_STYLE_ID = 'bt-hide-style';
+
+const FALLBACK_RULES = ENABLE_S4_COLLAPSE_FALLBACK
+  ? `
+[data-bt-hidden-cell] {
+  height: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+`
+  : '';
 
 const CSS_RULES = `
 [data-bt-hidden] {
@@ -8,6 +26,7 @@ const CSS_RULES = `
 [data-bt-hidden-cell] + [role="separator"] {
   display: none !important;
 }
+${FALLBACK_RULES}
 `;
 
 /**

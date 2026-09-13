@@ -58,7 +58,7 @@ test('Tracer: popup toggle -> storage -> live DOM hide/un-hide on x.com', async 
 
     // Wait for content script to run
     const promotedCell = page.locator('[data-testid="cellInnerDiv"]:has([data-testid="placementTracking"])');
-    await expect(promotedCell).toBeVisible();
+    await expect(promotedCell).toBeAttached();
 
     const promotedContentWrapper = promotedCell.locator('> div').first();
 
@@ -67,12 +67,18 @@ test('Tracer: popup toggle -> storage -> live DOM hide/un-hide on x.com', async 
     const isHidden = await promotedContentWrapper.evaluate((el) => window.getComputedStyle(el).display === 'none');
     expect(isHidden).toBe(true);
 
+    // Note: A synthetic fixture cannot reproduce X's real virtualizer (see Spike S4).
+    // This is a necessary-but-not-sufficient check confirming that hiding the cell's
+    // inner content wrapper collapses the cell container's computed height to zero
+    // and suppresses the following separator. Real virtualizer gap behavior must be verified on live x.com.
+    const cellHeight = await promotedCell.evaluate((el) => (el as HTMLElement).offsetHeight);
+    expect(cellHeight).toBe(0);
+
     // Separator following promoted cell should also be hidden
     const separator = promotedCell.locator('+ [role="separator"]');
-    if (await separator.count() > 0) {
-      const sepDisplay = await separator.evaluate((el) => window.getComputedStyle(el).display === 'none');
-      expect(sepDisplay).toBe(true);
-    }
+    expect(await separator.count()).toBeGreaterThan(0);
+    const sepDisplay = await separator.evaluate((el) => window.getComputedStyle(el).display === 'none');
+    expect(sepDisplay).toBe(true);
 
     // Organic cells must NOT be hidden
     const organicCells = page.locator('[data-testid="cellInnerDiv"]:not(:has([data-testid="placementTracking"]))');
