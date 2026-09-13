@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Columns3 } from 'lucide-react';
+import { Columns3, Palette } from 'lucide-react';
 
 export interface FeatureEntry {
   id: string;
@@ -14,6 +14,13 @@ export interface CategoryEntry {
   id: string;
   caption: string;
   icon: LucideIcon;
+  /**
+   * Categories with their own dedicated panel component (rendered directly by App.tsx rather
+   * than the generic CategoryPanel/ToggleRow hierarchy) are exempt from TileGrid's "must have
+   * at least one registered feature" visibility rule (D-12, UI-SPEC). "Themes" is the first
+   * such category: it has no boolean feature toggles, only a preset selector and color picker.
+   */
+  dedicatedPanel?: boolean;
 }
 
 export const categories: CategoryEntry[] = [
@@ -21,6 +28,12 @@ export const categories: CategoryEntry[] = [
     id: 'timeline',
     caption: 'Timeline',
     icon: Columns3,
+  },
+  {
+    id: 'themes',
+    caption: 'Themes',
+    icon: Palette,
+    dedicatedPanel: true,
   },
 ];
 

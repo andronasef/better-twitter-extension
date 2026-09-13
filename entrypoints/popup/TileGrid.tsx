@@ -12,9 +12,10 @@ export function TileGrid({
   features,
   onSelectCategory,
 }: TileGridProps) {
-  // Only display categories with at least one registered feature (D-01, D-02)
-  const populatedCategories = categories.filter((cat) =>
-    features.some((f) => f.categoryId === cat.id)
+  // Only display categories with at least one registered feature, unless the category has its
+  // own dedicated panel (e.g. "Themes", which has no boolean toggles) (D-01, D-02, D-12)
+  const populatedCategories = categories.filter(
+    (cat) => cat.dedicatedPanel || features.some((f) => f.categoryId === cat.id)
   );
 
   if (populatedCategories.length === 0) {

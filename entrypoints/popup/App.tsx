@@ -3,12 +3,13 @@ import { ChevronLeft } from 'lucide-react';
 import { categories as defaultCategories, features as defaultFeatures } from '@/lib/registry';
 import type { CategoryEntry, FeatureEntry } from '@/lib/registry';
 import { settingsItem, diagnosticsItem, xThemeItem } from '@/lib/storage';
-import type { Settings, Diagnostics } from '@/lib/storage';
+import type { Settings, Diagnostics, ThemeId } from '@/lib/storage';
 import { resolveScheme } from '@/lib/theme';
 import { browser } from 'wxt/browser';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { TileGrid } from './TileGrid';
 import { CategoryPanel } from './CategoryPanel';
+import { ThemesPanel } from './ThemesPanel';
 
 const lightVars: Record<string, string> = {
   '--bt-accent': '#1D9BF0',
@@ -136,6 +137,27 @@ export default function App({
     await settingsItem.setValue(next);
   };
 
+  const handleThemeChange = async (theme: ThemeId) => {
+    const prev = settings || (await settingsItem.getValue());
+    const next: Settings = { ...prev, theme };
+    setSettings(next);
+    await settingsItem.setValue(next);
+  };
+
+  const handleAccentChange = async (hex: string) => {
+    const prev = settings || (await settingsItem.getValue());
+    const next: Settings = { ...prev, customAccent: hex };
+    setSettings(next);
+    await settingsItem.setValue(next);
+  };
+
+  const handleAccentReset = async () => {
+    const prev = settings || (await settingsItem.getValue());
+    const next: Settings = { ...prev, customAccent: null };
+    setSettings(next);
+    await settingsItem.setValue(next);
+  };
+
   const activeCategory = categories.find((c) => c.id === activeCategoryId);
   const activeFeatures = activeCategory
     ? features.filter((f) => f.categoryId === activeCategory.id)
@@ -187,6 +209,13 @@ export default function App({
                 Your settings live in this browser. Close and reopen the popup &mdash; if this keeps happening, reload the extension from chrome://extensions.
               </p>
             </div>
+          ) : activeCategoryId === 'themes' ? (
+            <ThemesPanel
+              settings={settings}
+              onThemeChange={handleThemeChange}
+              onAccentChange={handleAccentChange}
+              onAccentReset={handleAccentReset}
+            />
           ) : activeCategory ? (
             <CategoryPanel
               category={activeCategory}
