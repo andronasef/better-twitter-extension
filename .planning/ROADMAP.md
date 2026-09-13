@@ -61,7 +61,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 01-04-PLAN.md — X theme probe and cached theme, bundled popup typeface, and the full UI-SPEC popup shell with tooltips and every declared state
+- [x] 01-04-PLAN.md — X theme probe and cached theme, bundled popup typeface, and the full UI-SPEC popup shell with tooltips and every declared state
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
