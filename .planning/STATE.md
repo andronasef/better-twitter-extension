@@ -1,19 +1,19 @@
 ---
 gsd_state_version: "1.0"
-current_phase: 1
+current_phase: 01
 current_phase_name: Foundation & Settings Popup
 status: executing
-stopped_at: Phase 1 context gathered
-last_updated: "2026-09-13T10:40:35.606Z"
+stopped_at: Completed 01-01-PLAN.md
+last_updated: "2026-09-13T11:05:00.000Z"
 last_activity: 2026-09-13
-last_activity_desc: Roadmap created; 47 v1 requirements mapped across 6 phases
-state_head: 300c86853c0dc722ff2d8861a40d2acd08cf7c75
+last_activity_desc: Completed 01-01-PLAN.md (Walking Skeleton)
+state_head: fa14e40
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 5
-  completed_plans: 0
-  percent: 0
+  completed_plans: 1
+  percent: 20
 ---
 
 # Project State
@@ -23,24 +23,24 @@ progress:
 See: .planning/PROJECT.md (updated 2026-09-13)
 
 **Core value:** Every annoyance the author has with X is fixed by a toggle in one popup — and toggling it feels native, not bolted on.
-**Current focus:** Phase 1 — Foundation & Settings Popup
+**Current focus:** Phase 01 — Foundation & Settings Popup
 
 ## Current Position
 
-Phase: 1 (Foundation & Settings Popup) — READY TO EXECUTE
-Plan: 0 of TBD in current phase
-Status: Ready to execute
-Last activity: 2026-09-13 — Roadmap created; 47 v1 requirements mapped across 6 phases
+Phase: 01 (Foundation & Settings Popup) — EXECUTING
+Plan: 2 of 5 (01-02-PLAN.md next)
+Status: Executing Phase 01
+Last activity: 2026-09-13 — Completed 01-01-PLAN.md (Walking Skeleton)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██░░░░░░░░] 20%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 0
-- Average duration: —
-- Total execution time: —
+- Total plans completed: 1
+- Average duration: 25 min
+- Total execution time: 25 min
 
 **By Phase:**
 
@@ -68,17 +68,20 @@ Recent decisions affecting current work:
 - [Scope, post-research]: Media downloader cut entirely — CWS removal precedent for a near-identical extension.
 - [Scope, post-research]: Reactions prefill X's native reply composer; the extension never posts. No undo toast, no delete verification.
 
+- [Plan 01-01]: Used route-fulfilled https://x.com/home with fixture HTML in Playwright to verify content script injection on MV3.
+- [Plan 01-01]: Resolved build output directory is .output/chrome-mv3 without random hashes.
+- [Plan 01-01]: Ad stripper uses clean CSS attribute hiding (data-bt-hidden, data-bt-hidden-cell) leaving X's React DOM untouched.
+- [Plan 01-01]: Strictly enforce Bun package manager across all tooling.
+
 ### Pending Todos
 
 None yet.
 
 ### Blockers/Concerns
 
-- **Requirement count correction.** REQUIREMENTS.md's footer claimed 42 v1 requirements; the actual count of distinct IDs in the document is 47 (FOUND 9, CLEAN 5, THEME 7, BOOK 10, REACT 6, UI 5, STORE 5). The traceability table now reflects 47. No requirement was dropped or invented — the footer was simply miscounted.
-- **Live x.com is unverified across the board.** Research is HIGH confidence on Chrome MV3/WXT platform mechanics and LOW-MEDIUM on X.com's actual DOM, virtualizer internals, GraphQL operation names, and routing behavior. Every selector, operation shape, and injection tactic in the roadmap is a hypothesis until checked against the live site. Each phase carries its own spike list for this reason.
+- **Live x.com is unverified across the board.** Spikes S1 (routing) and S2 (GraphQL) in Plan 01-02 will test live behavior.
 - **Three empirical unknowns gate multiple phases:** (a) whether x.com routing fires the Navigation API or needs a `history.pushState` patch — Phase 1; (b) live GraphQL operation shapes and `doc_id` churn — Phase 1 discovery, Phase 3 and 4 consumption; (c) whether React tolerates a trailing sibling in the action row — Phase 3 (save button), inherited by Phase 5 (reaction trigger).
-- **Single-purpose CWS policy is a real gate.** Five feature areas in one listing. The one-sentence purpose narrative must be locked in Phase 1 and every later phase must justify any new permission against it — otherwise Phase 6 becomes a rewrite rather than an audit.
-- **Stale research sections.** `research/ARCHITECTURE.md` and `research/PITFALLS.md` still contain media-downloader and reply-posting/undo-toast guidance. Both features are cut. PROJECT.md and REQUIREMENTS.md are authoritative on scope.
+- **Single-purpose CWS policy is a real gate.** Five feature areas in one listing. The one-sentence purpose narrative must be locked in Phase 1 and every later phase must justify any new permission against it.
 
 ## Deferred Items
 
@@ -90,6 +93,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-09-12T22:20:06.875Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-foundation-settings-popup/01-CONTEXT.md
+Last session: 2026-09-13T11:05:00.000Z
+Stopped at: Completed 01-01-PLAN.md (Walking Skeleton)
+Resume file: .planning/phases/01-foundation-settings-popup/01-02-PLAN.md
