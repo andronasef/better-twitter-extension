@@ -2,7 +2,7 @@
 
 ## Overview
 
-Better Twitter is a Chrome MV3 extension that layers toggles onto a hostile, virtualized, client-routed React SPA. The whole project rests on one piece of shared plumbing — a single tweet observation pipeline, a route watcher, a selector-resolution layer, a MAIN-world fetch bridge, a Radix-in-shadow-root portal provider, and a live settings broadcast — so that phase comes first and proves itself by making promoted tweets disappear the instant a toggle flips. From there the work climbs the risk curve exactly the way all four research passes independently ordered it: pure DOM/CSS features that only read the page (clutter hiding, themes), then bookmark capture (the highest-complexity piece, where X's undocumented GraphQL and MV3's disposable service worker both bite), then the bookmark management UI and timeline resurfacing that spend that captured data, then the reaction palette that has to hand the user a prefilled composer without ever posting for them, and finally the Chrome Web Store package whose single-purpose narrative was locked in on day one.
+Better Twitter is a Chrome MV3 extension that layers toggles onto a hostile, virtualized, client-routed React SPA. The whole project rests on one piece of shared plumbing — a single tweet observation pipeline, a route watcher, a selector-resolution layer, a MAIN-world fetch bridge, a Radix-in-shadow-root portal provider, and a live settings broadcast — so that phase comes first and proves itself by making promoted tweets disappear the instant a toggle flips. From there the work climbs the risk curve exactly the way all four research passes independently ordered it: pure DOM/CSS features that only read the page (clutter hiding, themes), then bookmarks (capturing via undocumented GraphQL, local management/search, and timeline resurfacing), then the reaction palette that has to hand the user a prefilled composer without ever posting for them, and finally the Chrome Web Store package whose single-purpose narrative was locked in on day one.
 
 Every phase is a vertical slice: at the end of each one the extension is installable and the user has something new they can actually use, not a layer they have to wait on.
 
@@ -15,12 +15,11 @@ Every phase is a vertical slice: at the end of each one the extension is install
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation & Settings Popup** - Shared plumbing plus a working popup, proven end-to-end by a live ad-stripping toggle
+- [x] **Phase 1: Foundation & Settings Popup** - Shared plumbing plus a working popup, proven end-to-end by a live ad-stripping toggle
 - [ ] **Phase 2: Clean Timeline & Themes** - Clutter toggles and the full theme engine — read-only DOM/CSS features on top of the pipeline
-- [ ] **Phase 3: Bookmark Capture** - Three layered capture strategies with automatic fallback, resumable runs, and honest failure reporting
-- [ ] **Phase 4: Bookmark Folders, Search & Resurfacing** - Captured bookmarks become organized, searchable on x.com/bookmarks, and resurfaced into the feed
-- [ ] **Phase 5: Twemoji Reactions** - Hover/long-press palette that prefills X's native reply composer for the user to send
-- [ ] **Phase 6: Chrome Web Store Packaging** - Permission audit, privacy policy, single-purpose listing, and a submittable package
+- [ ] **Phase 3: Bookmarks (Capture, Management & Resurfacing)** - Multi-strategy capture, local storage/quota management, folder/tag organization, in-page search, and feed resurfacing
+- [ ] **Phase 4: Twemoji Reactions** - Hover/long-press palette that prefills X's native reply composer for the user to send
+- [ ] **Phase 5: Chrome Web Store Packaging** - Permission audit, privacy policy, single-purpose listing, and a submittable package
 
 ## Phase Details
 
@@ -87,15 +86,32 @@ Plans:
 
   - Do the `data-testid` fallback chains hold across X's A/B variant cohorts? Research is explicit that a selector can be correct in one account and broken in a beta bucket simultaneously — test against 2+ real accounts, not just the developer's own session.
 
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+**Wave 1**
+- [ ] 02-01-PLAN.md — Timeline & Sidebar Declutter Engine: vanity metrics stripper, right sidebar clutter stripper, popup integration for Clean Timeline controls
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 02-02-PLAN.md — Tab Reordering & Auto-Selection Engine: CSS flex order tab swap, Following auto-activation on /home, popup controls
+
+**Wave 3** *(blocked on Wave 1 completion)*
+- [ ] 02-03-PLAN.md — Theme Engine Core & Zero-FOUC Injection: Dracula, Nord, Matrix, custom accent picker, synchronous document_start stylesheet injection, popup thumbnail cards
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 02-04-PLAN.md — Layout Engines: Minimal centered layout, Old Twitter 2015 3-column layout, horizontal top navbar, left mini profile card
+
+**Wave 5** *(blocked on Wave 2, Wave 4 completion)*
+- [ ] 02-05-PLAN.md — Full Phase Integration: Playwright E2E verification, full unit test suite, and standing build/permission audit
+
 **UI hint**: yes
 
-### Phase 3: Bookmark Capture
+### Phase 3: Bookmarks (Capture, Management & Resurfacing)
 
-**Goal**: The user's X bookmarks land in local storage reliably — by whichever of three layered strategies is currently working — and the user can always see exactly what happened, including when nothing did.
+**Goal**: The user's X bookmarks land in local storage reliably via layered strategies, are organized and searchable inside x.com/bookmarks, and resurfaced back into the timeline so saved tweets don't rot.
 **Mode:** mvp
 **Depends on**: Phase 1
-**Requirements**: BOOK-01, BOOK-02, BOOK-03, BOOK-10
+**Requirements**: BOOK-01, BOOK-02, BOOK-03, BOOK-04, BOOK-05, BOOK-06, BOOK-07, BOOK-08, BOOK-09, BOOK-10
 **Success Criteria** (what must be TRUE):
 
   1. User can run a capture and watch their bookmark count climb in the popup, with the extension silently picking whichever strategy works (API interception, background-tab scrape, or the extension's own save button) rather than asking the user to choose.
@@ -103,33 +119,18 @@ Plans:
   3. User can close the laptop or lose the tab mid-capture, come back, and have capture resume from where it stopped rather than restarting from zero or reporting a false "done".
   4. User is told in plain language when capture cannot proceed — not logged in, X's endpoint changed, rate limited — instead of being shown an empty or stale list.
   5. User with a very large bookmark collection stays inside the local storage budget and is told what was pruned, rather than hitting an opaque storage error.
+  6. User can open x.com/bookmarks and find folder, tag, and search controls living in the native page itself, not in a separate window or popup.
+  7. User can create folders and tags and file saved tweets into them.
+  8. User can type a word from a tweet's text or an author's name and get the matching bookmarks back.
+  9. User can turn on resurfacing, set the interval N, and see a "📌 Resurfaced from your Bookmarks" card appear every N tweets in their feed.
+  10. User can scroll past a resurfaced card without the page jumping, and the card stays where it belongs as the feed virtualizes around it.
 
 **Spikes** (empirical, must be answered against live x.com):
 
   - The live bookmark GraphQL operation's request and response shape, and its `doc_id`/query-id churn. Query IDs must be extracted from X's own live traffic at runtime and never hardcoded; the interception layer needs schema-mismatch detection that fails over to the next capture strategy from day one, since a stale ID returns an empty result rather than an error.
-  - Does React tolerate a trailing sibling appended to the action row (`role="group"`)? This is the first action-row injection in the project — the save button — and the answer also governs the reaction trigger in Phase 5. Research flags that flex-wrap / `justify-content: space-between` layout can shift on child-count change, so this needs a visual check, not just a "the node survived" check.
+  - Does React tolerate a trailing sibling appended to the action row (`role="group"`)? This is the first action-row injection in the project — the save button — and the answer also governs the reaction trigger in Phase 4. Research flags that flex-wrap / `justify-content: space-between` layout can shift on child-count change, so this needs a visual check, not just a "the node survived" check.
   - Does a backgrounded scrape tab actually keep running under Chrome's throttling, and does the service worker survive a full capture run? Verify by manually terminating the worker mid-scrape via DevTools and by running a scrape backgrounded 10+ minutes while logged out.
   - How does storage behave at 1000+ bookmarks — what is the real per-bookmark footprint against the `chrome.storage.local` quota?
-
-**Plans**: TBD
-**UI hint**: yes
-
-### Phase 4: Bookmark Folders, Search & Resurfacing
-
-**Goal**: Captured bookmarks become something the user actually uses — organized into folders and tags, searchable from inside X's own bookmarks page, and resurfaced back into the timeline so old saves stop rotting.
-**Mode:** mvp
-**Depends on**: Phase 3
-**Requirements**: BOOK-04, BOOK-05, BOOK-06, BOOK-07, BOOK-08, BOOK-09
-**Success Criteria** (what must be TRUE):
-
-  1. User can open x.com/bookmarks and find folder, tag, and search controls living in the native page itself, not in a separate window or popup.
-  2. User can create folders and tags and file saved tweets into them.
-  3. User can type a word from a tweet's text or an author's name and get the matching bookmarks back.
-  4. User can turn on resurfacing, set the interval N, and see a "📌 Resurfaced from your Bookmarks" card appear every N tweets in their feed.
-  5. User can scroll past a resurfaced card without the page jumping, and the card stays where it belongs as the feed virtualizes around it.
-
-**Spikes** (empirical, must be answered against live x.com):
-
   - The live timeline GraphQL `instructions`/`entries` shape, so a synthetic resurfaced entry can be spliced into the response before X renders it. Research strongly prefers response-splice over DOM insertion precisely to avoid the scroll-jump and virtualizer-wipe class of bugs; DOM sibling insertion is a documented-fragile fallback only.
   - Resurfacing cadence: what value of N and what selection behavior actually feels good rather than nagging.
   - Re-verification, not new work: 60fps scroll (FOUND-08) and storage headroom (BOOK-10) under resurfacing load — this phase adds the most write-heavy DOM mutation in the project and repeatedly reads the largest dataset, so both are the most likely to regress here.
@@ -137,7 +138,7 @@ Plans:
 **Plans**: TBD
 **UI hint**: yes
 
-### Phase 5: Twemoji Reactions
+### Phase 4: Twemoji Reactions
 
 **Goal**: A Facebook-style Twemoji palette on the Like button that hands the user X's own reply composer prefilled with their chosen emoji — and never sends anything itself.
 **Mode:** mvp
@@ -159,11 +160,11 @@ Plans:
 **Plans**: TBD
 **UI hint**: yes
 
-### Phase 6: Chrome Web Store Packaging
+### Phase 5: Chrome Web Store Packaging
 
 **Goal**: The extension is a submittable, policy-clean package that a stranger can install, with a listing that reads as one coherent purpose rather than five bundled features.
 **Mode:** mvp
-**Depends on**: Phase 2, Phase 4, Phase 5
+**Depends on**: Phase 2, Phase 3, Phase 4
 **Requirements**: STORE-01, STORE-02, STORE-03, STORE-04, STORE-05
 **Success Criteria** (what must be TRUE):
 
@@ -178,16 +179,15 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Settings Popup | 2/5 | In Progress | - |
+| 1. Foundation & Settings Popup | 5/5 | Completed | 2026-09-13 |
 | 2. Clean Timeline & Themes | 0/TBD | Not started | - |
-| 3. Bookmark Capture | 0/TBD | Not started | - |
-| 4. Bookmark Folders, Search & Resurfacing | 0/TBD | Not started | - |
-| 5. Twemoji Reactions | 0/TBD | Not started | - |
-| 6. Chrome Web Store Packaging | 0/TBD | Not started | - |
+| 3. Bookmarks (Capture, Management & Resurfacing) | 0/TBD | Not started | - |
+| 4. Twemoji Reactions | 0/TBD | Not started | - |
+| 5. Chrome Web Store Packaging | 0/TBD | Not started | - |
 
 ## Coverage
 
@@ -197,10 +197,9 @@ All 47 v1 requirements map to exactly one phase. No orphans, no duplicates.
 |-------|--------------|-------|
 | 1 | FOUND-01…09, UI-01…05, CLEAN-01 | 15 |
 | 2 | CLEAN-02…05, THEME-01…07 | 11 |
-| 3 | BOOK-01, BOOK-02, BOOK-03, BOOK-10 | 4 |
-| 4 | BOOK-04…09 | 6 |
-| 5 | REACT-01…06 | 6 |
-| 6 | STORE-01…05 | 5 |
+| 3 | BOOK-01…10 | 10 |
+| 4 | REACT-01…06 | 6 |
+| 5 | STORE-01…05 | 5 |
 | **Total** | | **47** |
 
 ## Scope Notes
