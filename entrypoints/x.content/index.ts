@@ -4,7 +4,7 @@ import type { Settings } from '@/lib/storage';
 import { startPipeline, stopPipeline } from './pipeline';
 import { createSettingsDispatcher } from './dispatcher';
 import { adStripper } from '@/features/ad-stripper';
-import { startBridge } from './bridge-client';
+import { startBridge, onGraphqlShape } from './bridge-client';
 import { startRouteWatcher, onRouteChange } from './route-watcher';
 import { teardownPageScope, registerPageObserver } from '@/lib/observers';
 import { resolve } from '@/lib/selectors';
@@ -19,6 +19,19 @@ export default defineContentScript({
 
     // 2. Start MAIN-world bridge
     startBridge();
+
+    // Dev-only instrumentation for Spikes S1 and S2
+    if (import.meta.env.DEV) {
+      if (typeof (window as any).navigation !== 'undefined') {
+        (window as any).navigation.addEventListener('navigate', (e: any) => {
+          console.log('[bt:spike] Navigation API navigate event:', e?.destination?.url);
+        });
+      }
+
+      onGraphqlShape((shape) => {
+        console.log('[bt:spike] GraphQL shape:', shape);
+      });
+    }
 
     const dispatcher = createSettingsDispatcher({
       [adStripper.id]: adStripper,

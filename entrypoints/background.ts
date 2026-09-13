@@ -1,3 +1,5 @@
 export default defineBackground(() => {
-  console.log('Hello background!', { id: browser.runtime.id });
+  if (import.meta.env.DEV) {
+    console.log('Hello background!', { id: browser.runtime.id });
+  }
 });
