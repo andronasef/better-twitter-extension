@@ -209,12 +209,50 @@ svg [fill="#1d9bf0" i] {
 `;
 
 /**
+ * Minimal layout transform rules (THEME-05, D-14): centers the timeline column, hides the
+ * right sidebar completely, and collapses the left navigation rail to a 68px icon-only rail.
+ * Purely a layout transform — Minimal enforces no forced background/surface recoloring, unlike
+ * the Dracula/Nord/Matrix color-engine presets above.
+ */
+export const MINIMAL_LAYOUT_CSS = `
+html[data-bt-theme="minimal"] div[data-testid="sidebarColumn"] {
+  display: none !important;
+}
+
+html[data-bt-theme="minimal"] header[role="banner"] {
+  width: 68px !important;
+  min-width: 68px !important;
+  align-items: center !important;
+}
+
+html[data-bt-theme="minimal"] header[role="banner"] nav a span,
+html[data-bt-theme="minimal"] header[role="banner"] nav [role="button"] span {
+  display: none !important;
+}
+
+html[data-bt-theme="minimal"] main[role="main"] {
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
+}
+
+html[data-bt-theme="minimal"] div[data-testid="primaryColumn"] {
+  margin: 0 auto !important;
+  max-width: 650px !important;
+  width: 100% !important;
+  border-left: 1px solid var(--bt-theme-border) !important;
+  border-right: 1px solid var(--bt-theme-border) !important;
+}
+`;
+
+/**
  * Generates the full master theme stylesheet: root custom properties, Dracula/Nord/Matrix
- * palette token blocks, surface recoloring rules, and universal accent overrides.
+ * palette token blocks, surface recoloring rules, universal accent overrides, and the Minimal
+ * (THEME-05) layout transform.
  */
 export function generateThemeCss(): string {
   return [
-    '/* Better Twitter Master Theme Engine (THEME-01..04, THEME-07, D-09..D-11) */',
+    '/* Better Twitter Master Theme Engine (THEME-01..05, THEME-07, D-09..D-14) */',
     ROOT_TOKENS,
     '/* Theme Presets: Dracula (THEME-01), Nord (THEME-02), Matrix (THEME-03) */',
     THEME_PRESET_TOKEN_BLOCKS,
@@ -222,6 +260,8 @@ export function generateThemeCss(): string {
     APPLY_SURFACE_RULES,
     '/* Universal accent color overrides (THEME-04, D-11) */',
     ACCENT_OVERRIDE_RULES,
+    '/* Minimal Layout (THEME-05, D-14) */',
+    MINIMAL_LAYOUT_CSS,
   ].join('\n');
 }
 
