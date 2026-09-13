@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { fakeBrowser } from 'wxt/testing';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { fakeBrowser } from 'wxt/testing/fake-browser';
 import {
   recordHit,
   recordMiss,
