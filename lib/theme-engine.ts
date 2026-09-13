@@ -1,16 +1,11 @@
 import type { ThemeId } from './storage';
 
 /**
- * Master Theme CSS Generator (THEME-01..04, THEME-07, D-09, D-10, D-11, D-13)
+ * Master Theme CSS Generator (THEME-01..07, D-09..D-15)
  *
- * Defines the `--bt-theme-*` CSS custom property contract, the Dracula / Nord / Matrix
- * color engine palettes, the surface recoloring rules that force those palettes across
- * X's own Light/Dark mode (D-10), and the universal custom accent color overrides that
- * replace X's hardcoded `rgb(29, 155, 240)` / `#1d9bf0` accent everywhere (THEME-04, D-11).
- *
- * `THEME_PRESETS` also carries metadata for all 6 unified theme/layout presets (D-09) so the
- * popup's Themes panel thumbnail cards (D-12) can render every option, including Minimal
- * (THEME-05) and Old Twitter (THEME-06), whose layout-transform CSS ships in a later plan.
+ * Defines the `--bt-theme-*` CSS custom property contract, Dracula / Nord / Matrix /
+ * Minimal / Old Twitter aesthetic engines, surface recoloring rules, action icon palettes,
+ * typography transforms, and universal custom accent color overrides.
  */
 
 export interface ThemePreset {
@@ -28,13 +23,6 @@ export interface ThemePreset {
 
 const DEFAULT_ACCENT = '#1d9bf0';
 
-/**
- * Theme preset metadata for the popup's Themes panel thumbnail cards (D-12, UI-SPEC).
- * `default` and `minimal` are native/layout-only presets with no forced palette — THEME-05
- * (Minimal) is a layout transform, not a color theme — so their bg/surface/border/text
- * tokens are left as empty strings; consumers fall back to the popup's own native
- * light/dark surface tokens for preview purposes.
- */
 export const THEME_PRESETS: Record<ThemeId, ThemePreset> = {
   default: {
     id: 'default',
@@ -75,7 +63,7 @@ export const THEME_PRESETS: Record<ThemeId, ThemePreset> = {
   matrix: {
     id: 'matrix',
     label: 'Matrix',
-    desc: 'Hacker green and black',
+    desc: 'Hacker green terminal',
     bg: '#000000',
     surface: '#0a140a',
     surfaceHover: '#0f240f',
@@ -110,10 +98,6 @@ export const THEME_PRESETS: Record<ThemeId, ThemePreset> = {
   },
 };
 
-/**
- * Theme presets with an active color-engine surface application in this plan (THEME-01/02/03).
- * Minimal (THEME-05) and Old Twitter (THEME-06) are layout transforms implemented in a later plan.
- */
 const COLOR_ENGINE_THEME_IDS: ThemeId[] = ['dracula', 'nord', 'matrix'];
 
 const ROOT_TOKENS = `
@@ -172,9 +156,7 @@ const primaryContainerSelector = COLOR_ENGINE_THEME_IDS.flatMap((id) =>
 ).join(',\n');
 
 /**
- * Surface recoloring rules (D-10): forces the active theme's background/surface/text colors
- * across documentElement, body, #react-root, and primary containers regardless of whether
- * X itself is currently in Light or Dark mode.
+ * Surface recoloring & atmospheric vibe styling (Dracula, Nord, Matrix)
  */
 export const APPLY_SURFACE_RULES = `
 ${htmlBgSelector} {
@@ -191,35 +173,102 @@ ${primaryContainerSelector} {
   border-color: var(--bt-theme-border) !important;
 }
 
-/* Ensure inner primary column containers, sections, and tweets inherit theme surface */
+/* ========================================================
+   DRACULA VIBE: Cyber Vampiric Glow & Neon Pastels
+   ======================================================== */
 html[data-bt-theme="dracula"] [data-testid="primaryColumn"] section,
 html[data-bt-theme="dracula"] [data-testid="primaryColumn"] section > div,
 html[data-bt-theme="dracula"] [data-testid="cellInnerDiv"],
 html[data-bt-theme="dracula"] article[data-testid="tweet"],
 html[data-bt-theme="dracula"] [data-testid="ScrollSnap-List"],
 html[data-bt-theme="dracula"] div[aria-label*="Timeline"] {
-  background-color: var(--bt-theme-surface) !important;
-  border-color: var(--bt-theme-border) !important;
+  background-color: #343746 !important;
+  border-color: #44475a !important;
 }
 
 html[data-bt-theme="dracula"] div[data-testid="primaryColumn"] > div > div:first-child {
   background-color: rgba(40, 42, 54, 0.85) !important;
   backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid #44475a !important;
 }
 
+html[data-bt-theme="dracula"] article[data-testid="tweet"] {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+  border-radius: 8px !important;
+  border: 1px solid #44475a !important;
+  margin-bottom: 6px !important;
+}
+
+html[data-bt-theme="dracula"] article[data-testid="tweet"] [dir="auto"] {
+  color: #f8f8f2 !important;
+}
+
+/* Dracula Action Icons: Neon Pastels */
+html[data-bt-theme="dracula"] [data-testid="retweet"] svg,
+html[data-bt-theme="dracula"] [data-testid="unretweet"] svg {
+  color: #50fa7b !important;
+}
+html[data-bt-theme="dracula"] [data-testid="like"] svg,
+html[data-bt-theme="dracula"] [data-testid="unlike"] svg {
+  color: #ff79c6 !important;
+}
+html[data-bt-theme="dracula"] [data-testid="reply"] svg {
+  color: #8be9fd !important;
+}
+html[data-bt-theme="dracula"] [data-testid="bookmark"] svg {
+  color: #ffb86c !important;
+}
+
+/* ========================================================
+   NORD VIBE: Arctic Cold Aurora & Frosted Glass
+   ======================================================== */
 html[data-bt-theme="nord"] [data-testid="primaryColumn"] section,
 html[data-bt-theme="nord"] [data-testid="primaryColumn"] section > div,
 html[data-bt-theme="nord"] [data-testid="cellInnerDiv"],
 html[data-bt-theme="nord"] article[data-testid="tweet"],
 html[data-bt-theme="nord"] [data-testid="ScrollSnap-List"],
 html[data-bt-theme="nord"] div[aria-label*="Timeline"] {
-  background-color: var(--bt-theme-surface) !important;
-  border-color: var(--bt-theme-border) !important;
+  background-color: #3b4252 !important;
+  border-color: #4c566a !important;
 }
 
 html[data-bt-theme="nord"] div[data-testid="primaryColumn"] > div > div:first-child {
   background-color: rgba(46, 52, 64, 0.85) !important;
-  backdrop-filter: blur(12px) !important;
+  backdrop-filter: blur(16px) !important;
+  border-bottom: 1px solid #4c566a !important;
+}
+
+html[data-bt-theme="nord"] article[data-testid="tweet"] {
+  border-radius: 8px !important;
+  border: 1px solid #4c566a !important;
+  margin-bottom: 6px !important;
+}
+
+html[data-bt-theme="nord"] article[data-testid="tweet"] [dir="auto"] {
+  color: #eceff4 !important;
+}
+
+/* Nord Action Icons: Aurora Palette */
+html[data-bt-theme="nord"] [data-testid="retweet"] svg,
+html[data-bt-theme="nord"] [data-testid="unretweet"] svg {
+  color: #a3be8c !important;
+}
+html[data-bt-theme="nord"] [data-testid="like"] svg,
+html[data-bt-theme="nord"] [data-testid="unlike"] svg {
+  color: #bf616a !important;
+}
+html[data-bt-theme="nord"] [data-testid="reply"] svg {
+  color: #88c0d0 !important;
+}
+html[data-bt-theme="nord"] [data-testid="bookmark"] svg {
+  color: #ebcb8b !important;
+}
+
+/* ========================================================
+   MATRIX VIBE: Terminal Monospace Hacker Phosphor
+   ======================================================== */
+html[data-bt-theme="matrix"] * {
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", "Fira Code", "Courier New", monospace !important;
 }
 
 html[data-bt-theme="matrix"] [data-testid="primaryColumn"] section,
@@ -228,31 +277,45 @@ html[data-bt-theme="matrix"] [data-testid="cellInnerDiv"],
 html[data-bt-theme="matrix"] article[data-testid="tweet"],
 html[data-bt-theme="matrix"] [data-testid="ScrollSnap-List"],
 html[data-bt-theme="matrix"] div[aria-label*="Timeline"] {
-  background-color: var(--bt-theme-surface) !important;
-  border-color: var(--bt-theme-border) !important;
+  background-color: #0a140a !important;
+  border-color: #003b00 !important;
 }
 
 html[data-bt-theme="matrix"] div[data-testid="primaryColumn"] > div > div:first-child {
-  background-color: rgba(0, 0, 0, 0.85) !important;
+  background-color: rgba(0, 0, 0, 0.9) !important;
   backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid #003b00 !important;
 }
 
-/* Ensure tweet texts, handles, and borders render cleanly */
-html[data-bt-theme="dracula"] article[data-testid="tweet"] [dir="auto"] {
-  color: var(--bt-theme-text) !important;
+html[data-bt-theme="matrix"] article[data-testid="tweet"] {
+  border-radius: 2px !important;
+  border: 1px solid #003b00 !important;
+  margin-bottom: 4px !important;
+  background-color: #0a140a !important;
 }
-html[data-bt-theme="nord"] article[data-testid="tweet"] [dir="auto"] {
-  color: var(--bt-theme-text) !important;
-}
+
 html[data-bt-theme="matrix"] article[data-testid="tweet"] [dir="auto"] {
-  color: var(--bt-theme-text) !important;
+  color: #00ff66 !important;
+  text-shadow: 0 0 5px rgba(0, 255, 102, 0.3) !important;
+}
+
+html[data-bt-theme="matrix"] [data-testid="Tweet-User-Avatar"] img,
+html[data-bt-theme="matrix"] [data-testid="Tweet-User-Avatar"] div,
+html[data-bt-theme="matrix"] [data-testid="UserAvatar-Container"] {
+  border-radius: 2px !important;
+}
+
+html[data-bt-theme="matrix"] [data-testid="retweet"] svg,
+html[data-bt-theme="matrix"] [data-testid="unretweet"] svg,
+html[data-bt-theme="matrix"] [data-testid="like"] svg,
+html[data-bt-theme="matrix"] [data-testid="unlike"] svg,
+html[data-bt-theme="matrix"] [data-testid="reply"] svg,
+html[data-bt-theme="matrix"] [data-testid="bookmark"] svg {
+  color: #00ff66 !important;
+  fill: #00ff66 !important;
 }
 `;
 
-/**
- * Universal custom accent color overrides (THEME-04, D-11): targets X's React-Native-for-Web
- * inline styles and SVG fills directly rather than fighting generated atomic class names.
- */
 const ACCENT_OVERRIDE_RULES = `
 [style*="color: rgb(29, 155, 240)"],
 [style*="color:rgb(29,155,240)"] {
@@ -273,10 +336,9 @@ svg [fill="#1d9bf0" i] {
 `;
 
 /**
- * Minimal layout transform rules (THEME-05, D-14): centers the timeline column, hides the
- * right sidebar completely, and collapses the left navigation rail to a 68px icon-only rail.
- * Purely a layout transform — Minimal enforces no forced background/surface recoloring, unlike
- * the Dracula/Nord/Matrix color-engine presets above.
+ * Minimal Layout Transform Rules (THEME-05, D-14)
+ * Collapses the navigation to a clean 68px icon rail with all SVG icons intact,
+ * centers timeline at 650px, and hides right sidebar column.
  */
 export const MINIMAL_LAYOUT_CSS = `
 html[data-bt-theme="minimal"] div[data-testid="sidebarColumn"] {
@@ -289,14 +351,42 @@ html[data-bt-theme="minimal"] header[role="banner"] {
   align-items: center !important;
 }
 
+html[data-bt-theme="minimal"] header[role="banner"] > div,
+html[data-bt-theme="minimal"] header[role="banner"] > div > div,
+html[data-bt-theme="minimal"] header[role="banner"] > div > div > div {
+  width: 100% !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+html[data-bt-theme="minimal"] header[role="banner"] nav {
+  width: 100% !important;
+  align-items: center !important;
+}
+
 html[data-bt-theme="minimal"] header[role="banner"] nav a span,
 html[data-bt-theme="minimal"] header[role="banner"] nav [role="button"] span {
   display: none !important;
 }
 
-html[data-bt-theme="minimal"] header[role="banner"] nav a {
+html[data-bt-theme="minimal"] header[role="banner"] nav a,
+html[data-bt-theme="minimal"] header[role="banner"] nav [role="button"] {
+  width: 50px !important;
+  height: 50px !important;
+  padding: 0 !important;
+  margin: 4px auto !important;
+  display: flex !important;
+  align-items: center !important;
   justify-content: center !important;
-  padding: 12px 0 !important;
+  border-radius: 9999px !important;
+}
+
+html[data-bt-theme="minimal"] header[role="banner"] nav a svg,
+html[data-bt-theme="minimal"] header[role="banner"] nav [role="button"] svg {
+  display: block !important;
+  width: 26px !important;
+  height: 26px !important;
+  margin: 0 auto !important;
 }
 
 html[data-bt-theme="minimal"] main[role="main"] {
@@ -313,7 +403,7 @@ html[data-bt-theme="minimal"] div[data-testid="primaryColumn"] {
   border-right: 1px solid var(--bt-theme-border) !important;
 }
 
-/* Collapse Post button to 50x50 round icon button so it does not overflow across the feed */
+/* Collapse Post button to 50x50 round circle button */
 html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"] {
   width: 50px !important;
   height: 50px !important;
@@ -334,7 +424,7 @@ html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"] svg {
   margin: 0 auto !important;
 }
 
-/* Collapse Account Switcher to avatar-only to prevent bottom overlap */
+/* Collapse Account Switcher to avatar-only */
 html[data-bt-theme="minimal"] [data-testid="SideNav_AccountSwitcher_Button"] {
   width: 50px !important;
   height: 50px !important;
@@ -349,13 +439,6 @@ html[data-bt-theme="minimal"] [data-testid="SideNav_AccountSwitcher_Button"] > d
 }
 `;
 
-/**
- * Theme IDs whose token block is emitted purely for CSS custom-property/color reference (e.g.
- * Old Twitter's classic palette, so the `--bt-theme-*` tokens are available for anything that
- * wants to read them) without being folded into the generic cross-theme surface application in
- * APPLY_SURFACE_RULES. Old Twitter's structural layout transform below applies its own hardcoded
- * classic hex values directly, since it is a full structural transform, not a surface recolor.
- */
 const LAYOUT_TOKEN_ONLY_THEME_IDS: ThemeId[] = ['old-twitter'];
 
 const LAYOUT_PRESET_TOKEN_BLOCKS = LAYOUT_TOKEN_ONLY_THEME_IDS.map((id) =>
@@ -363,10 +446,9 @@ const LAYOUT_PRESET_TOKEN_BLOCKS = LAYOUT_TOKEN_ONLY_THEME_IDS.map((id) =>
 ).join('');
 
 /**
- * Old Twitter 2015 layout transform rules (THEME-06, D-15): 3-column classic desktop layout,
- * fixed 46px horizontal top navbar, discrete bordered tweet cards, rounded-square avatars, and
- * a left-column mini profile card (mounted non-destructively by features/layout-engine, and
- * gracefully collapsed under 1000px viewports).
+ * Old Twitter 2015 Classic Layout Transform Rules (THEME-06, D-15)
+ * Authentic 2015 desktop: 46px top navbar, 3-column desktop layout (290px / 590px / 290px),
+ * discrete bordered tweet cards with 5px radius, 4px rounded-square avatars, and dark text.
  */
 export const OLD_TWITTER_LAYOUT_CSS = `
 html[data-bt-theme="old-twitter"] body {
@@ -374,28 +456,17 @@ html[data-bt-theme="old-twitter"] body {
   padding-top: 54px !important;
 }
 
-/* Native header keeps fixed 46px 100vw top banner contract, but hides inner vertical nav items */
+/* Native header keeps fixed 46px 100vw top banner contract, but rendered invisible
+   in favor of the authentic OldTwitterNavbar component */
 html[data-bt-theme="old-twitter"] header[role="banner"] {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
   width: 100vw !important;
   height: 46px !important;
-  background-color: #ffffff !important;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.15) !important;
-  z-index: 1000 !important;
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-/* Hide native vertical nav, Post button, and AccountSwitcher from header so they do NOT float over the feed */
-html[data-bt-theme="old-twitter"] header[role="banner"] nav,
-html[data-bt-theme="old-twitter"] header[role="banner"] [data-testid="SideNav_NewTweet_Button"],
-html[data-bt-theme="old-twitter"] header[role="banner"] [data-testid="SideNav_AccountSwitcher_Button"],
-html[data-bt-theme="old-twitter"] header[role="banner"] > div > div > div > div:not(:first-child) {
-  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  z-index: -1 !important;
 }
 
 html[data-bt-theme="old-twitter"] main[role="main"] {
@@ -406,6 +477,7 @@ html[data-bt-theme="old-twitter"] main[role="main"] {
   width: 100% !important;
 }
 
+/* Discrete tweet cards: classic 2015 white cards with 1px border and 5px radius */
 html[data-bt-theme="old-twitter"] article[data-testid="tweet"] {
   background-color: #ffffff !important;
   border: 1px solid #e1e8ed !important;
@@ -414,7 +486,7 @@ html[data-bt-theme="old-twitter"] article[data-testid="tweet"] {
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) !important;
 }
 
-/* Force dark text on white cards for Old Twitter so text is never invisible */
+/* Force dark text on white cards for Old Twitter so text is always high contrast */
 html[data-bt-theme="old-twitter"] [data-testid="primaryColumn"],
 html[data-bt-theme="old-twitter"] [data-testid="cellInnerDiv"],
 html[data-bt-theme="old-twitter"] article[data-testid="tweet"],
@@ -438,6 +510,7 @@ html[data-bt-theme="old-twitter"] article[data-testid="tweet"] svg {
   fill: #657786 !important;
 }
 
+/* Classic square avatars with 4px border-radius */
 html[data-bt-theme="old-twitter"] [data-testid="Tweet-User-Avatar"] img,
 html[data-bt-theme="old-twitter"] [data-testid="Tweet-User-Avatar"] div,
 html[data-bt-theme="old-twitter"] [data-testid="UserAvatar-Container"],
@@ -445,17 +518,45 @@ html[data-bt-theme="old-twitter"] article[data-testid="tweet"] img[src*="profile
   border-radius: 4px !important;
 }
 
-/* 3-column classic proportions (D-15): left mini profile card ~290px (mounted by
-   features/layout-engine), center timeline ~590px, right sidebar ~290px. */
+/* 3-column classic proportions: left mini profile card ~290px, center timeline ~590px, right sidebar ~290px */
 html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] {
   max-width: 590px !important;
   width: 590px !important;
   background-color: transparent !important;
   border: none !important;
 }
+
 html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] {
   max-width: 290px !important;
   width: 290px !important;
+  margin-left: 15px !important;
+}
+
+/* Sticky feed header & composer transformed into classic white containers */
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] > div > div:first-child,
+html[data-bt-theme="old-twitter"] div[data-testid="ScrollSnap-List"],
+html[data-bt-theme="old-twitter"] div[data-testid="TopNavBar"],
+html[data-bt-theme="old-twitter"] nav[aria-label*="Timeline"] {
+  background-color: #ffffff !important;
+  border: 1px solid #e1e8ed !important;
+  border-radius: 5px 5px 0 0 !important;
+  color: #14171a !important;
+}
+
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] > div > div:first-child * {
+  color: #14171a !important;
+}
+
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] > div > div:nth-child(2) {
+  background-color: #ffffff !important;
+  border: 1px solid #e1e8ed !important;
+  border-radius: 5px !important;
+  margin-bottom: 10px !important;
+}
+
+html[data-bt-theme="old-twitter"] [data-bt-mini-profile-card-host] {
+  margin-right: 15px !important;
+  margin-top: 0px !important;
 }
 
 /* Responsive: collapse the injected left mini profile card under 1000px viewports */
@@ -467,18 +568,13 @@ html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] {
 }
 `;
 
-/**
- * Generates the full master theme stylesheet: root custom properties, Dracula/Nord/Matrix
- * palette token blocks, surface recoloring rules, universal accent overrides, and the Minimal
- * (THEME-05) / Old Twitter (THEME-06) layout transforms.
- */
 export function generateThemeCss(): string {
   return [
     '/* Better Twitter Master Theme Engine (THEME-01..07, D-09..D-15) */',
     ROOT_TOKENS,
     '/* Theme Presets: Dracula (THEME-01), Nord (THEME-02), Matrix (THEME-03) */',
     THEME_PRESET_TOKEN_BLOCKS,
-    "/* Surface recoloring (D-10): enforces theme background/surface/text regardless of X's Light/Dark mode */",
+    "/* Surface recoloring & atmospheric vibe styling (D-10) */",
     APPLY_SURFACE_RULES,
     '/* Universal accent color overrides (THEME-04, D-11) */',
     ACCENT_OVERRIDE_RULES,
@@ -493,13 +589,13 @@ export function generateThemeCss(): string {
 
 const THEME_STYLE_ID = 'bt-theme';
 
-/**
- * Injects the master theme stylesheet synchronously into document.documentElement.
- * Idempotent: does nothing if the stylesheet is already present.
- */
 export function injectThemeStylesheet(): void {
   if (typeof document === 'undefined') return;
-  if (document.getElementById(THEME_STYLE_ID)) return;
+  const existing = document.getElementById(THEME_STYLE_ID);
+  if (existing) {
+    existing.textContent = generateThemeCss();
+    return;
+  }
 
   const style = document.createElement('style');
   style.id = THEME_STYLE_ID;
@@ -511,12 +607,6 @@ export function injectThemeStylesheet(): void {
   }
 }
 
-/**
- * Applies the active theme and custom accent color to document.documentElement (THEME-07, D-13).
- * Sets `data-bt-theme` so the injected stylesheet's preset selectors match, and sets or clears
- * the `--bt-theme-accent` custom property override so a custom accent instantly recolors every
- * surface targeted by the universal accent overrides above.
- */
 export function applyThemeAttributes(theme: ThemeId, customAccent: string | null): void {
   if (typeof document === 'undefined' || !document.documentElement) return;
 
