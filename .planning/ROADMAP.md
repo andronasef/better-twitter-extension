@@ -57,7 +57,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 01-03-PLAN.md — Selector-resolution layer with per-feature miss reporting to the action badge, pipeline hardening for 60fps scroll, and spike S4
+- [x] 01-03-PLAN.md — Selector-resolution layer with per-feature miss reporting to the action badge, pipeline hardening for 60fps scroll, and spike S4
 
 **Wave 4** *(blocked on Wave 3 completion)*
 

@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Foundation & Settings Popup
 status: executing
-stopped_at: Completed 01-02-PLAN.md
-last_updated: "2026-09-13T11:25:00.000Z"
+stopped_at: Completed 01-03-PLAN.md
+last_updated: "2026-09-13T17:56:00.000Z"
 last_activity: 2026-09-13
-last_activity_desc: Completed 01-02-PLAN.md (Route Watcher & Bridge)
-state_head: 8348a75
+last_activity_desc: Completed 01-03-PLAN.md (Diagnostics & Scroll Performance)
+state_head: 6e1f787
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 5
-  completed_plans: 2
-  percent: 40
+  completed_plans: 3
+  percent: 60
 ---
 
 # Project State
@@ -28,19 +28,19 @@ See: .planning/PROJECT.md (updated 2026-09-13)
 ## Current Position
 
 Phase: 01 (Foundation & Settings Popup) — EXECUTING
-Plan: 3 of 5 (01-03-PLAN.md next)
+Plan: 4 of 5 (01-04-PLAN.md next)
 Status: Executing Phase 01
-Last activity: 2026-09-13 — Completed 01-02-PLAN.md (Route Watcher & Bridge)
+Last activity: 2026-09-13 — Completed 01-03-PLAN.md (Diagnostics & Scroll Performance)
 
-Progress: [████░░░░░░] 40%
+Progress: [██████░░░░] 60%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 2
-- Average duration: 22.5 min
-- Total execution time: 45 min
+- Total plans completed: 3
+- Average duration: 23.3 min
+- Total execution time: 70 min
 
 **By Phase:**
 
@@ -76,6 +76,11 @@ Recent decisions affecting current work:
 - [Plan 01-02]: XHR URLs stored on request instance (this._btUrl) for concurrency safety.
 - [Plan 01-02]: Layered route watcher unifies 4 sources into debounced 50ms signal.
 - [Plan 01-02]: Named observer registry separates page vs global scopes, preventing observer leaks.
+- [Plan 01-03]: 3-condition miss heuristic (feature enabled, >= 1 tweet seen on page, 3 consecutive zero-match ticks) in lib/diagnostics.ts.
+- [Plan 01-03]: Feature-scoped selector resolution via withFeature(featureId) in lib/selectors.ts.
+- [Plan 01-03]: Action badge driven by diagnostics transitions (empty <-> non-empty) with UI-SPEC warning color #E07C00.
+- [Plan 01-03]: Early exit on removal-only mutation batches in timeline pipeline.
+- [Plan 01-03]: Spike S4 documented with PENDING LIVE RUN; ENABLE_S4_COLLAPSE_FALLBACK implemented in lib/hide-style.ts.
 
 ### Pending Todos
 
@@ -83,7 +88,7 @@ None yet.
 
 ### Blockers/Concerns
 
-- **Live x.com is unverified across the board.** Spikes S1 (routing) and S2 (GraphQL) in Plan 01-02 will test live behavior.
+- **Live x.com is unverified across the board.** Spikes S1 (routing), S2 (GraphQL), and S4 (virtualizer gap) have test procedures defined with PENDING LIVE RUN markers.
 - **Three empirical unknowns gate multiple phases:** (a) whether x.com routing fires the Navigation API or needs a `history.pushState` patch — Phase 1; (b) live GraphQL operation shapes and `doc_id` churn — Phase 1 discovery, Phase 3 and 4 consumption; (c) whether React tolerates a trailing sibling in the action row — Phase 3 (save button), inherited by Phase 5 (reaction trigger).
 - **Single-purpose CWS policy is a real gate.** Five feature areas in one listing. The one-sentence purpose narrative must be locked in Phase 1 and every later phase must justify any new permission against it.
 
@@ -97,6 +102,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-09-13T11:25:00.000Z
-Stopped at: Completed 01-02-PLAN.md (Route Watcher & Bridge)
-Resume file: .planning/phases/01-foundation-settings-popup/01-03-PLAN.md
+Last session: 2026-09-13T17:56:00.000Z
+Stopped at: Completed 01-03-PLAN.md (Diagnostics & Scroll Performance)
+Resume file: .planning/phases/01-foundation-settings-popup/01-04-PLAN.md
