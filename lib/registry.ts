@@ -54,6 +54,21 @@ export const features: FeatureEntry[] = [
     tooltip: 'Hides follower and following counts on user profile pages.',
     defaultEnabled: false,
   },
+  {
+    id: 'swapHomeTabs',
+    categoryId: 'timeline',
+    title: 'Following first on Home',
+    tooltip: 'Places the Following tab first and opens it automatically when you visit Home. Preserves your pinned Lists.',
+    defaultEnabled: false,
+  },
+  {
+    id: 'hideForYouTab',
+    categoryId: 'timeline',
+    parentId: 'swapHomeTabs',
+    title: 'Hide For You tab completely',
+    tooltip: 'Completely removes the algorithmic For You tab from the top navigation bar.',
+    defaultEnabled: false,
+  },
 ];
 
 // Rule: hidePromotedTweets is ON by default per D-12; every toggle added by later phases defaults to false
