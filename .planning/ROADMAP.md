@@ -16,7 +16,7 @@ Every phase is a vertical slice: at the end of each one the extension is install
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation & Settings Popup** - Shared plumbing plus a working popup, proven end-to-end by a live ad-stripping toggle
-- [ ] **Phase 2: Clean Timeline & Themes** - Clutter toggles and the full theme engine — read-only DOM/CSS features on top of the pipeline
+- [x] **Phase 2: Clean Timeline & Themes** - Clutter toggles and the full theme engine — read-only DOM/CSS features on top of the pipeline
 - [ ] **Phase 3: Bookmarks (Capture, Management & Resurfacing)** - Multi-strategy capture, local storage/quota management, folder/tag organization, in-page search, and feed resurfacing
 - [ ] **Phase 4: Twemoji Reactions** - Hover/long-press palette that prefills X's native reply composer for the user to send
 - [ ] **Phase 5: Chrome Web Store Packaging** - Permission audit, privacy policy, single-purpose listing, and a submittable package
@@ -90,19 +90,19 @@ Plans:
 
 Plans:
 **Wave 1**
-- [ ] 02-01-PLAN.md — Timeline & Sidebar Declutter Engine: vanity metrics stripper, right sidebar clutter stripper, popup integration for Clean Timeline controls
+- [x] 02-01-PLAN.md — Timeline & Sidebar Declutter Engine: vanity metrics stripper, right sidebar clutter stripper, popup integration for Clean Timeline controls
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 02-02-PLAN.md — Tab Reordering & Auto-Selection Engine: CSS flex order tab swap, Following auto-activation on /home, popup controls
+- [x] 02-02-PLAN.md — Tab Reordering & Auto-Selection Engine: CSS flex order tab swap, Following auto-activation on /home, popup controls
 
 **Wave 3** *(blocked on Wave 1 completion)*
-- [ ] 02-03-PLAN.md — Theme Engine Core & Zero-FOUC Injection: Dracula, Nord, Matrix, custom accent picker, synchronous document_start stylesheet injection, popup thumbnail cards
+- [x] 02-03-PLAN.md — Theme Engine Core & Zero-FOUC Injection: Dracula, Nord, Matrix, custom accent picker, synchronous document_start stylesheet injection, popup thumbnail cards
 
 **Wave 4** *(blocked on Wave 3 completion)*
-- [ ] 02-04-PLAN.md — Layout Engines: Minimal centered layout, Old Twitter 2015 3-column layout, horizontal top navbar, left mini profile card
+- [x] 02-04-PLAN.md — Layout Engines: Minimal centered layout, Old Twitter 2015 3-column layout, horizontal top navbar, left mini profile card
 
 **Wave 5** *(blocked on Wave 2, Wave 4 completion)*
-- [ ] 02-05-PLAN.md — Full Phase Integration: Playwright E2E verification, full unit test suite, and standing build/permission audit
+- [x] 02-05-PLAN.md — Full Phase Integration: Playwright E2E verification, full unit test suite, and standing build/permission audit
 
 **UI hint**: yes
 
@@ -184,7 +184,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Settings Popup | 5/5 | Completed | 2026-09-13 |
-| 2. Clean Timeline & Themes | 0/TBD | Not started | - |
+| 2. Clean Timeline & Themes | 5/5 | Completed | 2026-09-13 |
 | 3. Bookmarks (Capture, Management & Resurfacing) | 0/TBD | Not started | - |
 | 4. Twemoji Reactions | 0/TBD | Not started | - |
 | 5. Chrome Web Store Packaging | 0/TBD | Not started | - |
