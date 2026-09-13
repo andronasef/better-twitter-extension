@@ -1,5 +1,7 @@
 import { storage } from 'wxt/utils/storage';
 
+export type ThemeId = 'default' | 'dracula' | 'nord' | 'matrix' | 'minimal' | 'old-twitter';
+
 export interface Settings {
   version: number;
   features: {
@@ -11,6 +13,8 @@ export interface Settings {
     hideForYouTab?: boolean;
     [key: string]: boolean | undefined;
   };
+  theme?: ThemeId;
+  customAccent?: string | null;
 }
 
 export interface Diagnostics {
@@ -29,7 +33,7 @@ export interface XTheme {
 export function migrateSettings(oldSettings: any): Settings {
   const oldFeatures = oldSettings?.features || {};
   return {
-    version: 2,
+    version: 3,
     features: {
       ...oldFeatures,
       hidePromotedTweets: oldFeatures.hidePromotedTweets ?? true,
@@ -39,12 +43,14 @@ export function migrateSettings(oldSettings: any): Settings {
       swapHomeTabs: oldFeatures.swapHomeTabs ?? false,
       hideForYouTab: oldFeatures.hideForYouTab ?? false,
     },
+    theme: (oldSettings?.theme as ThemeId) ?? 'default',
+    customAccent: oldSettings?.customAccent ?? null,
   };
 }
 
 export const settingsItem = storage.defineItem<Settings>('local:settings', {
   fallback: {
-    version: 2,
+    version: 3,
     features: {
       hidePromotedTweets: true,
       cleanSidebar: false,
@@ -53,10 +59,13 @@ export const settingsItem = storage.defineItem<Settings>('local:settings', {
       swapHomeTabs: false,
       hideForYouTab: false,
     },
+    theme: 'default',
+    customAccent: null,
   },
-  version: 2,
+  version: 3,
   migrations: {
     2: (old: any) => migrateSettings(old),
+    3: (old: any) => migrateSettings(old),
   },
 });
 

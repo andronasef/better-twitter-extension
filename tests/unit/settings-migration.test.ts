@@ -12,7 +12,7 @@ describe('Settings migration v1 -> v2 (CLEAN-05, D-08)', () => {
 
     const v2Settings = migrateSettings(v1Settings);
 
-    expect(v2Settings.version).toBe(2);
+    expect(v2Settings.version).toBe(3);
     expect(v2Settings.features.hidePromotedTweets).toBe(true);
     expect(v2Settings.features.cleanSidebar).toBe(false);
     expect(v2Settings.features.hideVanityMetrics).toBe(false);
@@ -29,7 +29,7 @@ describe('Settings migration v1 -> v2 (CLEAN-05, D-08)', () => {
 
     const v2Settings = migrateSettings(v1Settings);
 
-    expect(v2Settings.version).toBe(2);
+    expect(v2Settings.version).toBe(3);
     expect(v2Settings.features.hidePromotedTweets).toBe(false);
     expect(v2Settings.features.cleanSidebar).toBe(false);
     expect(v2Settings.features.hideVanityMetrics).toBe(false);
@@ -38,14 +38,14 @@ describe('Settings migration v1 -> v2 (CLEAN-05, D-08)', () => {
 
   it('handles null, undefined, or empty v1 settings gracefully', () => {
     const v2Null = migrateSettings(null);
-    expect(v2Null.version).toBe(2);
+    expect(v2Null.version).toBe(3);
     expect(v2Null.features.hidePromotedTweets).toBe(true);
     expect(v2Null.features.cleanSidebar).toBe(false);
     expect(v2Null.features.hideVanityMetrics).toBe(false);
     expect(v2Null.features.hideProfileCounts).toBe(false);
 
     const v2Empty = migrateSettings({});
-    expect(v2Empty.version).toBe(2);
+    expect(v2Empty.version).toBe(3);
     expect(v2Empty.features.hidePromotedTweets).toBe(true);
   });
 
