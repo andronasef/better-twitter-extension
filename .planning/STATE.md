@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Foundation & Settings Popup
 status: executing
-stopped_at: Completed 01-01-PLAN.md
-last_updated: "2026-09-13T11:05:00.000Z"
+stopped_at: Completed 01-02-PLAN.md
+last_updated: "2026-09-13T11:25:00.000Z"
 last_activity: 2026-09-13
-last_activity_desc: Completed 01-01-PLAN.md (Walking Skeleton)
-state_head: fa14e40
+last_activity_desc: Completed 01-02-PLAN.md (Route Watcher & Bridge)
+state_head: 8348a75
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 5
-  completed_plans: 1
-  percent: 20
+  completed_plans: 2
+  percent: 40
 ---
 
 # Project State
@@ -28,19 +28,19 @@ See: .planning/PROJECT.md (updated 2026-09-13)
 ## Current Position
 
 Phase: 01 (Foundation & Settings Popup) — EXECUTING
-Plan: 2 of 5 (01-02-PLAN.md next)
+Plan: 3 of 5 (01-03-PLAN.md next)
 Status: Executing Phase 01
-Last activity: 2026-09-13 — Completed 01-01-PLAN.md (Walking Skeleton)
+Last activity: 2026-09-13 — Completed 01-02-PLAN.md (Route Watcher & Bridge)
 
-Progress: [██░░░░░░░░] 20%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 1
-- Average duration: 25 min
-- Total execution time: 25 min
+- Total plans completed: 2
+- Average duration: 22.5 min
+- Total execution time: 45 min
 
 **By Phase:**
 
@@ -72,6 +72,10 @@ Recent decisions affecting current work:
 - [Plan 01-01]: Resolved build output directory is .output/chrome-mv3 without random hashes.
 - [Plan 01-01]: Ad stripper uses clean CSS attribute hiding (data-bt-hidden, data-bt-hidden-cell) leaving X's React DOM untouched.
 - [Plan 01-01]: Strictly enforce Bun package manager across all tooling.
+- [Plan 01-02]: Bridge events emit on injected script node (document.currentScript) avoiding window broadcast security risks.
+- [Plan 01-02]: XHR URLs stored on request instance (this._btUrl) for concurrency safety.
+- [Plan 01-02]: Layered route watcher unifies 4 sources into debounced 50ms signal.
+- [Plan 01-02]: Named observer registry separates page vs global scopes, preventing observer leaks.
 
 ### Pending Todos
 
@@ -93,6 +97,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-09-13T11:05:00.000Z
-Stopped at: Completed 01-01-PLAN.md (Walking Skeleton)
-Resume file: .planning/phases/01-foundation-settings-popup/01-02-PLAN.md
+Last session: 2026-09-13T11:25:00.000Z
+Stopped at: Completed 01-02-PLAN.md (Route Watcher & Bridge)
+Resume file: .planning/phases/01-foundation-settings-popup/01-03-PLAN.md
