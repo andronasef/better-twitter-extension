@@ -41,7 +41,7 @@ The repository currently contains only `.planning/` and `.claude/`. The scaffold
 
 ## Component Inventory
 
-Could not enumerate: the repository has no `package.json` and no `components.json` — `npx shadcn info` has nothing to read, and `node -p "require('radix-ui/package.json').version"` has no `node_modules`. The scaffold that creates them is the first task of this phase. **Re-run `npx shadcn info` after `shadcn init -b radix` and rewrite this line with the command, count, `radix-ui@<resolved version>`, and date.**
+Enumerated via `bunx shadcn@4.21.0 info` on 2026-09-13: 3 components installed (`switch`, `tooltip`, `button`), using unified `radix-ui@1.6.7`.
 
 The table below is a **non-exhaustive** list of known-good components for this phase, never a closed allowlist. Reaching for a component outside it is the expected path, not an exception.
 
@@ -330,6 +330,6 @@ No third-party registry was declared, so the `shadcn view` vetting gate did not 
 
 ### Executor obligations carried from checker review
 
-1. **Rewrite the Component Inventory provenance line** immediately after `shadcn init -b radix` — record the command, the component count, the resolved `radix-ui@<version>`, and the date, replacing `Could not enumerate:`. The planner must carry this as an explicit task line in the scaffold plan; the § Design System copy of this obligation is prose and will otherwise be skipped.
+1. **Rewrite the Component Inventory provenance line** immediately after `shadcn init -b radix` — record the command, the component count, the resolved `radix-ui@<version>`, and the date, replacing the placeholder notice.
 2. **`-b radix` is mandatory, not decorative.** shadcn's default base flipped to Base UI in the July 2026 changelog; omitting the flag installs `@base-ui/react` and silently breaks project constraint C-4.
 3. **Pin exact versions and commit the lockfile** — this is the control for the six `SUS (too-new)` packages, not per-package review.
