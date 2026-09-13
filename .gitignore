@@ -26,3 +26,9 @@ playwright-report
 *.njsproj
 *.sln
 *.sw?
+
+# Testing artifacts
+scripts/screenshots/
+
+# Research repositories
+.planning/research/OldTwitter/

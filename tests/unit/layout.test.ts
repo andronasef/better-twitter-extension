@@ -55,7 +55,8 @@ describe('Old Twitter 2015 layout engine CSS (THEME-06, D-15)', () => {
   it('transforms the header into a fixed 46px horizontal top navbar', () => {
     expect(OLD_TWITTER_LAYOUT_CSS).toContain('height: 46px !important;');
     expect(OLD_TWITTER_LAYOUT_CSS).toContain('position: fixed !important;');
-    expect(OLD_TWITTER_LAYOUT_CSS).toContain('width: 100vw !important;');
+    expect(OLD_TWITTER_LAYOUT_CSS).toContain('width: 100% !important;');
+    expect(OLD_TWITTER_LAYOUT_CSS).toContain('overflow-x: hidden !important;');
   });
 
   it('renders discrete bordered tweet cards with a 5px radius', () => {
@@ -84,6 +85,23 @@ describe('Old Twitter 2015 layout engine CSS (THEME-06, D-15)', () => {
   it('gracefully collapses the mini profile card under 1000px viewports', () => {
     expect(OLD_TWITTER_LAYOUT_CSS).toContain('@media (max-width: 1000px)');
     expect(OLD_TWITTER_LAYOUT_CSS).toContain('[data-bt-mini-profile-card]');
+  });
+
+  it('recolors right sidebar modules to authentic white cards with light borders', () => {
+    expect(OLD_TWITTER_LAYOUT_CSS).toContain('div[data-testid="sidebarColumn"] section');
+    expect(OLD_TWITTER_LAYOUT_CSS).toContain('aside[role="complementary"] section');
+    expect(OLD_TWITTER_LAYOUT_CSS).toContain('background-color: #ffffff !important;');
+  });
+
+  it('styles compose dialog modal with white container and classic blue Tweet button', () => {
+    expect(OLD_TWITTER_LAYOUT_CSS).toContain('[role="dialog"]');
+    expect(OLD_TWITTER_LAYOUT_CSS).toContain('[data-testid="tweetButton"]');
+    expect(OLD_TWITTER_LAYOUT_CSS).toContain('background-color: #1da1f2 !important;');
+  });
+
+  it('scopes 590px primary column width to non-messages routes', () => {
+    expect(OLD_TWITTER_LAYOUT_CSS).toContain(':not([data-bt-page="messages"]) div[data-testid="primaryColumn"]');
+    expect(OLD_TWITTER_LAYOUT_CSS).toContain('[data-bt-page="messages"] div[data-testid="primaryColumn"]');
   });
 });
 
@@ -195,5 +213,18 @@ describe('layoutEngine (D-09, THEME-06): live layout switching without DOM destr
       layoutEngine.disableOldTwitter();
     });
     expect(document.querySelector('[data-bt-mini-profile-card]')).toBeFalsy();
+  });
+
+  it('enableOldTwitter() does not mount the mini profile card when on /messages', async () => {
+    const originalPath = window.location.pathname;
+    window.history.pushState({}, '', '/messages');
+    try {
+      await act(async () => {
+        layoutEngine.enableOldTwitter();
+      });
+      expect(document.querySelector('[data-bt-mini-profile-card]')).toBeFalsy();
+    } finally {
+      window.history.pushState({}, '', originalPath);
+    }
   });
 });

@@ -32,6 +32,10 @@ export interface XTheme {
 
 export function migrateSettings(oldSettings: any): Settings {
   const oldFeatures = oldSettings?.features || {};
+  let theme = (oldSettings?.theme as ThemeId) ?? 'default';
+  if (theme === 'old-twitter') {
+    theme = 'default';
+  }
   return {
     version: 3,
     features: {
@@ -43,7 +47,7 @@ export function migrateSettings(oldSettings: any): Settings {
       swapHomeTabs: oldFeatures.swapHomeTabs ?? false,
       hideForYouTab: oldFeatures.hideForYouTab ?? false,
     },
-    theme: (oldSettings?.theme as ThemeId) ?? 'default',
+    theme,
     customAccent: oldSettings?.customAccent ?? null,
   };
 }

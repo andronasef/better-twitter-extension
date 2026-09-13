@@ -64,7 +64,7 @@ export function OldTwitterNavbar({
         position: 'fixed',
         top: 0,
         left: 0,
-        width: '100vw',
+        width: '100%',
         height: '46px',
         backgroundColor: '#FFFFFF',
         borderBottom: '1px solid rgba(0, 0, 0, 0.15)',
@@ -303,13 +303,41 @@ let navbarHostEl: HTMLElement | null = null;
 
 function scrapeNavbarProfile(): OldTwitterNavbarProps {
   try {
+    let displayName: string | undefined;
+    let handle: string | undefined;
+    let avatarUrl: string | null = null;
+
     const accountBtn = document.querySelector('[data-testid="SideNav_AccountSwitcher_Button"]');
-    if (!accountBtn) return {};
-    const avatarImg = accountBtn.querySelector('img') as HTMLImageElement | null;
-    const avatarUrl = avatarImg?.src || null;
-    const spans = Array.from(accountBtn.querySelectorAll('span')).map((s) => s.textContent?.trim()).filter(Boolean);
-    const handle = spans.find((t) => t?.startsWith('@'));
-    const displayName = spans.find((t) => t && !t.startsWith('@') && t.length > 0 && !t.includes('\n'));
+    if (accountBtn) {
+      const avatarImg = accountBtn.querySelector('img') as HTMLImageElement | null;
+      if (avatarImg?.src) avatarUrl = avatarImg.src;
+      if (avatarImg?.alt && avatarImg.alt.trim() && !avatarImg.alt.startsWith('http')) {
+        displayName = avatarImg.alt.trim();
+      }
+
+      const textNodes = Array.from(
+        accountBtn.querySelectorAll('span, div[dir="auto"], div[dir="ltr"]')
+      ).map((s) => s.textContent?.trim()).filter(Boolean);
+
+      const foundHandle = textNodes.find((t) => t?.startsWith('@'));
+      if (foundHandle) handle = foundHandle;
+
+      const foundName = textNodes.find((t) => t && !t.startsWith('@') && t.length > 0 && !t.includes('\n'));
+      if (foundName) displayName = foundName;
+
+      const ariaLabel = accountBtn.getAttribute('aria-label') || '';
+      const handleMatch = ariaLabel.match(/@([a-zA-Z0-9_]+)/);
+      if (handleMatch && !handle) handle = `@${handleMatch[1]}`;
+    }
+
+    if (!handle) {
+      const profileLink = document.querySelector('a[data-testid="AppTabBar_Profile_Link"]');
+      const href = profileLink?.getAttribute('href')?.replace(/^\//, '');
+      if (href && href !== 'profile' && !href.includes('/')) {
+        handle = `@${href}`;
+      }
+    }
+
     return { displayName: displayName || undefined, handle: handle || undefined, avatarUrl };
   } catch {
     return {};
@@ -328,6 +356,20 @@ export function mountOldTwitterNavbar(): void {
   const profile = scrapeNavbarProfile();
   navbarRoot = createRoot(navbarHostEl);
   navbarRoot.render(<OldTwitterNavbar {...profile} />);
+
+  if (!profile.handle || !profile.avatarUrl) {
+    let attempts = 0;
+    const retryTimer = setInterval(() => {
+      attempts++;
+      const updated = scrapeNavbarProfile();
+      if (updated.handle && updated.avatarUrl) {
+        clearInterval(retryTimer);
+        navbarRoot?.render(<OldTwitterNavbar {...updated} />);
+      } else if (attempts > 20) {
+        clearInterval(retryTimer);
+      }
+    }, 400);
+  }
 }
 
 /** Cleanly unmounts the 2015 Top Navbar */

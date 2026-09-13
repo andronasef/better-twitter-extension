@@ -64,4 +64,15 @@ describe('Settings migration v1 -> v2 (CLEAN-05, D-08)', () => {
     expect(v2Settings.features.customFlag).toBe(true);
     expect(v2Settings.features.hideVanityMetrics).toBe(false);
   });
+
+  it('migrates archived old-twitter theme to default', () => {
+    const oldTwitterSettings = {
+      version: 3,
+      features: {},
+      theme: 'old-twitter',
+    };
+
+    const migrated = migrateSettings(oldTwitterSettings);
+    expect(migrated.theme).toBe('default');
+  });
 });

@@ -87,6 +87,26 @@ describe('Theme engine CSS generator (THEME-01..04, THEME-07, D-09..D-11)', () =
     });
   });
 
+  describe('Minimal palette (Zen Editorial)', () => {
+    it('THEME_PRESETS.minimal defines Zen tokens', () => {
+      const p = THEME_PRESETS.minimal;
+      expect(p.bg).toBe('#08090a');
+      expect(p.surface).toBe('#0e1015');
+      expect(p.surfaceHover).toBe('#151820');
+      expect(p.border).toBe('#1c2028');
+      expect(p.text).toBe('#f3f4f6');
+      expect(p.textMuted).toBe('#6b7280');
+      expect(p.accent).toBe('#f3f4f6');
+    });
+
+    it('emits an html[data-bt-theme="minimal"] token block', () => {
+      expect(css).toContain('html[data-bt-theme="minimal"]');
+      expect(css).toContain('--bt-theme-bg: #08090a !important;');
+      expect(css).toContain('--bt-theme-surface: #0e1015 !important;');
+      expect(css).toContain('--bt-theme-text: #f3f4f6 !important;');
+    });
+  });
+
   it('Default preset uses the native X appearance and default accent (#1d9bf0)', () => {
     const p = THEME_PRESETS.default;
     expect(p.accent.toLowerCase()).toBe('#1d9bf0');

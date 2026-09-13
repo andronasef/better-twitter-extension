@@ -1,0 +1,38 @@
+{
+  "contract": "1.0.0",
+  "flavor": "core",
+  "milestone": null,
+  "phases": [
+    {
+      "number": "1",
+      "name": "Foundation & Settings Popup",
+      "status": "completed"
+    },
+    {
+      "number": "2",
+      "name": "Clean Timeline & Themes",
+      "status": "pending"
+    },
+    {
+      "number": "3",
+      "name": "Bookmarks: Capture, Management & Resurfacing",
+      "status": "pending"
+    },
+    {
+      "number": "4",
+      "name": "Twemoji Reactions",
+      "status": "pending"
+    },
+    {
+      "number": "5",
+      "name": "Chrome Web Store Packaging",
+      "status": "pending"
+    }
+  ],
+  "next": {
+    "command": "/gsd-progress --next",
+    "label": "Advance to the next step",
+    "reason": "Phase 01 of 6 · 0% · executing"
+  },
+  "updated_at": "2026-09-13T10:43:15.320Z"
+}

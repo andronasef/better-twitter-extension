@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Twitter Desktop Vibe Test Fixture</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #000000;
+      color: #e7e9ea;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow-y: scroll;
+    }
+    #react-root > div > div > div.app-row {
+      display: flex;
+      flex-direction: row;
+      min-height: 100vh;
+      width: 100%;
+    }
+    .header-wrapper {
+      display: flex;
+      flex-grow: 1;
+      align-items: flex-end;
+      flex-direction: column;
+      z-index: 3;
+    }
+    header[role="banner"] {
+      display: flex;
+      flex-direction: column;
+      width: 275px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      border-right: 1px solid #2f3336;
+      padding: 0 12px;
+    }
+    header[role="banner"] nav {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 8px;
+    }
+    header[role="banner"] nav a,
+    header[role="banner"] nav [role="button"] {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 16px;
+      color: inherit;
+      text-decoration: none;
+      font-size: 19px;
+      font-weight: 500;
+      border-radius: 9999px;
+      transition: background-color 0.15s ease;
+    }
+    header[role="banner"] nav a svg,
+    header[role="banner"] nav [role="button"] svg {
+      width: 26px;
+      height: 26px;
+      flex-shrink: 0;
+      fill: currentColor;
+    }
+    .post-btn {
+      width: 90%;
+      height: 52px;
+      background-color: #1d9bf0;
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: 700;
+      border: none;
+      border-radius: 9999px;
+      margin-top: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .post-btn svg { display: none; width: 24px; height: 24px; fill: currentColor; }
+
+    main[role="main"] {
+      display: flex;
+      flex-grow: 1;
+      flex-shrink: 1;
+      min-height: 100vh;
+    }
+    .main-inner {
+      width: 990px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+    div[data-testid="primaryColumn"] {
+      width: 600px;
+      min-height: 100vh;
+      border-left: 1px solid #2f3336;
+      border-right: 1px solid #2f3336;
+    }
+    .primary-inner {
+      width: 100%;
+    }
+    div[data-testid="sidebarColumn"] {
+      width: 350px;
+      min-height: 100vh;
+      padding: 12px 24px;
+    }
+
+    /* Tablist */
+    .tablist-container {
+      position: sticky;
+      top: 0;
+      height: 53px;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #2f3336;
+      display: flex;
+      align-items: center;
+      z-index: 2;
+    }
+    .tablist {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+    .tab-item {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      height: 100%;
+      position: relative;
+    }
+    .tab-item.active span {
+      border-bottom: 4px solid var(--bt-theme-accent, #1d9bf0);
+      padding-bottom: 14px;
+      color: #fff;
+    }
+    .tab-item:not(.active) {
+      color: #71767b;
+    }
+
+    /* Composer */
+    .composer-box {
+      padding: 16px;
+      border-bottom: 1px solid #2f3336;
+      display: flex;
+      gap: 12px;
+    }
+    .avatar-mock {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #334155;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    .composer-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .composer-input {
+      font-size: 20px;
+      color: #71767b;
+      min-height: 48px;
+    }
+    .composer-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .toolbar-icons {
+      display: flex;
+      gap: 16px;
+      color: var(--bt-theme-accent, #1d9bf0);
+    }
+    .toolbar-icons svg { width: 20px; height: 20px; fill: currentColor; cursor: pointer; }
+    .btn-small-post {
+      padding: 8px 18px;
+      background: var(--bt-theme-accent, #1d9bf0);
+      color: #fff;
+      border: none;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    /* Tweet Cards */
+    article[data-testid="tweet"] {
+      padding: 16px;
+      border-bottom: 1px solid #2f3336;
+      display: flex;
+      gap: 12px;
+    }
+    .tweet-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .tweet-header-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 15px;
+    }
+    .tweet-author { font-weight: 700; }
+    .tweet-handle { color: #71767b; margin-left: 4px; }
+    .tweet-text {
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    .media-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      height: 220px;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .media-placeholder-1 {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      font-size: 13px;
+      gap: 6px;
+    }
+    .media-placeholder-2 {
+      background: linear-gradient(135deg, #334155, #1e293b);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      font-size: 13px;
+      gap: 6px;
+    }
+    .tweet-actions-group {
+      display: flex;
+      justify-content: space-between;
+      max-width: 420px;
+      margin-top: 8px;
+    }
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #71767b;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .action-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+    /* Sidebar modules */
+    .search-mock {
+      background: #202327;
+      border-radius: 9999px;
+      padding: 12px 18px;
+      color: #71767b;
+      margin-bottom: 16px;
+    }
+    .sidebar-card {
+      background: #16181c;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid #2f3336;
+    }
+    .sidebar-title {
+      font-size: 19px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+    .trend-item {
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+  </style>
+</head>
+<body>
+  <div id="react-root">
+    <div>
+      <div>
+        <div class="app-row">
+          <!-- Left Nav -->
+          <div class="header-wrapper">
+            <header role="banner">
+              <nav>
+                <a href="#"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><span>X</span></a>
+                <a href="#"><svg viewBox="0 0 24 24"><path d="M12 1.696L.622 8.807l1.06 1.696L3 9.679V19.5C3 20.881 4.119 22 5.5 22h13c1.381 0 2.5-1.119 2.5-2.5V9.679l1.318.824 1.06-1.696L12 1.696zM12 16.5c-1.933 0-3.5-1.567-3.5-3.5s1.567-3.5 3.5-3.5 3.5 1.567 3.5 3.5-1.567 3.5-3.5 3.5z"/></svg><span>Home</span></a>
+                <a href="#"><svg viewBox="0 0 24 24"><path d="M10.25 3.75c-3.59 0-6.5 2.91-6.5 6.5s2.91 6.5 6.5 6.5c1.795 0 3.419-.728 4.596-1.904l4.707 4.707 1.414-1.414-4.707-4.707c1.176-1.177 1.904-2.801 1.904-4.596 0-3.59-2.91-6.5-6.5-6.5zm-4.5 6.5c0-2.485 2.015-4.5 4.5-4.5s4.5 2.015 4.5 4.5-2.015 4.5-4.5 4.5-4.5-2.015-4.5-4.5z"/></svg><span>Explore</span></a>
+                <a href="#"><svg viewBox="0 0 24 24"><path d="M19.993 9.042C19.48 5.017 16.054 2 12 2s-7.48 3.017-7.993 7.042A8.614 8.614 0 0 0 3 14v1.5a2.5 2.5 0 0 0 2.5 2.5h13a2.5 2.5 0 0 0 2.5-2.5V14a8.614 8.614 0 0 0-1.007-4.958z"/></svg><span>Notifications</span></a>
+                <a href="#"><svg viewBox="0 0 24 24"><path d="M1.998 5.5A2.5 2.5 0 0 1 4.5 3h15A2.5 2.5 0 0 1 22 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 1.998 18.5v-13zm2.5-.5a.5.5 0 0 0-.5.5v1.207l7.5 4.688 7.5-4.688V5.5a.5.5 0 0 0-.5-.5h-15z"/></svg><span>Messages</span></a>
+                <a href="#"><svg viewBox="0 0 24 24"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H18a2.5 2.5 0 0 1 2.5 2.5v14.25a.75.75 0 0 1-1.28.53L12 12.06l-7.22 7.22A.75.75 0 0 1 3.5 18.75V4.5z"/></svg><span>Bookmarks</span></a>
+                <a href="#"><svg viewBox="0 0 24 24"><path d="M5.651 19h12.698c-.337-1.8-1.023-3.21-1.945-4.19C15.318 13.65 13.838 13 12 13s-3.317.65-4.404 1.81c-.922.98-1.608 2.39-1.945 4.19zm.486-5.56C7.627 11.85 9.648 11 12 11s4.373.85 5.863 2.44c1.477 1.58 2.366 3.8 2.632 6.46A1 1 0 0 1 19.5 21H4.5a1 1 0 0 1-.995-1.1c.266-2.66 1.155-4.88 2.632-6.46zM12 4a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z"/></svg><span>Profile</span></a>
+              </nav>
+              <button class="post-btn" data-testid="SideNav_NewTweet_Button">
+                <span>Post</span>
+                <svg viewBox="0 0 24 24"><path d="M23 3c-6.62-.1-10.38 2.41-13.05 6.08C7.29 12.75 6 17 6 23h2c0-5.5 1.07-9.28 3.32-12.36C13.58 7.55 16.73 5.32 23 5V3z"/></svg>
+              </button>
+            </header>
+          </div>
+
+          <!-- Main Timeline -->
+          <main role="main">
+            <div class="main-inner">
+              <div data-testid="primaryColumn">
+                <div class="primary-inner">
+                  <!-- Sticky Header -->
+                  <div class="tablist-container">
+                    <div class="tablist" role="tablist">
+                      <div class="tab-item active" role="tab"><span>For you</span></div>
+                      <div class="tab-item" role="tab"><span>Following</span></div>
+                      <div class="tab-item" role="tab"><span>Design & Tech</span></div>
+                    </div>
+                  </div>
+
+                  <!-- Composer -->
+                  <div class="composer-box">
+                    <div class="avatar-mock">A</div>
+                    <div class="composer-content">
+                      <div class="composer-input">What is happening?!</div>
+                      <div class="composer-toolbar">
+                        <div class="toolbar-icons">
+                          <svg viewBox="0 0 24 24"><path d="M3 5.5A2.5 2.5 0 0 1 5.5 3h13A2.5 2.5 0 0 1 21 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 18.5v-13zM5.5 5a.5.5 0 0 0-.5.5v8.793l3.646-3.647a.5.5 0 0 1 .708 0L13.5 14.793l3.646-3.647a.5.5 0 0 1 .708 0L20 13.293V5.5a.5.5 0 0 0-.5-.5h-14z"/></svg>
+                          <svg viewBox="0 0 24 24"><path d="M3 5.5A2.5 2.5 0 0 1 5.5 3h13A2.5 2.5 0 0 1 21 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 18.5v-13zM9 13.5v-3H6.5v3H9zm4.5-3H11v3h2.5v-3zm3 0H15v3h1.5v-3z"/></svg>
+                          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-3-9.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0zm6 0a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0zm-7 4.5a5 5 0 0 0 8 0H8z"/></svg>
+                        </div>
+                        <button class="btn-small-post">Post</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Feed -->
+                  <section aria-label="Timeline">
+                    <div data-testid="cellInnerDiv">
+                      <article data-testid="tweet">
+                        <div class="avatar-mock" style="background:#4338ca;">R</div>
+                        <div class="tweet-body">
+                          <div class="tweet-header-row">
+                            <div><span class="tweet-author">Radwa</span><span class="tweet-handle">@Rooade132 · 6h</span></div>
+                            <div style="color:#71767b; cursor:pointer;">•••</div>
+                          </div>
+                          <div class="tweet-text" dir="auto">
+                            Today I walked in the golden dunes 🏕️🐾 and watched the seaside palm trees sway under the evening breeze.
+                          </div>
+                          <div class="media-grid-2">
+                            <div class="media-placeholder-1">
+                              <span>🌴 Beach Palms</span>
+                            </div>
+                            <div class="media-placeholder-2">
+                              <span>🌅 Golden Sunset</span>
+                            </div>
+                          </div>
+                          <div class="tweet-actions-group" role="group">
+                            <div class="action-btn" data-testid="reply"><svg viewBox="0 0 24 24"><path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-1.104.61 1.006 3.02c.164.49-.247.98-.756.98-.16 0-.32-.05-.46-.15l-4.737-3.4H9.756c-4.42 0-8.005-3.58-8.005-8z"/></svg><span>48</span></div>
+                            <div class="action-btn" data-testid="retweet"><svg viewBox="0 0 24 24"><path d="M4.5 3.88l4.432 4.14-1.364 1.46L5.5 7.55V16c0 1.1.896 2 2 2H13v2H7.5c-2.209 0-4-1.79-4-4V7.55L1.432 9.48.068 8.02 4.5 3.88zM16.5 20.12l-4.432-4.14 1.364-1.46 2.068 1.93V8c0-1.1-.896-2-2-2H11V4h5.5c2.209 0 4 1.79 4 4v8.45l2.068-1.93 1.364 1.46-4.432 4.14z"/></svg><span>126</span></div>
+                            <div class="action-btn" data-testid="like"><svg viewBox="0 0 24 24"><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-2.415.11-4.3 2.1-4.3 4.59 0 2.91 2.39 5.8 5.74 8.65 1.95 1.66 4.17 3.16 4.26 3.22.14.1.32.14.5.14s.36-.04.5-.14c.09-.06 2.31-1.56 4.26-3.22 3.35-2.85 5.74-5.74 5.74-8.65 0-2.49-1.88-4.48-4.3-4.59z"/></svg><span>1.4K</span></div>
+                            <div class="action-btn" data-testid="bookmark"><svg viewBox="0 0 24 24"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H18a2.5 2.5 0 0 1 2.5 2.5v14.25a.75.75 0 0 1-1.28.53L12 12.06l-7.22 7.22A.75.75 0 0 1 3.5 18.75V4.5z"/></svg><span>89</span></div>
+                          </div>
+                        </div>
+                      </article>
+                    </div>
+
+                    <div data-testid="cellInnerDiv">
+                      <article data-testid="tweet">
+                        <div class="avatar-mock" style="background:#059669;">D</div>
+                        <div class="tweet-body">
+                          <div class="tweet-header-row">
+                            <div><span class="tweet-author">DevCraft</span><span class="tweet-handle">@devcraft · 3h</span></div>
+                            <div style="color:#71767b; cursor:pointer;">•••</div>
+                          </div>
+                          <div class="tweet-text" dir="auto">
+                            The secret to extraordinary software architecture is ruthless simplicity. Remove what doesn't serve the human experience.
+                          </div>
+                          <div class="tweet-actions-group" role="group">
+                            <div class="action-btn" data-testid="reply"><svg viewBox="0 0 24 24"><path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-1.104.61 1.006 3.02c.164.49-.247.98-.756.98-.16 0-.32-.05-.46-.15l-4.737-3.4H9.756c-4.42 0-8.005-3.58-8.005-8z"/></svg><span>24</span></div>
+                            <div class="action-btn" data-testid="retweet"><svg viewBox="0 0 24 24"><path d="M4.5 3.88l4.432 4.14-1.364 1.46L5.5 7.55V16c0 1.1.896 2 2 2H13v2H7.5c-2.209 0-4-1.79-4-4V7.55L1.432 9.48.068 8.02 4.5 3.88zM16.5 20.12l-4.432-4.14 1.364-1.46 2.068 1.93V8c0-1.1-.896-2-2-2H11V4h5.5c2.209 0 4 1.79 4 4v8.45l2.068-1.93 1.364 1.46-4.432 4.14z"/></svg><span>410</span></div>
+                            <div class="action-btn" data-testid="like"><svg viewBox="0 0 24 24"><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-2.415.11-4.3 2.1-4.3 4.59 0 2.91 2.39 5.8 5.74 8.65 1.95 1.66 4.17 3.16 4.26 3.22.14.1.32.14.5.14s.36-.04.5-.14c.09-.06 2.31-1.56 4.26-3.22 3.35-2.85 5.74-5.74 5.74-8.65 0-2.49-1.88-4.48-4.3-4.59z"/></svg><span>3.8K</span></div>
+                            <div class="action-btn" data-testid="bookmark"><svg viewBox="0 0 24 24"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H18a2.5 2.5 0 0 1 2.5 2.5v14.25a.75.75 0 0 1-1.28.53L12 12.06l-7.22 7.22A.75.75 0 0 1 3.5 18.75V4.5z"/></svg><span>312</span></div>
+                          </div>
+                        </div>
+                      </article>
+                    </div>
+                  </section>
+                </div>
+              </div>
+
+              <!-- Right Sidebar Column -->
+              <div data-testid="sidebarColumn">
+                <div class="search-mock">Search</div>
+                <div class="sidebar-card">
+                  <div class="sidebar-title">What's happening</div>
+                  <div class="trend-item">
+                    <div style="font-size:12px; color:#71767b;">Technology · Trending</div>
+                    <div style="font-weight:700; margin-top:2px;">TypeScript 5.8</div>
+                    <div style="font-size:12px; color:#71767b; margin-top:2px;">42.5K posts</div>
+                  </div>
+                  <div class="trend-item">
+                    <div style="font-size:12px; color:#71767b;">Design · Trending</div>
+                    <div style="font-weight:700; margin-top:2px;">Minimal Interfaces</div>
+                    <div style="font-size:12px; color:#71767b; margin-top:2px;">18.2K posts</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

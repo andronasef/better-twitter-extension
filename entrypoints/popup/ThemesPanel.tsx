@@ -4,7 +4,7 @@ import { AccentPicker } from './AccentPicker';
 import { THEME_PRESETS } from '@/lib/theme-engine';
 import type { ThemeId, Settings } from '@/lib/storage';
 
-const THEME_ORDER: ThemeId[] = ['default', 'dracula', 'nord', 'matrix', 'minimal', 'old-twitter'];
+const THEME_ORDER: ThemeId[] = ['default', 'minimal', 'dracula', 'nord', 'matrix'];
 
 interface ThemesPanelProps {
   settings: Settings | null;

@@ -24,11 +24,16 @@ export const layoutEngine = {
     // 1. Mount authentic 2015 top navigation bar
     mountOldTwitterNavbar();
 
-    // 2. Mount classic left-column mini profile card
-    const primary = resolve('primaryColumn');
-    const target = primary?.parentElement ?? document.body;
-    if (target) {
-      mountMiniProfileCard(target, primary);
+    // 2. Mount classic left-column mini profile card (omit on /messages)
+    const isMessages = typeof window !== 'undefined' && window.location.pathname.startsWith('/messages');
+    if (isMessages) {
+      unmountMiniProfileCard();
+    } else {
+      const primary = resolve('primaryColumn');
+      const target = primary?.parentElement ?? document.body;
+      if (target) {
+        mountMiniProfileCard(target, primary);
+      }
     }
   },
 

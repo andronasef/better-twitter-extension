@@ -100,6 +100,14 @@ export default defineContentScript({
       // Re-run pipeline and dispatch features
       startPipeline();
 
+      if (typeof window !== 'undefined' && document.documentElement) {
+        if (window.location.pathname.startsWith('/messages')) {
+          document.documentElement.setAttribute('data-bt-page', 'messages');
+        } else {
+          document.documentElement.removeAttribute('data-bt-page');
+        }
+      }
+
       if (currentSettings) {
         dispatcher.dispatch(currentSettings);
         // Re-mount the Old Twitter mini profile card on every page setup (initial load and

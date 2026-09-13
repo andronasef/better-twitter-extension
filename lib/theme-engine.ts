@@ -75,14 +75,14 @@ export const THEME_PRESETS: Record<ThemeId, ThemePreset> = {
   minimal: {
     id: 'minimal',
     label: 'Minimal',
-    desc: 'Centered distraction-free',
-    bg: '',
-    surface: '',
-    surfaceHover: '',
-    border: '',
-    text: '',
-    textMuted: '',
-    accent: DEFAULT_ACCENT,
+    desc: 'Zen editorial & distraction-free',
+    bg: '#08090a',
+    surface: '#0e1015',
+    surfaceHover: '#151820',
+    border: '#1c2028',
+    text: '#f3f4f6',
+    textMuted: '#6b7280',
+    accent: '#f3f4f6',
   },
   'old-twitter': {
     id: 'old-twitter',
@@ -98,7 +98,7 @@ export const THEME_PRESETS: Record<ThemeId, ThemePreset> = {
   },
 };
 
-const COLOR_ENGINE_THEME_IDS: ThemeId[] = ['dracula', 'nord', 'matrix'];
+const COLOR_ENGINE_THEME_IDS: ThemeId[] = ['dracula', 'nord', 'matrix', 'minimal'];
 
 const ROOT_TOKENS = `
 :root {
@@ -203,7 +203,12 @@ html[data-bt-theme="dracula"] article[data-testid="tweet"] [dir="auto"] {
   color: #f8f8f2 !important;
 }
 
-/* Dracula Action Icons: Neon Pastels */
+/* Dracula Tweet Card Hover Glow */
+html[data-bt-theme="dracula"] article[data-testid="tweet"]:hover {
+  border-color: #bd93f9 !important;
+  box-shadow: 0 4px 16px rgba(189, 147, 249, 0.25) !important;
+}
+
 html[data-bt-theme="dracula"] [data-testid="retweet"] svg,
 html[data-bt-theme="dracula"] [data-testid="unretweet"] svg {
   color: #50fa7b !important;
@@ -242,6 +247,12 @@ html[data-bt-theme="nord"] article[data-testid="tweet"] {
   border-radius: 8px !important;
   border: 1px solid #4c566a !important;
   margin-bottom: 6px !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25) !important;
+}
+
+html[data-bt-theme="nord"] article[data-testid="tweet"]:hover {
+  border-color: #88c0d0 !important;
+  box-shadow: 0 4px 16px rgba(136, 192, 208, 0.2) !important;
 }
 
 html[data-bt-theme="nord"] article[data-testid="tweet"] [dir="auto"] {
@@ -294,6 +305,11 @@ html[data-bt-theme="matrix"] article[data-testid="tweet"] {
   background-color: #0a140a !important;
 }
 
+html[data-bt-theme="matrix"] article[data-testid="tweet"]:hover {
+  border-color: #00ff66 !important;
+  box-shadow: 0 0 10px rgba(0, 255, 102, 0.3) !important;
+}
+
 html[data-bt-theme="matrix"] article[data-testid="tweet"] [dir="auto"] {
   color: #00ff66 !important;
   text-shadow: 0 0 5px rgba(0, 255, 102, 0.3) !important;
@@ -313,6 +329,83 @@ html[data-bt-theme="matrix"] [data-testid="reply"] svg,
 html[data-bt-theme="matrix"] [data-testid="bookmark"] svg {
   color: #00ff66 !important;
   fill: #00ff66 !important;
+}
+
+/* ========================================================
+   MINIMAL VIBE: Zen Editorial Distraction-Free
+   ======================================================== */
+html[data-bt-theme="minimal"] [data-testid="primaryColumn"] section,
+html[data-bt-theme="minimal"] [data-testid="primaryColumn"] section > div,
+html[data-bt-theme="minimal"] [data-testid="cellInnerDiv"],
+html[data-bt-theme="minimal"] article[data-testid="tweet"],
+html[data-bt-theme="minimal"] [data-testid="ScrollSnap-List"],
+html[data-bt-theme="minimal"] div[aria-label*="Timeline"] {
+  background-color: #0e1015 !important;
+  border-color: #1c2028 !important;
+}
+
+html[data-bt-theme="minimal"] div[data-testid="primaryColumn"] > div > div:first-child {
+  background-color: rgba(14, 16, 21, 0.88) !important;
+  backdrop-filter: blur(16px) !important;
+  border-bottom: 1px solid #1c2028 !important;
+}
+
+html[data-bt-theme="minimal"] article[data-testid="tweet"] {
+  background-color: #0e1015 !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 12px !important;
+  margin-bottom: 8px !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+html[data-bt-theme="minimal"] article[data-testid="tweet"]:hover {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Relaxed Editorial Typography */
+html[data-bt-theme="minimal"] article[data-testid="tweet"] [dir="auto"] {
+  color: #f3f4f6 !important;
+  line-height: 1.65 !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* Zen Action Icons: Dimmed on idle, illuminate smoothly on tweet hover */
+html[data-bt-theme="minimal"] article[data-testid="tweet"] [role="group"] {
+  opacity: 0.55;
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+html[data-bt-theme="minimal"] article[data-testid="tweet"]:hover [role="group"],
+html[data-bt-theme="minimal"] article[data-testid="tweet"] [role="group"]:hover {
+  opacity: 1 !important;
+}
+
+/* Minimal Action Icon hover colors */
+html[data-bt-theme="minimal"] [data-testid="retweet"]:hover svg,
+html[data-bt-theme="minimal"] [data-testid="unretweet"]:hover svg {
+  color: #34d399 !important;
+}
+html[data-bt-theme="minimal"] [data-testid="like"]:hover svg,
+html[data-bt-theme="minimal"] [data-testid="unlike"]:hover svg {
+  color: #f43f5e !important;
+}
+html[data-bt-theme="minimal"] [data-testid="reply"]:hover svg {
+  color: #38bdf8 !important;
+}
+html[data-bt-theme="minimal"] [data-testid="bookmark"]:hover svg {
+  color: #fbbf24 !important;
+}
+
+/* Sleek frosted glass navigation pill for Minimal Left Rail */
+html[data-bt-theme="minimal"] header[role="banner"] nav {
+  background: rgba(14, 16, 21, 0.75) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 32px !important;
+  padding: 10px 4px !important;
+  margin-top: 12px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important;
 }
 `;
 
@@ -337,18 +430,46 @@ svg [fill="#1d9bf0" i] {
 
 /**
  * Minimal Layout Transform Rules (THEME-05, D-14)
- * Collapses the navigation to a clean 68px icon rail with all SVG icons intact,
- * centers timeline at 650px, and hides right sidebar column.
+ * Collapses navigation to a clean 68px icon rail with all SVG icons intact,
+ * centers timeline at 650px without horizontal/vertical split overflow,
+ * and hides the right sidebar column and floating distractions.
  */
 export const MINIMAL_LAYOUT_CSS = `
+/* Hide sidebar column completely */
 html[data-bt-theme="minimal"] div[data-testid="sidebarColumn"] {
   display: none !important;
+}
+
+/* Center outer flex layout with zero gap blowout */
+html[data-bt-theme="minimal"] #react-root > div > div > div.app-row,
+html[data-bt-theme="minimal"] #react-root > div > div > div {
+  width: 100% !important;
+  max-width: 100% !important;
+  justify-content: center !important;
+  display: flex !important;
+  flex-direction: row !important;
+}
+
+/* Left rail dock: collapse wrapper and header to 68px flush */
+html[data-bt-theme="minimal"] #react-root > div > div > div > div:has(header[role="banner"]),
+html[data-bt-theme="minimal"] #react-root > div > div > div > header[role="banner"],
+html[data-bt-theme="minimal"] .header-wrapper {
+  flex-grow: 0 !important;
+  flex-shrink: 0 !important;
+  width: 68px !important;
+  max-width: 68px !important;
+  min-width: 68px !important;
+  align-items: center !important;
 }
 
 html[data-bt-theme="minimal"] header[role="banner"] {
   width: 68px !important;
   min-width: 68px !important;
+  max-width: 68px !important;
+  flex-grow: 0 !important;
+  flex-shrink: 0 !important;
   align-items: center !important;
+  border-right: none !important;
 }
 
 html[data-bt-theme="minimal"] header[role="banner"] > div,
@@ -379,6 +500,12 @@ html[data-bt-theme="minimal"] header[role="banner"] nav [role="button"] {
   align-items: center !important;
   justify-content: center !important;
   border-radius: 9999px !important;
+  transition: background-color 0.15s ease, transform 0.15s ease !important;
+}
+
+html[data-bt-theme="minimal"] header[role="banner"] nav a:hover,
+html[data-bt-theme="minimal"] header[role="banner"] nav [role="button"]:hover {
+  transform: scale(1.06) !important;
 }
 
 html[data-bt-theme="minimal"] header[role="banner"] nav a svg,
@@ -389,10 +516,22 @@ html[data-bt-theme="minimal"] header[role="banner"] nav [role="button"] svg {
   margin: 0 auto !important;
 }
 
+/* Main column: fixed 650px, zero flex shrink, centered right next to rail */
 html[data-bt-theme="minimal"] main[role="main"] {
   display: flex !important;
   justify-content: center !important;
+  width: 650px !important;
+  max-width: 650px !important;
+  min-width: 650px !important;
+  flex-grow: 0 !important;
+  flex-shrink: 0 !important;
+  margin: 0 0 0 16px !important;
+}
+
+html[data-bt-theme="minimal"] main[role="main"] > div {
   width: 100% !important;
+  max-width: 100% !important;
+  justify-content: center !important;
 }
 
 html[data-bt-theme="minimal"] div[data-testid="primaryColumn"] {
@@ -401,6 +540,12 @@ html[data-bt-theme="minimal"] div[data-testid="primaryColumn"] {
   width: 100% !important;
   border-left: 1px solid var(--bt-theme-border) !important;
   border-right: 1px solid var(--bt-theme-border) !important;
+}
+
+html[data-bt-theme="minimal"] div[data-testid="primaryColumn"] > div {
+  max-width: 100% !important;
+  width: 100% !important;
+  overflow: visible !important;
 }
 
 /* Collapse Post button to 50x50 round circle button */
@@ -413,6 +558,12 @@ html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"] {
   border-radius: 9999px !important;
   justify-content: center !important;
   align-items: center !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+  transition: transform 0.15s ease !important;
+}
+
+html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"]:hover {
+  transform: scale(1.08) !important;
 }
 
 html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"] span {
@@ -437,6 +588,12 @@ html[data-bt-theme="minimal"] [data-testid="SideNav_AccountSwitcher_Button"] {
 html[data-bt-theme="minimal"] [data-testid="SideNav_AccountSwitcher_Button"] > div:not(:first-child) {
   display: none !important;
 }
+
+/* Hide floating action buttons (DM drawer, Grok floating) in Minimal mode */
+html[data-bt-theme="minimal"] div[data-testid="DMDrawer"],
+html[data-bt-theme="minimal"] div[data-testid="floatingActionButton"] {
+  display: none !important;
+}
 `;
 
 const LAYOUT_TOKEN_ONLY_THEME_IDS: ThemeId[] = ['old-twitter'];
@@ -451,18 +608,23 @@ const LAYOUT_PRESET_TOKEN_BLOCKS = LAYOUT_TOKEN_ONLY_THEME_IDS.map((id) =>
  * discrete bordered tweet cards with 5px radius, 4px rounded-square avatars, and dark text.
  */
 export const OLD_TWITTER_LAYOUT_CSS = `
+html[data-bt-theme="old-twitter"],
 html[data-bt-theme="old-twitter"] body {
   background-color: #e6ecf0 !important;
+  overflow-x: hidden !important;
+}
+
+html[data-bt-theme="old-twitter"] body {
   padding-top: 54px !important;
 }
 
-/* Native header keeps fixed 46px 100vw top banner contract, but rendered invisible
+/* Native header keeps fixed 46px 100% top banner contract, but rendered invisible
    in favor of the authentic OldTwitterNavbar component */
 html[data-bt-theme="old-twitter"] header[role="banner"] {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
-  width: 100vw !important;
+  width: 100% !important;
   height: 46px !important;
   opacity: 0 !important;
   pointer-events: none !important;
@@ -519,11 +681,18 @@ html[data-bt-theme="old-twitter"] article[data-testid="tweet"] img[src*="profile
 }
 
 /* 3-column classic proportions: left mini profile card ~290px, center timeline ~590px, right sidebar ~290px */
-html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] {
+html[data-bt-theme="old-twitter"]:not([data-bt-page="messages"]) div[data-testid="primaryColumn"] {
   max-width: 590px !important;
   width: 590px !important;
   background-color: transparent !important;
   border: none !important;
+}
+
+html[data-bt-theme="old-twitter"][data-bt-page="messages"] div[data-testid="primaryColumn"] {
+  max-width: none !important;
+  width: auto !important;
+  background-color: #ffffff !important;
+  border-right: 1px solid #e1e8ed !important;
 }
 
 html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] {
@@ -532,26 +701,248 @@ html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] {
   margin-left: 15px !important;
 }
 
-/* Sticky feed header & composer transformed into classic white containers */
+/* Sticky feed header & Notifications bar transformed into classic white containers */
 html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] > div > div:first-child,
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] > div > div:first-child div,
 html[data-bt-theme="old-twitter"] div[data-testid="ScrollSnap-List"],
 html[data-bt-theme="old-twitter"] div[data-testid="TopNavBar"],
-html[data-bt-theme="old-twitter"] nav[aria-label*="Timeline"] {
+html[data-bt-theme="old-twitter"] div[data-testid="TopNavBar"] div,
+html[data-bt-theme="old-twitter"] nav[aria-label*="Timeline"],
+html[data-bt-theme="old-twitter"] nav[aria-label*="Timeline"] div,
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] div[style*="position: sticky"],
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] div[style*="position: sticky"] div,
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] div[style*="backdrop-filter"],
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] div[style*="backdrop-filter"] div {
   background-color: #ffffff !important;
-  border: 1px solid #e1e8ed !important;
-  border-radius: 5px 5px 0 0 !important;
+  border-color: #e1e8ed !important;
+  backdrop-filter: none !important;
+}
+
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] > div > div:first-child h2,
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] > div > div:first-child span,
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] > div > div:first-child [dir="auto"],
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] div[style*="position: sticky"] h2,
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] div[style*="position: sticky"] span,
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] div[style*="position: sticky"] [dir="auto"],
+html[data-bt-theme="old-twitter"] div[data-testid="ScrollSnap-List"] *,
+html[data-bt-theme="old-twitter"] nav[aria-label*="Timeline"] * {
   color: #14171a !important;
 }
 
-html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] > div > div:first-child * {
+/* Notifications settings gear icon and header action icons */
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] > div > div:first-child svg,
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] div[style*="position: sticky"] svg {
+  color: #1da1f2 !important;
+  fill: #1da1f2 !important;
+}
+
+/* Timeline '+' tab button and navigation items */
+html[data-bt-theme="old-twitter"] div[data-testid="ScrollSnap-List"] + div,
+html[data-bt-theme="old-twitter"] nav[aria-label*="Timeline"] button,
+html[data-bt-theme="old-twitter"] nav[aria-label*="Timeline"] a {
+  background-color: #ffffff !important;
+}
+html[data-bt-theme="old-twitter"] div[data-testid="ScrollSnap-List"] + div svg {
   color: #14171a !important;
+  fill: #14171a !important;
+}
+
+/* Inline composer on Home feed */
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] div:has(> [data-testid="tweetTextarea_0_label"]),
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] div:has([data-testid="tweetTextarea_0"]),
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] [data-testid="tweetTextarea_0_label"],
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] [data-testid="tweetTextarea_0"],
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] div[data-testid="toolBar"],
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] > div > div:nth-child(2),
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] > div > div:nth-child(2) div,
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] > div > div:nth-child(2) section {
+  background-color: #ffffff !important;
+  border-color: #e1e8ed !important;
+  color: #14171a !important;
+}
+
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] [data-testid="tweetTextarea_0"] [dir="auto"],
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] [data-testid="tweetTextarea_0_label"] span {
+  color: #14171a !important;
+}
+
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] [data-testid="tweetTextarea_0"]::placeholder,
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] [data-testid="tweetTextarea_0_label"] [dir="auto"]::placeholder {
+  color: #657786 !important;
 }
 
 html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] > div > div:nth-child(2) {
-  background-color: #ffffff !important;
   border: 1px solid #e1e8ed !important;
   border-radius: 5px !important;
   margin-bottom: 10px !important;
+}
+
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] div:has([data-testid="tweetTextarea_0"]) img[src*="profile_images"],
+html[data-bt-theme="old-twitter"] div[data-testid="primaryColumn"] > div > div:nth-child(2) img[src*="profile_images"] {
+  border-radius: 4px !important;
+}
+
+/* Classic blue Tweet and Post buttons */
+html[data-bt-theme="old-twitter"] [data-testid="tweetButton"],
+html[data-bt-theme="old-twitter"] [data-testid="tweetButtonInline"] {
+  background-color: #1da1f2 !important;
+  border: 1px solid #1da1f2 !important;
+  border-radius: 4px !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+  box-shadow: none !important;
+}
+
+html[data-bt-theme="old-twitter"] [data-testid="tweetButton"] *,
+html[data-bt-theme="old-twitter"] [data-testid="tweetButtonInline"] * {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+html[data-bt-theme="old-twitter"] [data-testid="tweetButton"]:hover,
+html[data-bt-theme="old-twitter"] [data-testid="tweetButtonInline"]:hover {
+  background-color: #0c85d0 !important;
+}
+
+/* Right sidebar card modules (Subscribe to Premium, Today's News, What's happening, Who to follow) */
+html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] section,
+html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] aside,
+html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] [data-testid="trend"],
+html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] [role="region"],
+html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] [aria-label*="News"],
+html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] [aria-label*="Trending"],
+html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] [aria-label*="Timeline"],
+html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] > div > div > div > div > div,
+html[data-bt-theme="old-twitter"] aside[role="complementary"] section,
+html[data-bt-theme="old-twitter"] aside[role="complementary"] aside,
+html[data-bt-theme="old-twitter"] aside[role="complementary"] [data-testid="trend"],
+html[data-bt-theme="old-twitter"] aside[role="complementary"] [role="region"],
+html[data-bt-theme="old-twitter"] aside[role="complementary"] > div > div > div > div > div {
+  background-color: #ffffff !important;
+  border: 1px solid #e1e8ed !important;
+  border-radius: 5px !important;
+}
+
+/* Target any dark-background divs inside sidebar */
+html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] *[style*="background-color: rgb(22, 24, 28)"],
+html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] *[style*="background-color: rgb(0, 0, 0)"],
+html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] *[style*="background-color: rgb(21, 24, 28)"],
+html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] *[style*="background-color: rgb(32, 35, 39)"],
+html[data-bt-theme="old-twitter"] aside[role="complementary"] *[style*="background-color: rgb(22, 24, 28)"],
+html[data-bt-theme="old-twitter"] aside[role="complementary"] *[style*="background-color: rgb(0, 0, 0)"],
+html[data-bt-theme="old-twitter"] aside[role="complementary"] *[style*="background-color: rgb(21, 24, 28)"],
+html[data-bt-theme="old-twitter"] aside[role="complementary"] *[style*="background-color: rgb(32, 35, 39)"] {
+  background-color: #ffffff !important;
+  border-color: #e1e8ed !important;
+}
+
+/* Sub-containers / items inside sidebar modules */
+html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] section div,
+html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] aside div,
+html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] [role="region"] div,
+html[data-bt-theme="old-twitter"] aside[role="complementary"] section div,
+html[data-bt-theme="old-twitter"] aside[role="complementary"] aside div,
+html[data-bt-theme="old-twitter"] aside[role="complementary"] [role="region"] div {
+  background-color: transparent !important;
+  border-color: #e1e8ed !important;
+}
+
+/* Right sidebar text colors */
+html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] *,
+html[data-bt-theme="old-twitter"] aside[role="complementary"] * {
+  color: #14171a !important;
+}
+
+html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] time,
+html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] [style*="color: rgb(113, 118, 123)"],
+html[data-bt-theme="old-twitter"] aside[role="complementary"] time,
+html[data-bt-theme="old-twitter"] aside[role="complementary"] [style*="color: rgb(113, 118, 123)"] {
+  color: #657786 !important;
+}
+
+/* Follow buttons in right sidebar */
+html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] button[data-testid*="-follow"],
+html[data-bt-theme="old-twitter"] aside[role="complementary"] button[data-testid*="-follow"] {
+  background-color: #ffffff !important;
+  border: 1px solid #1da1f2 !important;
+  border-radius: 4px !important;
+}
+html[data-bt-theme="old-twitter"] div[data-testid="sidebarColumn"] button[data-testid*="-follow"] *,
+html[data-bt-theme="old-twitter"] aside[role="complementary"] button[data-testid*="-follow"] * {
+  color: #1da1f2 !important;
+  font-weight: 700 !important;
+}
+
+/* Search inputs in sidebar, navbar, and messages */
+html[data-bt-theme="old-twitter"] [data-testid="SearchBox_Search_Input"],
+html[data-bt-theme="old-twitter"] [data-testid="SearchBox_Search_Input_Container"],
+html[data-bt-theme="old-twitter"] form[role="search"] div,
+html[data-bt-theme="old-twitter"] input[placeholder*="Search"] {
+  background-color: #f5f8fa !important;
+  border: 1px solid #e1e8ed !important;
+  color: #14171a !important;
+  border-radius: 21px !important;
+}
+html[data-bt-theme="old-twitter"] input[placeholder*="Search"]::placeholder,
+html[data-bt-theme="old-twitter"] [data-testid="SearchBox_Search_Input"]::placeholder {
+  color: #657786 !important;
+}
+
+/* Tweet compose dialog modal: classic 2015 white container */
+html[data-bt-theme="old-twitter"] [role="dialog"],
+html[data-bt-theme="old-twitter"] [role="dialog"] > div,
+html[data-bt-theme="old-twitter"] div[aria-labelledby="modal-header"],
+html[data-bt-theme="old-twitter"] div[aria-labelledby="modal-header"] > div {
+  background-color: #ffffff !important;
+  color: #14171a !important;
+  border-color: #e1e8ed !important;
+}
+
+html[data-bt-theme="old-twitter"] [role="dialog"] [data-testid="tweetTextarea_0"],
+html[data-bt-theme="old-twitter"] [role="dialog"] [data-testid="tweetTextarea_0_label"] {
+  background-color: #ffffff !important;
+  color: #14171a !important;
+}
+
+html[data-bt-theme="old-twitter"] [role="dialog"] [data-testid="tweetTextarea_0"] [dir="auto"],
+html[data-bt-theme="old-twitter"] [role="dialog"] span,
+html[data-bt-theme="old-twitter"] [role="dialog"] div[dir="auto"],
+html[data-bt-theme="old-twitter"] [role="dialog"] h2 {
+  color: #14171a !important;
+}
+
+/* Modal close icon */
+html[data-bt-theme="old-twitter"] [role="dialog"] [data-testid="app-bar-close"] svg,
+html[data-bt-theme="old-twitter"] [role="dialog"] [aria-label="Close"] svg {
+  color: #657786 !important;
+  fill: #657786 !important;
+}
+
+/* Composer media icons */
+html[data-bt-theme="old-twitter"] [role="dialog"] div[data-testid="toolBar"] svg,
+html[data-bt-theme="old-twitter"] div[data-testid="toolBar"] svg {
+  color: #1da1f2 !important;
+  fill: #1da1f2 !important;
+}
+
+/* Messages page chat list and message panel */
+html[data-bt-theme="old-twitter"] [data-testid="DMDrawer"],
+html[data-bt-theme="old-twitter"] section[aria-label*="Direct Messages"],
+html[data-bt-theme="old-twitter"] section[aria-label*="Direct Messages"] * {
+  background-color: #ffffff !important;
+  color: #14171a !important;
+}
+
+/* Floating action buttons at bottom right */
+html[data-bt-theme="old-twitter"] [data-testid="floatingActionButton"],
+html[data-bt-theme="old-twitter"] div[data-testid="DMDrawer"] {
+  background-color: #ffffff !important;
+  border: 1px solid #e1e8ed !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12) !important;
+}
+html[data-bt-theme="old-twitter"] [data-testid="floatingActionButton"] svg {
+  color: #1da1f2 !important;
+  fill: #1da1f2 !important;
 }
 
 html[data-bt-theme="old-twitter"] [data-bt-mini-profile-card-host] {
