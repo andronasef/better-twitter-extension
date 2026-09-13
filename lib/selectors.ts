@@ -32,6 +32,51 @@ export const SELECTORS = {
 
   // Primary feed column container
   primaryColumn: ['div[data-testid="primaryColumn"]'],
+
+  // Tweet action bar (like, repost, reply, share buttons row)
+  tweetActionBar: [
+    '[data-testid="tweet"] [role="group"]',
+    'article [role="group"]',
+  ],
+
+  // Tweet action numeric metric label
+  // Justification: X wraps count labels in an unlabelled transition container inside action buttons
+  tweetActionMetric: [
+    '[role="group"] [data-testid="app-text-transition-container"]',
+    '[role="group"] button span:has(span)',
+  ],
+
+  // Tweet analytics / view count button
+  analyticsButton: [
+    '[role="group"] a[href*="/analytics"]',
+    '[role="group"] [data-testid="analytics"]',
+    '[role="group"] [aria-label*="Views" i]',
+  ],
+
+  // Tweet detail expanded stats row (reposts, quotes, likes counts)
+  // Justification: tweet detail expanded stats block is a div wrapping retweet/like anchor links
+  detailStatsRow: [
+    'article div:has(> a[href$="/retweets"])',
+    'article a[href$="/retweets"]',
+    'article a[href$="/likes"]',
+  ],
+
+  // Profile page follower counts
+  profileFollowerCounts: [
+    'a[href$="/verified_followers"]',
+    'a[href$="/followers"]',
+  ],
+
+  // Profile page following counts
+  profileFollowingCounts: [
+    'a[href$="/following"]',
+  ],
+
+  // Native hover tooltip
+  nativeTooltip: [
+    '[role="tooltip"]',
+    'div[role="tooltip"]',
+  ],
 } as const;
 
 export type SelectorKey = keyof typeof SELECTORS;

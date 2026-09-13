@@ -18,7 +18,7 @@ const FALLBACK_RULES = ENABLE_S4_COLLAPSE_FALLBACK
 `
   : '';
 
-const CSS_RULES = `
+export const CSS_RULES = `
 [data-bt-hidden] {
   display: none !important;
 }
@@ -27,6 +27,38 @@ const CSS_RULES = `
   display: none !important;
 }
 ${FALLBACK_RULES}
+
+/* Vanity metrics hiding (CLEAN-05, D-01) */
+html[data-bt-hide-metrics="true"] [data-testid="tweet"] [role="group"] [data-testid="app-text-transition-container"],
+html[data-bt-hide-metrics="true"] [data-testid="tweet"] [role="group"] button span:has(span) {
+  display: none !important;
+}
+
+/* Hide Analytics / View count icon and container completely (D-01) */
+html[data-bt-hide-metrics="true"] [data-testid="tweet"] [role="group"] a[href*="/analytics"],
+html[data-bt-hide-metrics="true"] [data-testid="tweet"] [role="group"] [data-testid="analytics"],
+html[data-bt-hide-metrics="true"] [data-testid="tweet"] [role="group"] div:has(a[href*="/analytics"]),
+html[data-bt-hide-metrics="true"] [data-testid="tweet"] [role="group"] [aria-label*="Views" i],
+html[data-bt-hide-metrics="true"] [data-testid="tweet"] [role="group"] [aria-label*="views" i] {
+  display: none !important;
+}
+
+/* Tweet detail stats row (D-02) */
+html[data-bt-hide-metrics="true"] article div:has(> a[href$="/retweets"]),
+html[data-bt-hide-metrics="true"] article div:has(> a[href$="/likes"]),
+html[data-bt-hide-metrics="true"] article a[href$="/retweets"],
+html[data-bt-hide-metrics="true"] article a[href$="/quotes"],
+html[data-bt-hide-metrics="true"] article a[href$="/likes"],
+html[data-bt-hide-metrics="true"] article a[href$="/history"] {
+  display: none !important;
+}
+
+/* Profile follower/following counts (CLEAN-05, D-03) */
+html[data-bt-hide-profile-counts="true"] a[href$="/verified_followers"],
+html[data-bt-hide-profile-counts="true"] a[href$="/followers"],
+html[data-bt-hide-profile-counts="true"] a[href$="/following"] {
+  display: none !important;
+}
 `;
 
 /**
