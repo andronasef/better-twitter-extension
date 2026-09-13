@@ -6,6 +6,7 @@ import { createSettingsDispatcher } from './dispatcher';
 import { adStripper } from '@/features/ad-stripper';
 import { sidebarCleaner } from '@/features/sidebar-cleaner';
 import { metricsStripper, profileCountsStripper } from '@/features/metrics-stripper';
+import { tabReorder, hideForYou } from '@/features/tab-reorder';
 import { startBridge, onGraphqlShape } from './bridge-client';
 import { startRouteWatcher, onRouteChange } from './route-watcher';
 import { teardownPageScope, registerPageObserver } from '@/lib/observers';
@@ -45,6 +46,8 @@ export default defineContentScript({
       [sidebarCleaner.id]: sidebarCleaner,
       [metricsStripper.id]: metricsStripper,
       [profileCountsStripper.id]: profileCountsStripper,
+      [tabReorder.id]: tabReorder,
+      [hideForYou.id]: hideForYou,
     });
 
     let currentSettings: Settings | null = null;
@@ -61,6 +64,12 @@ export default defineContentScript({
         }
         if (settings.features?.hideProfileCounts) {
           document.documentElement.setAttribute('data-bt-hide-profile-counts', 'true');
+        }
+        if (settings.features?.swapHomeTabs) {
+          document.documentElement.setAttribute('data-bt-swap-tabs', 'true');
+        }
+        if (settings.features?.hideForYouTab) {
+          document.documentElement.setAttribute('data-bt-hide-for-you', 'true');
         }
       }
       dispatcher.dispatch(settings);
