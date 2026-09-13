@@ -65,7 +65,7 @@ Plans:
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
-- [ ] 01-05-PLAN.md — Radix shadow-root portal provider, dev-only probe with spike S3, and the standing build/permission audit plus the locked single-purpose narrative
+- [x] 01-05-PLAN.md — Radix shadow-root portal provider, dev-only probe with spike S3, and the standing build/permission audit plus the locked single-purpose narrative
 
 **UI hint**: yes
 

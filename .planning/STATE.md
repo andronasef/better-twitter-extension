@@ -2,18 +2,18 @@
 gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Foundation & Settings Popup
-status: executing
-stopped_at: Completed 01-04-PLAN.md
-last_updated: "2026-09-13T18:06:00.000Z"
+status: completed
+stopped_at: Completed 01-05-PLAN.md (Phase 01 complete)
+last_updated: "2026-09-13T18:18:00.000Z"
 last_activity: 2026-09-13
-last_activity_desc: Completed 01-04-PLAN.md (Popup UI & Theming)
-state_head: 5437c73
+last_activity_desc: Completed 01-05-PLAN.md (Shadow-Root Portal, Dev Probe, Build Gate & Single-Purpose Ledger)
+state_head: a529a6f
 progress:
   total_phases: 6
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 5
-  completed_plans: 4
-  percent: 80
+  completed_plans: 5
+  percent: 100
 ---
 
 # Project State
@@ -23,35 +23,35 @@ progress:
 See: .planning/PROJECT.md (updated 2026-09-13)
 
 **Core value:** Every annoyance the author has with X is fixed by a toggle in one popup — and toggling it feels native, not bolted on.
-**Current focus:** Phase 01 — Foundation & Settings Popup
+**Current focus:** Phase 01 — Foundation & Settings Popup (Complete)
 
 ## Current Position
 
-Phase: 01 (Foundation & Settings Popup) — EXECUTING
-Plan: 5 of 5 (01-05-PLAN.md next)
-Status: Executing Phase 01
-Last activity: 2026-09-13 — Completed 01-04-PLAN.md (Popup UI & Theming)
+Phase: 01 (Foundation & Settings Popup) — COMPLETE
+Plan: 5 of 5 (All plans in Phase 01 complete)
+Status: Phase 01 complete, ready for milestone verification
+Last activity: 2026-09-13 — Completed 01-05-PLAN.md (Shadow-Root Portal, Dev Probe, Build Gate & Single-Purpose Ledger)
 
-Progress: [████████░░] 80%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 4
-- Average duration: 26.3 min
-- Total execution time: 105 min
+- Total plans completed: 5
+- Average duration: 25.0 min
+- Total execution time: 125 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 01 | 5 | 125 min | 25.0 min |
 
 **Recent Trend:**
 
-- Last 5 plans: —
-- Trend: —
+- Last 5 plans: 01-01 (15m), 01-02 (25m), 01-03 (30m), 01-04 (35m), 01-05 (20m)
+- Trend: Consistent high-velocity delivery across all waves
 
 *Updated after each plan completion*
 
@@ -81,16 +81,24 @@ Recent decisions affecting current work:
 - [Plan 01-03]: Action badge driven by diagnostics transitions (empty <-> non-empty) with UI-SPEC warning color #E07C00.
 - [Plan 01-03]: Early exit on removal-only mutation batches in timeline pipeline.
 - [Plan 01-03]: Spike S4 documented with PENDING LIVE RUN; ENABLE_S4_COLLAPSE_FALLBACK implemented in lib/hide-style.ts.
+- [Plan 01-04]: Font vendoring via @fontsource/inter with SIL OFL 1.1; zero runtime font requests.
+- [Plan 01-04]: Value-driven theme resolver with fallback to prefers-color-scheme; layout-free inline body style observer.
+- [Plan 01-04]: Popup App fixed at 360x480px, pinned header & footer, scrollable categories, keyboard-accessible tooltips with disableHoverableContent=true.
+- [Plan 01-05]: ShadowRootProvider and usePortalContainer return undefined outside provider for transparent popup compatibility.
+- [Plan 01-05]: Composed-path outside-click discrimination across BtPopover, BtDropdownMenu, and BtTooltip.
+- [Plan 01-05]: Dev-only probe entrypoint excluded at build time (1 content script in prod, 2 in dev).
+- [Plan 01-05]: Standing build audit gate enforces minimal permissions (storage only), scoped resources, 1 content script, 0 CSP overrides, and 0 dynamic code execution.
+- [Plan 01-05]: Single-purpose narrative locked in PURPOSE.md; permission additions require justified ledger entries.
 
 ### Pending Todos
 
-None yet.
+None. Phase 1 plans are complete.
 
 ### Blockers/Concerns
 
-- **Live x.com is unverified across the board.** Spikes S1 (routing), S2 (GraphQL), and S4 (virtualizer gap) have test procedures defined with PENDING LIVE RUN markers.
+- **Live x.com is unverified across the board.** Spikes S1 (routing), S2 (GraphQL), S3 (shadow root Radix), and S4 (virtualizer gap) have test procedures defined with PENDING LIVE RUN markers ready for live testing session.
 - **Three empirical unknowns gate multiple phases:** (a) whether x.com routing fires the Navigation API or needs a `history.pushState` patch — Phase 1; (b) live GraphQL operation shapes and `doc_id` churn — Phase 1 discovery, Phase 3 and 4 consumption; (c) whether React tolerates a trailing sibling in the action row — Phase 3 (save button), inherited by Phase 5 (reaction trigger).
-- **Single-purpose CWS policy is a real gate.** Five feature areas in one listing. The one-sentence purpose narrative must be locked in Phase 1 and every later phase must justify any new permission against it.
+- **Single-purpose CWS policy gate:** Settled and locked in Phase 1 (PURPOSE.md + scripts/audit-build.mjs).
 
 ## Deferred Items
 
@@ -102,6 +110,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-09-13T17:56:00.000Z
-Stopped at: Completed 01-03-PLAN.md (Diagnostics & Scroll Performance)
-Resume file: .planning/phases/01-foundation-settings-popup/01-04-PLAN.md
+Last session: 2026-09-13T18:18:00.000Z
+Stopped at: Completed 01-05-PLAN.md (Phase 01 Complete)
+Resume file: .planning/phases/01-foundation-settings-popup/01-05-SUMMARY.md
