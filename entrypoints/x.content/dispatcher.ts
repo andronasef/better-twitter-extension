@@ -18,7 +18,7 @@ export interface SettingsDispatcher {
  * Idempotent writes dispatch zero calls.
  */
 export function createSettingsDispatcher(features: FeatureMap): SettingsDispatcher {
-  let lastApplied: Record<string, boolean> = {};
+  let lastApplied: Record<string, boolean | undefined> = {};
   let isFirstDispatch = true;
 
   return {

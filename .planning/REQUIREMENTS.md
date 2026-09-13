@@ -141,24 +141,24 @@ Which phases cover which requirements. Populated during roadmap creation.
 | BOOK-01 | Phase 3 | Pending |
 | BOOK-02 | Phase 3 | Pending |
 | BOOK-03 | Phase 3 | Pending |
+| BOOK-04 | Phase 3 | Pending |
+| BOOK-05 | Phase 3 | Pending |
+| BOOK-06 | Phase 3 | Pending |
+| BOOK-07 | Phase 3 | Pending |
+| BOOK-08 | Phase 3 | Pending |
+| BOOK-09 | Phase 3 | Pending |
 | BOOK-10 | Phase 3 | Pending |
-| BOOK-04 | Phase 4 | Pending |
-| BOOK-05 | Phase 4 | Pending |
-| BOOK-06 | Phase 4 | Pending |
-| BOOK-07 | Phase 4 | Pending |
-| BOOK-08 | Phase 4 | Pending |
-| BOOK-09 | Phase 4 | Pending |
-| REACT-01 | Phase 5 | Pending |
-| REACT-02 | Phase 5 | Pending |
-| REACT-03 | Phase 5 | Pending |
-| REACT-04 | Phase 5 | Pending |
-| REACT-05 | Phase 5 | Pending |
-| REACT-06 | Phase 5 | Pending |
-| STORE-01 | Phase 6 | Pending |
-| STORE-02 | Phase 6 | Pending |
-| STORE-03 | Phase 6 | Pending |
-| STORE-04 | Phase 6 | Pending |
-| STORE-05 | Phase 6 | Pending |
+| REACT-01 | Phase 4 | Pending |
+| REACT-02 | Phase 4 | Pending |
+| REACT-03 | Phase 4 | Pending |
+| REACT-04 | Phase 4 | Pending |
+| REACT-05 | Phase 4 | Pending |
+| REACT-06 | Phase 4 | Pending |
+| STORE-01 | Phase 5 | Pending |
+| STORE-02 | Phase 5 | Pending |
+| STORE-03 | Phase 5 | Pending |
+| STORE-04 | Phase 5 | Pending |
+| STORE-05 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 47 total
@@ -176,11 +176,10 @@ Which phases cover which requirements. Populated during roadmap creation.
 |-------|--------------|-------|
 | 1 — Foundation & Settings Popup | FOUND-01…09, UI-01…05, CLEAN-01 | 15 |
 | 2 — Clean Timeline & Themes | CLEAN-02…05, THEME-01…07 | 11 |
-| 3 — Bookmark Capture | BOOK-01, BOOK-02, BOOK-03, BOOK-10 | 4 |
-| 4 — Bookmark Folders, Search & Resurfacing | BOOK-04…09 | 6 |
-| 5 — Twemoji Reactions | REACT-01…06 | 6 |
-| 6 — Chrome Web Store Packaging | STORE-01…05 | 5 |
+| 3 — Bookmarks (Capture, Folders, Search & Resurfacing) | BOOK-01…10 | 10 |
+| 4 — Twemoji Reactions | REACT-01…06 | 6 |
+| 5 — Chrome Web Store Packaging | STORE-01…05 | 5 |
 
 ---
 *Requirements defined: 2026-09-13*
-*Last updated: 2026-09-13 after roadmap creation (traceability populated, count corrected to 47)*
+*Last updated: 2026-09-13 (Phase 3 & 4 merged into Phase 3)*
