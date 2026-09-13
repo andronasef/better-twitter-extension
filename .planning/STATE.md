@@ -92,6 +92,12 @@ Items acknowledged and deferred at milestone close, most recent first:
 |----------|------|--------|-------------|-----------|
 | *(none)* | | | | |
 
+## Quick Tasks Completed
+
+| ID | Task | Date |
+|----|------|------|
+| 260914-43b | Fix Minimal theme left-rail scrollbar and edge-clipping issues | 2026-09-14 |
+
 ## Session Continuity
 
 Last session: 2026-09-13T21:12:00.000Z
