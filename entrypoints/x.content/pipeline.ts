@@ -1,4 +1,5 @@
 import { resolve } from '@/lib/selectors';
+import { registerPageObserver } from '@/lib/observers';
 
 type TweetSeenCallback = (cell: Element, tweetId: string) => void;
 type TweetGoneCallback = (cell: Element) => void;
@@ -140,16 +141,35 @@ export function startPipeline(): void {
 
   // Process any existing items immediately
   processTimelineChildren(timeline);
+
+  // Observe parent of timeline to catch replacement when revisiting tabs/routes
+  if (timeline.parentElement) {
+    const parentObserver = new MutationObserver(() => {
+      const current = resolve('timeline');
+      if (current && current !== activeTimeline && current.hasAttribute('style')) {
+        startPipeline();
+      }
+    });
+    parentObserver.observe(timeline.parentElement, { childList: true });
+    registerPageObserver('pipeline:parent', parentObserver);
+  }
+}
+
+/**
+ * Stops the pipeline and clears active timeline references.
+ */
+export function stopPipeline(): void {
+  timelineObserver?.disconnect();
+  timelineObserver = null;
+  activeTimeline = null;
+  knownTweets.length = 0;
 }
 
 /**
  * Resets pipeline state for unit test isolation.
  */
 export function resetPipeline(): void {
-  timelineObserver?.disconnect();
-  timelineObserver = null;
-  activeTimeline = null;
+  stopPipeline();
   seenCallbacks.clear();
   goneCallbacks.clear();
-  knownTweets.length = 0;
 }

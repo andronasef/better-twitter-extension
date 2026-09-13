@@ -1,15 +1,19 @@
 import { injectHideStylesheet } from '@/lib/hide-style';
 import { settingsItem } from '@/lib/storage';
-import { startPipeline } from './pipeline';
+import type { Settings } from '@/lib/storage';
+import { startPipeline, stopPipeline } from './pipeline';
 import { createSettingsDispatcher } from './dispatcher';
 import { adStripper } from '@/features/ad-stripper';
 import { startBridge } from './bridge-client';
+import { startRouteWatcher, onRouteChange } from './route-watcher';
+import { teardownPageScope, registerPageObserver } from '@/lib/observers';
+import { resolve } from '@/lib/selectors';
 
 export default defineContentScript({
   matches: ['*://x.com/*', '*://twitter.com/*'],
   runAt: 'document_start',
 
-  main() {
+  main(ctx) {
     // 1. Inject hide stylesheet synchronously before any content paints
     injectHideStylesheet();
 
@@ -20,26 +24,53 @@ export default defineContentScript({
       [adStripper.id]: adStripper,
     });
 
-    const init = async () => {
-      // 2. Read stored settings
-      const settings = await settingsItem.getValue();
+    let currentSettings: Settings | null = null;
 
-      // 3. Start pipeline
+    const setupPage = () => {
+      // Re-run pipeline and dispatch features
       startPipeline();
 
-      // Retry startPipeline when DOM changes in case timeline loads asynchronously
-      const rootObserver = new MutationObserver(() => {
-        startPipeline();
-      });
-      if (document.body) {
-        rootObserver.observe(document.body, { childList: true });
+      if (currentSettings) {
+        dispatcher.dispatch(currentSettings);
       }
 
-      // 4. Dispatch initial features
-      dispatcher.dispatch(settings);
+      // If timeline is not ready yet, watch for it under primary column or body
+      const primary = resolve('primaryColumn') || document.body;
+      if (primary) {
+        const attachObserver = new MutationObserver(() => {
+          const tl = resolve('timeline');
+          if (tl && tl.hasAttribute('style')) {
+            startPipeline();
+            if (currentSettings) {
+              dispatcher.dispatch(currentSettings);
+            }
+          }
+        });
+        attachObserver.observe(primary, { childList: true });
+        registerPageObserver('setupPage:attach', attachObserver);
+      }
+    };
 
-      // 5. Watch for settings updates
+    const init = async () => {
+      // 3. Read stored settings
+      currentSettings = await settingsItem.getValue();
+
+      // 4. Start route watcher with context
+      startRouteWatcher({ ctx });
+
+      // 5. Wire route changes: teardown page scope, stop pipeline, and re-run setup
+      onRouteChange(() => {
+        teardownPageScope();
+        stopPipeline();
+        setupPage();
+      });
+
+      // 6. Initial page setup
+      setupPage();
+
+      // 7. Watch for settings updates
       settingsItem.watch((newSettings) => {
+        currentSettings = newSettings;
         dispatcher.dispatch(newSettings);
       });
     };

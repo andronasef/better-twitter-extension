@@ -11,6 +11,9 @@
 </head>
 <body>
   <div data-testid="primaryColumn">
+    <nav style="padding: 10px;">
+      <button id="nav-profile" onclick="navigateToProfile()">Go to Profile</button>
+    </nav>
     <section>
       <h1>Home Timeline</h1>
       <div aria-label="Timeline: Your Home Timeline">
@@ -50,5 +53,40 @@
       </div>
     </section>
   </div>
+  <script>
+    function navigateToProfile() {
+      history.pushState({}, '', 'https://x.com/someuser');
+      document.title = 'User Profile / X';
+      const container = document.querySelector('[aria-label="Timeline: Your Home Timeline"]');
+      if (container) {
+        const newTimeline = document.createElement('div');
+        newTimeline.setAttribute('style', 'position: relative; min-height: 1000px;');
+        newTimeline.innerHTML = `
+          <!-- Profile Organic Tweet -->
+          <div data-testid="cellInnerDiv" style="transform: translateY(0px);">
+            <div>
+              <article data-testid="tweet">
+                <a href="https://x.com/someuser/status/2000000000000000001">Profile Tweet 1</a>
+                <p>Welcome to my profile!</p>
+              </article>
+            </div>
+          </div>
+          <!-- Profile Promoted Tweet -->
+          <div data-testid="cellInnerDiv" style="transform: translateY(120px);">
+            <div>
+              <article data-testid="tweet">
+                <div data-testid="placementTracking">
+                  <span>Promoted</span>
+                </div>
+                <a href="https://x.com/sponsor2/status/2000000000000000002">Profile Promoted Tweet 2</a>
+                <p>Buy profile sponsor ad!</p>
+              </article>
+            </div>
+          </div>
+        `;
+        container.replaceChildren(newTimeline);
+      }
+    }
+  </script>
 </body>
 </html>
