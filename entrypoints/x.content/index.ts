@@ -1,13 +1,14 @@
 import { injectHideStylesheet } from '@/lib/hide-style';
 import { injectThemeStylesheet, applyThemeAttributes } from '@/lib/theme-engine';
 import { settingsItem } from '@/lib/storage';
-import type { Settings } from '@/lib/storage';
+import type { Settings, ThemeId } from '@/lib/storage';
 import { startPipeline, stopPipeline } from './pipeline';
 import { createSettingsDispatcher } from './dispatcher';
 import { adStripper } from '@/features/ad-stripper';
 import { sidebarCleaner } from '@/features/sidebar-cleaner';
 import { metricsStripper, profileCountsStripper } from '@/features/metrics-stripper';
 import { tabReorder, hideForYou } from '@/features/tab-reorder';
+import { layoutEngine } from '@/features/layout-engine';
 import { startBridge, onGraphqlShape } from './bridge-client';
 import { startRouteWatcher, onRouteChange } from './route-watcher';
 import { teardownPageScope, registerPageObserver } from '@/lib/observers';
@@ -81,12 +82,30 @@ export default defineContentScript({
       dispatcher.dispatch(settings);
     });
 
+    /**
+     * Syncs the layout-engine's structural mount (Old Twitter mini profile card, THEME-06,
+     * D-15) with the active theme (D-09). Minimal (THEME-05) needs no structural mount — its
+     * layout is a pure CSS transform already applied via applyThemeAttributes() setting
+     * data-bt-theme="minimal", which the injected stylesheet's rules key off of.
+     */
+    const syncLayoutEngine = (theme: ThemeId) => {
+      if (theme === 'old-twitter') {
+        layoutEngine.enableOldTwitter();
+      } else {
+        layoutEngine.disableOldTwitter();
+      }
+    };
+
     const setupPage = () => {
       // Re-run pipeline and dispatch features
       startPipeline();
 
       if (currentSettings) {
         dispatcher.dispatch(currentSettings);
+        // Re-mount the Old Twitter mini profile card on every page setup (initial load and
+        // every client-side route change), since X's SPA re-renders may replace the DOM
+        // subtree our sibling card was mounted into.
+        syncLayoutEngine(currentSettings.theme ?? 'default');
       }
 
       // If timeline is not ready yet, watch for it under primary column or body
@@ -129,6 +148,9 @@ export default defineContentScript({
         currentSettings = newSettings;
         // Update theme + custom accent live, synchronously, without a page reload (THEME-07, D-13)
         applyThemeAttributes(newSettings.theme ?? 'default', newSettings.customAccent ?? null);
+        // Live layout switching (D-09): mount/unmount the Old Twitter mini profile card
+        // immediately on preset change, with zero page reload.
+        syncLayoutEngine(newSettings.theme ?? 'default');
         dispatcher.dispatch(newSettings);
       });
     };

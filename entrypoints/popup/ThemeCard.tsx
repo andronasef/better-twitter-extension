@@ -34,17 +34,49 @@ export function ThemeCard({ preset, isSelected, onSelect }: ThemeCardProps) {
       }`}
     >
       {/* Preview Area - 52px */}
-      <div
-        className="h-[52px] min-h-[52px] flex items-stretch gap-1.5 p-1.5"
-        style={{ backgroundColor: preset.bg }}
-      >
-        <div className="w-2 shrink-0 rounded-[2px]" style={{ backgroundColor: preset.surface }} />
-        <div className="flex-1 flex flex-col gap-1 justify-center min-w-0">
-          <div className="h-1.5 rounded-full w-full" style={{ backgroundColor: preset.surface }} />
-          <div className="h-1.5 rounded-full w-2/3" style={{ backgroundColor: preset.surface }} />
-          <div className="h-1.5 w-4 rounded-full" style={{ backgroundColor: preset.accent }} />
+      {preset.id === 'minimal' ? (
+        // Minimal mock (THEME-05): no left rail, no right column — a single centered narrow
+        // reading column, visually conveying "centered feed with no sidebar".
+        <div
+          className="h-[52px] min-h-[52px] flex items-stretch justify-center px-3 py-1.5"
+          style={{ backgroundColor: preset.bg }}
+        >
+          <div
+            className="w-full max-w-[70%] flex flex-col gap-1 justify-center min-w-0 border-x"
+            style={{ borderColor: preset.surface }}
+          >
+            <div className="h-1.5 rounded-full w-full mx-auto" style={{ backgroundColor: preset.surface }} />
+            <div className="h-1.5 rounded-full w-2/3 mx-auto" style={{ backgroundColor: preset.surface }} />
+            <div className="h-1.5 w-4 rounded-full mx-auto" style={{ backgroundColor: preset.accent }} />
+          </div>
         </div>
-      </div>
+      ) : preset.id === 'old-twitter' ? (
+        // Old Twitter mock (THEME-06): a top bar strip plus a 3-column classic layout
+        // (left profile card, center tweet card, right column).
+        <div className="h-[52px] min-h-[52px] flex flex-col" style={{ backgroundColor: preset.bg }}>
+          <div className="h-2 shrink-0" style={{ backgroundColor: preset.surface }} />
+          <div className="flex-1 flex items-stretch gap-1 p-1">
+            <div className="w-2 shrink-0 rounded-[1px]" style={{ backgroundColor: preset.surface }} />
+            <div className="flex-1 rounded-[1px] flex flex-col justify-center gap-0.5 px-1 min-w-0" style={{ backgroundColor: preset.surface }}>
+              <div className="h-1 rounded-full w-full" style={{ backgroundColor: preset.accent }} />
+              <div className="h-1 rounded-full w-2/3" style={{ backgroundColor: preset.bg }} />
+            </div>
+            <div className="w-2 shrink-0 rounded-[1px]" style={{ backgroundColor: preset.surface }} />
+          </div>
+        </div>
+      ) : (
+        <div
+          className="h-[52px] min-h-[52px] flex items-stretch gap-1.5 p-1.5"
+          style={{ backgroundColor: preset.bg }}
+        >
+          <div className="w-2 shrink-0 rounded-[2px]" style={{ backgroundColor: preset.surface }} />
+          <div className="flex-1 flex flex-col gap-1 justify-center min-w-0">
+            <div className="h-1.5 rounded-full w-full" style={{ backgroundColor: preset.surface }} />
+            <div className="h-1.5 rounded-full w-2/3" style={{ backgroundColor: preset.surface }} />
+            <div className="h-1.5 w-4 rounded-full" style={{ backgroundColor: preset.accent }} />
+          </div>
+        </div>
+      )}
 
       {/* Label Area - 36px */}
       <div className="h-[36px] min-h-[36px] flex items-center justify-between px-2 bg-[var(--bt-surface)]">
