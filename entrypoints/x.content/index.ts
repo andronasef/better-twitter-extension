@@ -15,6 +15,9 @@ import { teardownPageScope, registerPageObserver } from '@/lib/observers';
 import { resetDiagnosticsForPage } from '@/lib/diagnostics';
 import { resolve } from '@/lib/selectors';
 import { startThemeProbe } from './theme-probe';
+import { initActionBarIntegration, teardownActionBarIntegration } from '@/features/bookmarks/action-bar';
+import { captureEngine } from '@/features/bookmarks/capture-engine';
+import { mountBookmarksHub, unmountBookmarksHub } from '@/features/bookmarks/in-page-ui';
 
 export default defineContentScript({
   matches: ['*://x.com/*', '*://twitter.com/*'],
@@ -32,6 +35,15 @@ export default defineContentScript({
 
     // 3. Start theme observation probe
     startThemeProbe();
+
+    // 4. Initialize bookmarks capture engine and action bar integration (BOOK-01, D-05)
+    captureEngine.init();
+    initActionBarIntegration();
+
+    ctx.onInvalidated(() => {
+      teardownActionBarIntegration();
+      unmountBookmarksHub();
+    });
 
     // Dev-only instrumentation for Spikes S1 and S2
     if (import.meta.env.DEV) {
@@ -106,6 +118,13 @@ export default defineContentScript({
         } else {
           document.documentElement.removeAttribute('data-bt-page');
         }
+
+        const path = window.location.pathname;
+        if (path === '/bookmarks' || path.startsWith('/i/bookmarks')) {
+          mountBookmarksHub();
+        } else {
+          unmountBookmarksHub();
+        }
       }
 
       if (currentSettings) {
@@ -144,6 +163,7 @@ export default defineContentScript({
       onRouteChange(() => {
         resetDiagnosticsForPage();
         teardownPageScope();
+        unmountBookmarksHub();
         stopPipeline();
         setupPage();
       });
