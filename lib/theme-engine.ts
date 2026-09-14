@@ -639,26 +639,20 @@ html[data-bt-theme="minimal"] header[role="banner"] nav [role="button"] {
   transition: background-color 0.15s ease, transform 0.15s ease !important;
 }
 
-/* X keeps its own padded hover-pill div inside each nav item; at reduced zoom
-   it stays wider than the 44px rail slot and spills past the pill edges.
-   Clamp it to the slot so the highlight is a clean circle at any zoom. */
+/* X keeps its own padded hover-pill div inside each nav item; that padding is
+   fixed px, so at reduced zoom it grew wider than the rail slot and the round
+   highlight spilled past the pill edges. Drop the padding and let it fill the
+   slot - no clipping, or the icons themselves get cut in half. */
 html[data-bt-theme="minimal"] header[role="banner"] nav a > div,
 html[data-bt-theme="minimal"] header[role="banner"] nav [role="button"] > div {
-  width: 44px !important;
-  height: 44px !important;
-  min-width: 44px !important;
-  max-width: 44px !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
   padding: 0 !important;
   margin: 0 !important;
   border-radius: 9999px !important;
   align-items: center !important;
   justify-content: center !important;
-  overflow: visible !important;
-}
-
-html[data-bt-theme="minimal"] header[role="banner"] nav a,
-html[data-bt-theme="minimal"] header[role="banner"] nav [role="button"] {
-  overflow: hidden !important;
 }
 
 html[data-bt-theme="minimal"] header[role="banner"] nav a:hover,
