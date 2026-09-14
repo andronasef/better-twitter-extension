@@ -1,7 +1,8 @@
 ---
 phase: "03"
 slug: "bookmarks-capture-management-resurfacing"
-status: draft
+status: approved
+reviewed_at: "2026-09-14T18:16:15+03:00"
 shadcn_initialized: true
 preset: not applicable
 created: "2026-09-14"
@@ -217,6 +218,11 @@ Primary CTA buttons ("Sync Bookmarks Now", "Create Folder"), active folder/tag c
 ```
 
 - **Mount Target:** Appended immediately beneath X's sticky header within `div[data-testid="primaryColumn"]`.
+- **Primary Visual Anchor:** Full-width search pill input (40px) with icon and subtle border drawing focus immediately.
+- **Accessibility Fallbacks:** All icon-only actions declare explicit `aria-label`s:
+  - Clear search input button `[✕]`: `aria-label="Clear search input"`
+  - Popover close trigger: `aria-label="Close dialog"`
+  - Folder chip color dots: declared as `aria-hidden="true"` with color name announced via chip text.
 - **Search Interaction:** Typing filters the bookmarks list in real time with a 150ms debounce. Pressing `Escape` or clicking `[✕]` clears the search input.
 - **Folder / Tag Chips:**
   - Horizontal scrollable row with hidden scrollbars.
@@ -255,10 +261,14 @@ Primary CTA buttons ("Sync Bookmarks Now", "Create Folder"), active folder/tag c
                └──────────────────────────────────┘
 ```
 
+- **Primary Visual Anchor:** The active checked folder row (e.g. `[✓] Uncategorized`) with accent checkmark.
+- **Accessibility Fallbacks:**
+  - Search filter input inside popover: `aria-label="Filter folders"`
+  - Inline "+ Create Folder" action: `aria-label="Create new folder"`
 - **Trigger:** User clicks native `button[data-testid="bookmark"]`.
 - **Dual Action:** The click event propagates to X to execute cloud bookmarking, while the capture handler opens `BtPopover` anchored to the button rect.
 - **Selection:** Checkbox toggles folder membership. Changing checks immediately commits `folderIds` to `local:bookmarks`.
-- **Inline Folder Creation:** Clicking "+ Create Folder" transforms the footer row into an inline input with "Create" button.
+- **Inline Folder Creation:** Clicking "+ Create Folder" transforms the footer row into an inline input with "Create Folder" button.
 - **Dismissal:** Clicking outside, pressing Escape, or navigating away smoothly closes the popover.
 - **Quick-Save Mode:** When "Ask for folder when bookmarking" setting is OFF, clicking bookmark saves directly to "Uncategorized" with no popover, and the tooltip displays "Saved to Uncategorized".
 
@@ -278,6 +288,10 @@ Primary CTA buttons ("Sync Bookmarks Now", "Create Folder"), active folder/tag c
 └──────────────────────────────────────────────────────────────┘
 ```
 
+- **Primary Visual Anchor:** Top header banner ("📌 Resurfaced from [Folder Name]") with accent pin icon and 3px left accent stripe immediately distinguishing the card from native feed tweets.
+- **Accessibility Fallbacks:**
+  - Overflow action menu trigger `(···)`: `aria-label="Resurfaced bookmark options"`
+  - Pin icon: `aria-hidden="true"`
 - **Visual Differentiation:**
   - Header: `13px/600` Label text with accent `📌` pin icon and folder name.
   - Border: Left accent stripe (`border-left: 3px solid var(--bt-accent)`) or subtle card border tint.
@@ -326,6 +340,11 @@ Primary CTA buttons ("Sync Bookmarks Now", "Create Folder"), active folder/tag c
 └──────────────────────────────────────┘
 ```
 
+- **Primary Visual Anchor:** "Sync Bookmarks Now" primary CTA button with high-contrast accent fill, positioned directly beneath the large 28px counter.
+- **Accessibility Fallbacks:**
+  - Back navigation button `[←]`: `aria-label="Back to main settings"`
+  - Resurface cadence slider: `aria-label="Resurface interval in tweets"`
+  - Storage quota bar: `role="progressbar" aria-valuenow={bytesUsed} aria-valuemin={0} aria-valuemax={10485760} aria-label="Storage quota usage"`
 - **Sync Card:** Displays live total count and provides the primary CTA to trigger background sync. Shows live spinner and count during active capture.
 - **Cadence Slider:** Range 5 to 50 tweets, step 5, default 20. Live updates storage item `bookmarksSettings.resurfacingInterval`.
 - **Folder Eligibility List:** Checklist allowing users to exclude specific folders (e.g., sensitive or archive folders) from resurfacing.
@@ -365,12 +384,12 @@ Applicable state considerations resolved: 10 covered, 2 backstop, 0 unresolved.
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
-- [ ] Dimension 7 Inventory Provenance: PASS
+- [x] Dimension 1 Copywriting: PASS
+- [x] Dimension 2 Visuals: PASS
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: PASS
+- [x] Dimension 5 Spacing: PASS
+- [x] Dimension 6 Registry Safety: PASS
+- [x] Dimension 7 Inventory Provenance: PASS
 
-**Approval:** pending (gsd-ui-checker, 2026-09-14)
+**Approval:** approved 2026-09-14 (gsd-ui-checker)
