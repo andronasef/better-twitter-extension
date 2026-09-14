@@ -17,7 +17,7 @@ export default defineConfig({
     },
     web_accessible_resources: [
       {
-        resources: ['bridge.js'],
+        resources: ['bridge.js', 'twemoji/*', 'noto-animated/*'],
         matches: ['*://x.com/*', '*://twitter.com/*'],
       },
     ],
