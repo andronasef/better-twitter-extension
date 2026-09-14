@@ -4,7 +4,7 @@ import {
   bookmarkSyncItem,
   bookmarksSettingsItem,
 } from '@/lib/storage';
-import type { BookmarkItem } from './types';
+import type { BookmarkItem, BookmarkFolder } from './types';
 
 declare const chrome: any;
 
@@ -177,4 +177,65 @@ export async function removeBookmark(id: string): Promise<void> {
 export async function getBookmarksList(): Promise<BookmarkItem[]> {
   const bookmarks = await bookmarksItem.getValue();
   return Object.values(bookmarks).sort((a, b) => b.savedAt - a.savedAt);
+}
+
+/**
+ * Renames an existing folder and optionally updates its color.
+ */
+export async function renameFolder(
+  folderId: string,
+  newName: string,
+  newColor?: string
+): Promise<BookmarkFolder | null> {
+  const trimmed = newName.trim();
+  if (!trimmed || !folderId) return null;
+
+  const folders = await foldersItem.getValue();
+  const target = folders.find((f) => f.id === folderId);
+  if (!target) return null;
+
+  const updatedFolders = folders.map((f) =>
+    f.id === folderId
+      ? { ...f, name: trimmed, ...(newColor ? { color: newColor } : {}) }
+      : f
+  );
+  await foldersItem.setValue(updatedFolders);
+  return updatedFolders.find((f) => f.id === folderId) || null;
+}
+
+/**
+ * Deletes a custom folder.
+ * Any bookmarks assigned to this folder will have this folder removed;
+ * if they have no other folders assigned, they automatically fall back to 'uncategorized'.
+ * The default 'uncategorized' folder cannot be deleted.
+ */
+export async function deleteFolder(folderId: string): Promise<boolean> {
+  if (!folderId || folderId === 'uncategorized') return false;
+
+  // 1. Move all bookmarks associated with this folder to 'uncategorized' if no other folders remain
+  const bookmarks = await bookmarksItem.getValue();
+  let modifiedBookmarks = false;
+  const nextBookmarks = { ...bookmarks };
+
+  for (const [id, item] of Object.entries(nextBookmarks)) {
+    if (item.folderIds && item.folderIds.includes(folderId)) {
+      const remaining = item.folderIds.filter((fid) => fid !== folderId);
+      nextBookmarks[id] = {
+        ...item,
+        folderIds: remaining.length > 0 ? remaining : ['uncategorized'],
+      };
+      modifiedBookmarks = true;
+    }
+  }
+
+  if (modifiedBookmarks) {
+    await bookmarksItem.setValue(nextBookmarks);
+  }
+
+  // 2. Remove the folder from foldersItem
+  const folders = await foldersItem.getValue();
+  const nextFolders = folders.filter((f) => f.id !== folderId);
+  await foldersItem.setValue(nextFolders);
+
+  return true;
 }
