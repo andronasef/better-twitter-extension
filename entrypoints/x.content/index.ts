@@ -21,6 +21,7 @@ import { captureEngine } from '@/features/bookmarks/capture-engine';
 import { mountBookmarksHub, unmountBookmarksHub } from '@/features/bookmarks/in-page-ui';
 import { isBookmarksRoute } from '@/features/bookmarks/routes';
 import { initResurfacing, teardownResurfacing } from '@/features/bookmarks/resurfacing';
+import { initReactions, teardownReactions } from '@/features/reactions';
 
 export default defineContentScript({
   matches: ['*://x.com/*', '*://twitter.com/*'],
@@ -43,11 +44,15 @@ export default defineContentScript({
     captureEngine.init();
     initActionBarIntegration();
 
+    // 5. Initialize reactions palette interaction engine (REACT-01, REACT-02, D-01, D-02)
+    initReactions();
+
     ctx.onInvalidated(() => {
       captureEngine.stopAutoScrollSync();
       teardownActionBarIntegration();
       unmountBookmarksHub();
       teardownResurfacing();
+      teardownReactions();
     });
 
     // Dev-only instrumentation for Spikes S1 and S2
