@@ -199,10 +199,99 @@ ${t} [data-testid="tweetButtonInline"] span {
 }).join("");
 
 /**
+ * Stubborn surfaces X paints from its own palette (right sidebar widgets,
+ * search box, white pill buttons) plus the inline colors it writes onto
+ * thousands of nodes. Overriding the inline values is what actually recolors
+ * the long tail of text that otherwise stays X-default in every theme.
+ */
+const stubbornSelector = COLOR_ENGINE_THEME_IDS.map((id) => {
+  const t = `html[data-bt-theme="${id}"]`;
+  return `
+${t} [style*="color: rgb(231, 233, 234)"],
+${t} [style*="color: rgb(239, 243, 244)"] {
+  color: var(--bt-theme-text) !important;
+}
+
+${t} [style*="color: rgb(113, 118, 123)"],
+${t} [style*="color: rgb(83, 100, 113)"] {
+  color: var(--bt-theme-text-muted) !important;
+}
+
+/* X ships its light pill buttons (Follow, Post, Reply, Subscribe) as a
+   hardcoded near-white background with near-black text. */
+${t} [style*="background-color: rgb(239, 243, 244)"] {
+  background-color: var(--bt-theme-accent) !important;
+}
+
+${t} [style*="color: rgb(15, 20, 25)"] {
+  color: var(--bt-theme-bg) !important;
+}
+
+/* Right-column widget cards */
+${t} [data-testid="sidebarColumn"] section[role="region"],
+${t} [data-testid="sidebarColumn"] aside[role="complementary"],
+${t} [data-testid="sidebarColumn"] div:has(> section[role="region"]),
+${t} [data-testid="sidebarColumn"] div:has(> aside[role="complementary"]),
+${t} [data-testid="news_sidebar"] {
+  background-color: var(--bt-theme-surface) !important;
+  border-color: var(--bt-theme-border) !important;
+}
+
+${t} [data-testid="trend"]:hover,
+${t} [data-testid="UserCell"]:hover,
+${t} [data-testid^="news_sidebar_article"]:hover {
+  background-color: var(--bt-theme-surface-hover) !important;
+}
+
+/* Sidebar search field */
+${t} form[role="search"] {
+  background-color: var(--bt-theme-surface-hover) !important;
+  border-color: var(--bt-theme-border) !important;
+}
+
+${t} [data-testid="SearchBox_Search_Input"] {
+  background-color: transparent !important;
+  color: var(--bt-theme-text) !important;
+}
+
+/* Themed scrollbars */
+${t}::-webkit-scrollbar,
+${t} *::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+${t}::-webkit-scrollbar-track,
+${t} *::-webkit-scrollbar-track,
+${t}::-webkit-scrollbar-corner,
+${t} *::-webkit-scrollbar-corner {
+  background: var(--bt-theme-bg);
+}
+
+${t}::-webkit-scrollbar-thumb,
+${t} *::-webkit-scrollbar-thumb {
+  background: var(--bt-theme-border);
+  border-radius: 9999px;
+  border: 3px solid var(--bt-theme-bg);
+}
+
+${t}::-webkit-scrollbar-thumb:hover,
+${t} *::-webkit-scrollbar-thumb:hover {
+  background: var(--bt-theme-accent);
+}
+
+${t} {
+  scrollbar-color: var(--bt-theme-border) var(--bt-theme-bg) !important;
+}
+`;
+}).join("");
+
+/**
  * Surface recoloring & atmospheric vibe styling (Dracula, Nord, Matrix)
  */
 export const APPLY_SURFACE_RULES = `
 ${composerSelector}
+${stubbornSelector}
 
 ${htmlBgSelector} {
   background-color: var(--bt-theme-bg) !important;
