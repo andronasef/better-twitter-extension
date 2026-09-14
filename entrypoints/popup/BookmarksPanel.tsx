@@ -5,6 +5,10 @@ import {
   Check,
   Download,
   Upload,
+  Pencil,
+  Trash2,
+  Plus,
+  X,
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -13,7 +17,11 @@ import {
   bookmarksSettingsItem,
   bookmarkSyncItem,
 } from '@/lib/storage';
-import { getStorageUsage } from '@/features/bookmarks/storage';
+import {
+  getStorageUsage,
+  renameFolder,
+  deleteFolder,
+} from '@/features/bookmarks/storage';
 import {
   syncBookmarksBackground,
   resumeSync,
@@ -24,7 +32,7 @@ import type {
   BookmarkSyncState,
   BookmarksSettings,
 } from '@/features/bookmarks/types';
-import { isBookmarksRoute } from '@/features/bookmarks/routes';
+import { isBookmarksRoute, BOOKMARKS_URL } from '@/features/bookmarks/routes';
 
 function formatRelativeTime(timestamp: number): string {
   if (!timestamp) return 'Never synced';
@@ -57,6 +65,14 @@ export function BookmarksPanel() {
   const [storageUsage, setStorageUsage] = useState({ bytesInUse: 0, quotaLimit: 10485760, percent: 0 });
   const [importStatus, setImportStatus] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [editingFolderId, setEditingFolderId] = useState<string | null>(null);
+  const [editingFolderName, setEditingFolderName] = useState('');
+  const [editingFolderColor, setEditingFolderColor] = useState('');
+  const [deletingFolderId, setDeletingFolderId] = useState<string | null>(null);
+  const [isAddingFolder, setIsAddingFolder] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
+  const [newFolderColor, setNewFolderColor] = useState('#1D9BF0');
 
   useEffect(() => {
     let mounted = true;
@@ -160,6 +176,44 @@ export function BookmarksPanel() {
     await foldersItem.setValue(updatedFolders);
   };
 
+  const handleStartRename = (folder: BookmarkFolder, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingFolderId(folder.id);
+    setEditingFolderName(folder.name);
+    setEditingFolderColor(folder.color || '#1D9BF0');
+    setDeletingFolderId(null);
+  };
+
+  const handleSaveRename = async (folderId: string, e?: React.FormEvent | React.MouseEvent) => {
+    if (e) e.preventDefault();
+    if (!editingFolderName.trim()) return;
+    await renameFolder(folderId, editingFolderName, editingFolderColor);
+    setEditingFolderId(null);
+  };
+
+  const handleConfirmDelete = async (folderId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    await deleteFolder(folderId);
+    setDeletingFolderId(null);
+  };
+
+  const handleCreateFolder = async (e?: React.FormEvent | React.MouseEvent) => {
+    if (e) e.preventDefault();
+    const name = newFolderName.trim();
+    if (!name) return;
+    const newFolder: BookmarkFolder = {
+      id: `folder_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      name,
+      color: newFolderColor || '#1D9BF0',
+      createdAt: Date.now(),
+      resurfaceEnabled: true,
+    };
+    const currentFolders = await foldersItem.getValue();
+    await foldersItem.setValue([...currentFolders, newFolder]);
+    setNewFolderName('');
+    setIsAddingFolder(false);
+  };
+
   // Primary Sync Button action
   const handleSyncClick = async () => {
     if (isSyncing) return;
@@ -185,7 +239,7 @@ export function BookmarksPanel() {
           } catch {}
         }
         if (!isAlreadyOnBookmarks) {
-          await browser.tabs.update(activeTab.id, { url: 'https://x.com/i/bookmarks' });
+          await browser.tabs.update(activeTab.id, { url: BOOKMARKS_URL });
           return;
         }
       }
@@ -384,21 +438,180 @@ export function BookmarksPanel() {
         </div>
       </div>
 
-      {/* 3. FOLDER ELIGIBILITY Section */}
+      {/* 3. FOLDER ELIGIBILITY & CATEGORIES Section */}
       <div className="space-y-2">
-        <h3 className="text-[11px] font-bold tracking-wider text-[var(--bt-fg-muted,#71767b)] uppercase">
-          Folder Eligibility
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-[11px] font-bold tracking-wider text-[var(--bt-fg-muted,#71767b)] uppercase">
+            Categories & Eligibility
+          </h3>
+          <button
+            type="button"
+            onClick={() => {
+              setIsAddingFolder(true);
+              setEditingFolderId(null);
+              setDeletingFolderId(null);
+            }}
+            className="text-[12px] text-[var(--bt-accent,#1d9bf0)] hover:underline flex items-center gap-1 font-medium cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>New folder</span>
+          </button>
+        </div>
+
+        {/* Inline Create Folder Form */}
+        {isAddingFolder && (
+          <form
+            onSubmit={handleCreateFolder}
+            className="p-3 rounded-xl bg-[var(--bt-surface,#16181c)] border border-[var(--bt-border,#2f3336)] space-y-2.5"
+          >
+            <div className="flex items-center justify-between text-[13px] font-semibold text-[var(--bt-fg,#e7e9ea)]">
+              <span>Create New Category</span>
+              <button
+                type="button"
+                onClick={() => setIsAddingFolder(false)}
+                className="text-[var(--bt-fg-muted,#71767b)] hover:text-[var(--bt-fg,#e7e9ea)] cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <input
+              type="text"
+              placeholder="Category name..."
+              value={newFolderName}
+              onChange={(e) => setNewFolderName(e.target.value)}
+              autoFocus
+              className="w-full h-8 px-2.5 text-[13px] rounded-md bg-[var(--bt-surface-elevated,#202327)] text-[var(--bt-fg,#e7e9ea)] placeholder:text-[var(--bt-fg-muted,#71767b)] border border-[var(--bt-border,#2f3336)] focus:outline-none focus:border-[var(--bt-accent,#1d9bf0)]"
+            />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                {['#1D9BF0', '#00BA7C', '#FFD400', '#F91880', '#7856FF', '#FF7A00'].map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setNewFolderColor(c)}
+                    className="w-4 h-4 rounded-full flex items-center justify-center transition-transform hover:scale-110 cursor-pointer"
+                    style={{ backgroundColor: c }}
+                  >
+                    {newFolderColor === c && <Check className="w-2.5 h-2.5 text-white stroke-[3]" />}
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setIsAddingFolder(false)}
+                  className="px-2.5 py-1 text-[12px] rounded text-[var(--bt-fg-muted,#71767b)] hover:text-[var(--bt-fg,#e7e9ea)] cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={!newFolderName.trim()}
+                  className="px-3 py-1 text-[12px] rounded bg-[var(--bt-accent,#1d9bf0)] text-[var(--bt-accent-fg,#ffffff)] font-semibold disabled:opacity-50 hover:opacity-90 cursor-pointer"
+                >
+                  Create
+                </button>
+              </div>
+            </div>
+          </form>
+        )}
 
         <div className="p-2 rounded-xl bg-[var(--bt-surface,#16181c)] border border-[var(--bt-border,#2f3336)] space-y-1">
           {folders.map((folder) => {
             const isEligible = folder.resurfaceEnabled !== false;
+
+            if (editingFolderId === folder.id) {
+              return (
+                <form
+                  key={folder.id}
+                  onSubmit={(e) => handleSaveRename(folder.id, e)}
+                  className="p-2 rounded-lg bg-[var(--bt-surface-elevated,#202327)] border border-[var(--bt-accent,#1d9bf0)]/50 space-y-2"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="w-2.5 h-2.5 rounded-full shrink-0"
+                      style={{ backgroundColor: editingFolderColor || folder.color || '#71767B' }}
+                    />
+                    <input
+                      type="text"
+                      value={editingFolderName}
+                      onChange={(e) => setEditingFolderName(e.target.value)}
+                      autoFocus
+                      className="flex-1 h-7 px-2 text-[13px] rounded bg-[var(--bt-bg,#000000)] text-[var(--bt-fg,#e7e9ea)] border border-[var(--bt-border,#2f3336)] focus:outline-none focus:border-[var(--bt-accent,#1d9bf0)]"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between pt-1">
+                    <div className="flex items-center gap-1.5">
+                      {['#1D9BF0', '#00BA7C', '#FFD400', '#F91880', '#7856FF', '#FF7A00'].map((c) => (
+                        <button
+                          key={c}
+                          type="button"
+                          onClick={() => setEditingFolderColor(c)}
+                          className="w-4 h-4 rounded-full flex items-center justify-center transition-transform hover:scale-110 cursor-pointer"
+                          style={{ backgroundColor: c }}
+                        >
+                          {editingFolderColor === c && <Check className="w-2.5 h-2.5 text-white stroke-[3]" />}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setEditingFolderId(null)}
+                        className="px-2 py-0.5 text-[11px] rounded text-[var(--bt-fg-muted,#71767b)] hover:text-[var(--bt-fg,#e7e9ea)] cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={!editingFolderName.trim()}
+                        className="px-2.5 py-0.5 text-[11px] rounded bg-[var(--bt-accent,#1d9bf0)] text-[var(--bt-accent-fg,#ffffff)] font-semibold disabled:opacity-50 cursor-pointer"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              );
+            }
+
+            if (deletingFolderId === folder.id) {
+              return (
+                <div
+                  key={folder.id}
+                  className="p-2.5 rounded-lg bg-[var(--bt-surface-elevated,#202327)] border border-[var(--bt-destructive,#f4212e)]/50 space-y-2 text-[12px]"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <p className="text-[var(--bt-fg,#e7e9ea)]">
+                    Delete category <strong>"{folder.name}"</strong>? Bookmarks in this category will be moved to Uncategorized.
+                  </p>
+                  <div className="flex items-center justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setDeletingFolderId(null)}
+                      className="px-2 py-0.5 rounded text-[var(--bt-fg-muted,#71767b)] hover:text-[var(--bt-fg,#e7e9ea)] cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => handleConfirmDelete(folder.id, e)}
+                      className="px-2.5 py-0.5 rounded bg-[var(--bt-destructive,#f4212e)] text-white font-semibold hover:opacity-90 cursor-pointer"
+                    >
+                      Confirm Delete
+                    </button>
+                  </div>
+                </div>
+              );
+            }
+
             return (
               <div
                 key={folder.id}
                 data-slot="folder-eligibility-item"
                 onClick={() => handleToggleFolderEligibility(folder.id)}
-                className="flex items-center gap-3 p-2 rounded-lg hover:bg-[var(--bt-surface-elevated,#202327)] cursor-pointer transition-colors"
+                className="group flex items-center gap-3 p-2 rounded-lg hover:bg-[var(--bt-surface-elevated,#202327)] cursor-pointer transition-colors"
               >
                 <button
                   type="button"
@@ -422,6 +635,34 @@ export function BookmarksPanel() {
                 <span className="text-[14px] text-[var(--bt-fg,#e7e9ea)] truncate flex-1">
                   {folder.name}
                 </span>
+
+                {/* Actions for custom categories (Rename & Delete) */}
+                {folder.id !== 'uncategorized' && (
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      type="button"
+                      title={`Rename ${folder.name}`}
+                      aria-label={`Rename ${folder.name}`}
+                      onClick={(e) => handleStartRename(folder, e)}
+                      className="p-1 rounded text-[var(--bt-fg-muted,#71767b)] hover:text-[var(--bt-fg,#e7e9ea)] hover:bg-[rgba(255,255,255,0.12)] cursor-pointer"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      title={`Delete ${folder.name}`}
+                      aria-label={`Delete ${folder.name}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeletingFolderId(folder.id);
+                        setEditingFolderId(null);
+                      }}
+                      className="p-1 rounded text-[var(--bt-fg-muted,#71767b)] hover:text-[var(--bt-destructive,#f4212e)] hover:bg-red-500/10 cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
               </div>
             );
           })}
