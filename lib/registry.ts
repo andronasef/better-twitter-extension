@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Columns3, Palette } from 'lucide-react';
+import { Columns3, Palette, Bookmark } from 'lucide-react';
 
 export interface FeatureEntry {
   id: string;
@@ -33,6 +33,12 @@ export const categories: CategoryEntry[] = [
     id: 'themes',
     caption: 'Themes',
     icon: Palette,
+    dedicatedPanel: true,
+  },
+  {
+    id: 'bookmarks',
+    caption: 'Bookmarks',
+    icon: Bookmark,
     dedicatedPanel: true,
   },
 ];

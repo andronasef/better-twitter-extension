@@ -18,6 +18,7 @@ import { startThemeProbe } from './theme-probe';
 import { initActionBarIntegration, teardownActionBarIntegration } from '@/features/bookmarks/action-bar';
 import { captureEngine } from '@/features/bookmarks/capture-engine';
 import { mountBookmarksHub, unmountBookmarksHub } from '@/features/bookmarks/in-page-ui';
+import { initResurfacing, teardownResurfacing } from '@/features/bookmarks/resurfacing';
 
 export default defineContentScript({
   matches: ['*://x.com/*', '*://twitter.com/*'],
@@ -43,6 +44,7 @@ export default defineContentScript({
     ctx.onInvalidated(() => {
       teardownActionBarIntegration();
       unmountBookmarksHub();
+      teardownResurfacing();
     });
 
     // Dev-only instrumentation for Spikes S1 and S2
@@ -125,6 +127,12 @@ export default defineContentScript({
         } else {
           unmountBookmarksHub();
         }
+
+        if (path === '/home' || path === '/') {
+          initResurfacing();
+        } else {
+          teardownResurfacing();
+        }
       }
 
       if (currentSettings) {
@@ -164,6 +172,7 @@ export default defineContentScript({
         resetDiagnosticsForPage();
         teardownPageScope();
         unmountBookmarksHub();
+        teardownResurfacing();
         stopPipeline();
         setupPage();
       });

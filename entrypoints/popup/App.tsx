@@ -10,6 +10,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { TileGrid } from './TileGrid';
 import { CategoryPanel } from './CategoryPanel';
 import { ThemesPanel } from './ThemesPanel';
+import { BookmarksPanel } from './BookmarksPanel';
 
 const lightVars: Record<string, string> = {
   '--bt-accent': '#1D9BF0',
@@ -216,6 +217,8 @@ export default function App({
               onAccentChange={handleAccentChange}
               onAccentReset={handleAccentReset}
             />
+          ) : activeCategoryId === 'bookmarks' ? (
+            <BookmarksPanel />
           ) : activeCategory ? (
             <CategoryPanel
               category={activeCategory}
