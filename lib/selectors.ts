@@ -43,6 +43,28 @@ export const SELECTORS = {
     'button[aria-label*="Bookmarked" i]',
   ],
 
+  // Native like button in tweet action bar (REACT-01, REACT-02, D-01, D-02)
+  likeButton: [
+    '[data-testid="like"]',
+    '[data-testid="unlike"]',
+    'button[aria-label*="Like" i]',
+    'button[aria-label*="Liked" i]',
+  ],
+
+  // Native reply button in tweet action bar (REACT-03, D-05)
+  replyButton: [
+    '[data-testid="reply"]',
+    'button[aria-label*="Reply" i]',
+  ],
+
+  // Native reply composer textarea / contenteditable editor (REACT-03, D-06)
+  replyComposer: [
+    '[role="dialog"] [data-testid="tweetTextarea_0"]',
+    '[role="dialog"] [role="textbox"][contenteditable="true"]',
+    '[data-testid="tweetTextarea_0"]',
+    '[role="textbox"][contenteditable="true"]',
+  ],
+
   // Tweet article element enclosing tweet content and action bar
   // Justification: standard tweet root article element
   tweetArticle: [

@@ -5,6 +5,11 @@ import type {
   BookmarkSyncState,
   BookmarksSettings,
 } from '@/features/bookmarks/types';
+import type {
+  ReactionsSettings,
+  CustomEmojiCache,
+} from '@/features/reactions/types';
+import { DEFAULT_REACTION_SLOTS } from '@/features/reactions/constants';
 
 export type ThemeId = 'default' | 'dracula' | 'nord' | 'matrix' | 'minimal' | 'old-twitter';
 
@@ -130,5 +135,19 @@ export const bookmarksSettingsItem = storage.defineItem<BookmarksSettings>('loca
     resurfacingInterval: 20,
     askFolderOnSave: true,
   },
+  version: 1,
+});
+
+export const reactionsSettingsItem = storage.defineItem<ReactionsSettings>('local:reactionsSettings', {
+  fallback: {
+    enabled: true,
+    style: 'twemoji',
+    slots: DEFAULT_REACTION_SLOTS,
+  },
+  version: 1,
+});
+
+export const customEmojiCacheItem = storage.defineItem<CustomEmojiCache>('local:customEmojiCache', {
+  fallback: {},
   version: 1,
 });
