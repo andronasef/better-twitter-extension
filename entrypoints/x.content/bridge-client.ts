@@ -24,17 +24,25 @@ export interface BookmarkMutationDetail {
   url?: string;
 }
 
+export interface BookmarksErrorDetail {
+  reason: 'no_template' | 'fetch_failed';
+  error?: string;
+}
+
 type GraphqlHandler = (shape: GraphqlShape) => void;
 type NavigateHandler = (nav: BridgeNavigate) => void;
 type BookmarksHandler = (detail: BookmarksResponseDetail) => void;
 type BookmarkMutationHandler = (detail: BookmarkMutationDetail) => void;
+type BookmarksErrorHandler = (detail: BookmarksErrorDetail) => void;
 
 const graphqlHandlers: GraphqlHandler[] = [];
 const navigateHandlers: NavigateHandler[] = [];
 const bookmarksHandlers: BookmarksHandler[] = [];
 const mutationHandlers: BookmarkMutationHandler[] = [];
+const bookmarksErrorHandlers: BookmarksErrorHandler[] = [];
 
 let bridgeStarted = false;
+let bridgeScriptElement: HTMLScriptElement | null = null;
 
 export function onGraphqlShape(handler: GraphqlHandler): () => void {
   graphqlHandlers.push(handler);
@@ -58,6 +66,30 @@ export function onBookmarksResponse(handler: BookmarksHandler): () => void {
     const idx = bookmarksHandlers.indexOf(handler);
     if (idx !== -1) bookmarksHandlers.splice(idx, 1);
   };
+}
+
+export function onBookmarksError(handler: BookmarksErrorHandler): () => void {
+  bookmarksErrorHandlers.push(handler);
+  return () => {
+    const idx = bookmarksErrorHandlers.indexOf(handler);
+    if (idx !== -1) bookmarksErrorHandlers.splice(idx, 1);
+  };
+}
+
+export function requestBookmarksPage(cursor: string): void {
+  if (typeof window !== 'undefined') {
+    window.postMessage({ type: 'bt:request-bookmarks-page', cursor }, '*');
+    if (bridgeScriptElement) {
+      bridgeScriptElement.dispatchEvent(
+        new CustomEvent('bt:request-bookmarks-page', { detail: { cursor } })
+      );
+    }
+    if (typeof document !== 'undefined') {
+      document.dispatchEvent(
+        new CustomEvent('bt:request-bookmarks-page', { detail: { cursor } })
+      );
+    }
+  }
 }
 
 export function onBookmarkMutated(handler: BookmarkMutationHandler): () => void {
@@ -92,6 +124,8 @@ export async function startBridge(): Promise<void> {
     await injectScript('/bridge.js', {
       keepInDom: true,
       modifyScript(script: HTMLScriptElement) {
+        bridgeScriptElement = script;
+
         script.addEventListener('bt:graphql', (event: Event) => {
           const customEvent = event as CustomEvent<GraphqlShape>;
           if (customEvent.detail) {
@@ -105,10 +139,50 @@ export async function startBridge(): Promise<void> {
           }
         });
 
+        let lastBookmarksDetail: any = null;
+        const handleBookmarksDetail = (detail: BookmarksResponseDetail) => {
+          if (detail === lastBookmarksDetail) return;
+          lastBookmarksDetail = detail;
+          for (const handler of bookmarksHandlers) {
+            try {
+              handler(detail);
+            } catch {
+              // Ignore handler errors
+            }
+          }
+        };
+
         script.addEventListener('bt:graphql-bookmarks', (event: Event) => {
           const customEvent = event as CustomEvent<BookmarksResponseDetail>;
           if (customEvent.detail) {
-            for (const handler of bookmarksHandlers) {
+            handleBookmarksDetail(customEvent.detail);
+          }
+        });
+
+        document.addEventListener('bt:graphql-bookmarks', (event: Event) => {
+          const customEvent = event as CustomEvent<BookmarksResponseDetail>;
+          if (customEvent.detail) {
+            handleBookmarksDetail(customEvent.detail);
+          }
+        });
+
+        script.addEventListener('bt:graphql-bookmarks-error', (event: Event) => {
+          const customEvent = event as CustomEvent<BookmarksErrorDetail>;
+          if (customEvent.detail) {
+            for (const handler of bookmarksErrorHandlers) {
+              try {
+                handler(customEvent.detail);
+              } catch {
+                // Ignore handler errors
+              }
+            }
+          }
+        });
+
+        document.addEventListener('bt:graphql-bookmarks-error', (event: Event) => {
+          const customEvent = event as CustomEvent<BookmarksErrorDetail>;
+          if (customEvent.detail) {
+            for (const handler of bookmarksErrorHandlers) {
               try {
                 handler(customEvent.detail);
               } catch {
@@ -131,7 +205,33 @@ export async function startBridge(): Promise<void> {
           }
         });
 
+        document.addEventListener('bt:graphql-bookmark-mutation', (event: Event) => {
+          const customEvent = event as CustomEvent<BookmarkMutationDetail>;
+          if (customEvent.detail) {
+            for (const handler of mutationHandlers) {
+              try {
+                handler(customEvent.detail);
+              } catch {
+                // Ignore handler errors
+              }
+            }
+          }
+        });
+
         script.addEventListener('bt:navigate', (event: Event) => {
+          const customEvent = event as CustomEvent<BridgeNavigate>;
+          if (customEvent.detail) {
+            for (const handler of navigateHandlers) {
+              try {
+                handler(customEvent.detail);
+              } catch {
+                // Ignore handler errors
+              }
+            }
+          }
+        });
+
+        document.addEventListener('bt:navigate', (event: Event) => {
           const customEvent = event as CustomEvent<BridgeNavigate>;
           if (customEvent.detail) {
             for (const handler of navigateHandlers) {

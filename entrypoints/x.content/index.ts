@@ -133,7 +133,7 @@ export default defineContentScript({
           mountBookmarksHub();
           bookmarkSyncItem.getValue().then((sync) => {
             if (sync?.status === 'syncing') {
-              captureEngine.startAutoScrollSync();
+              captureEngine.syncBookmarksBackground();
             }
           });
         } else {

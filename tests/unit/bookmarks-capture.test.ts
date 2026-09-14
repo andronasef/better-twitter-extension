@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   bookmarksItem,
   bookmarkSyncItem,
@@ -205,5 +205,96 @@ describe('Bookmarks Capture Engine & Checkpoints (BOOK-01, BOOK-02, BOOK-03, D-1
     expect(sync.status).toBe('syncing');
     expect(sync.cursor).toBe('SAVED_CURSOR_VAL');
     expect(sync.totalCaptured).toBe(50);
+  });
+
+  it('triggers next page fetch when status is syncing and next cursor arrives', async () => {
+    vi.useFakeTimers();
+    try {
+      await bookmarkSyncItem.setValue({
+        status: 'syncing',
+        cursor: null,
+        totalCaptured: 0,
+        lastSyncTime: null,
+        lastCheckpointTime: null,
+        errorReason: null,
+      });
+
+      const payload = {
+        data: {
+          bookmark_timeline_v2: {
+            timeline: {
+              instructions: [
+                {
+                  type: 'TimelineAddEntries',
+                  entries: [
+                    {
+                      entryId: 'tweet-300',
+                      itemContent: {
+                        tweet_results: {
+                          result: {
+                            rest_id: '300',
+                            legacy: { full_text: 'Tweet 300' },
+                          },
+                        },
+                      },
+                    },
+                    {
+                      entryId: 'cursor-bottom-300',
+                      content: { value: 'CURSOR_PAGE_2' },
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      };
+
+      await handleBookmarksPayload({ data: payload, status: 200 });
+
+      const sync = await bookmarkSyncItem.getValue();
+      expect(sync.status).toBe('syncing');
+      expect(sync.cursor).toBe('CURSOR_PAGE_2');
+      expect(sync.totalCaptured).toBe(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('stops pagination loop when cursor is identical to existing checkpoint', async () => {
+    await bookmarkSyncItem.setValue({
+      status: 'syncing',
+      cursor: 'TERMINAL_CURSOR',
+      totalCaptured: 10,
+      lastSyncTime: 1000,
+      lastCheckpointTime: 1000,
+      errorReason: null,
+    });
+
+    const terminalPayload = {
+      data: {
+        bookmark_timeline_v2: {
+          timeline: {
+            instructions: [
+              {
+                type: 'TimelineAddEntries',
+                entries: [
+                  {
+                    entryId: 'cursor-bottom-end',
+                    content: { value: 'TERMINAL_CURSOR' },
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      },
+    };
+
+    await handleBookmarksPayload({ data: terminalPayload, status: 200 });
+
+    const sync = await bookmarkSyncItem.getValue();
+    expect(sync.status).toBe('complete');
+    expect(sync.cursor).toBeNull();
   });
 });

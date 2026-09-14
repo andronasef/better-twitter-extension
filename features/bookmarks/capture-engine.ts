@@ -9,11 +9,14 @@ import {
 import { saveBookmark, removeBookmark } from './storage';
 import {
   onBookmarksResponse,
+  onBookmarksError,
   onBookmarkMutated,
+  requestBookmarksPage,
   type BookmarksResponseDetail,
   type BookmarkMutationDetail,
+  type BookmarksErrorDetail,
 } from '@/entrypoints/x.content/bridge-client';
-import { isBookmarksRoute } from './routes';
+import { isBookmarksRoute, isBookmarksTabActive, BOOKMARKS_URL } from './routes';
 import type { BookmarkSyncState } from './types';
 
 export const ERROR_COPY = {
@@ -103,7 +106,7 @@ export async function handleBookmarksPayload(detail: {
   const isComplete =
     extraction.bottomCursor === null ||
     extraction.items.length === 0 ||
-    (extraction.bottomCursor === syncState.cursor && extraction.items.length === 0);
+    extraction.bottomCursor === syncState.cursor;
 
   const nextStatus = isComplete
     ? 'complete'
@@ -122,9 +125,14 @@ export async function handleBookmarksPayload(detail: {
   });
 
   if (isComplete) {
+    stopDirectGraphqlSync();
     stopAutoScrollSync();
   } else if (nextStatus === 'syncing') {
-    startAutoScrollSync();
+    if (extraction.bottomCursor) {
+      triggerNextPageFetch(extraction.bottomCursor, 300);
+    } else {
+      startAutoScrollSync();
+    }
   }
 }
 
@@ -133,6 +141,7 @@ export async function handleBookmarksPayload(detail: {
  */
 export async function scrapeVisibleBookmarksFromDom(): Promise<number> {
   if (typeof document === 'undefined') return 0;
+  if (!isBookmarksRoute(window.location.pathname) || !isBookmarksTabActive()) return 0;
   const articles = document.querySelectorAll('article[data-testid="tweet"]');
   if (articles.length === 0) return 0;
 
@@ -172,7 +181,8 @@ export function scrollBookmarksToBottom(): void {
     document.body?.scrollHeight || 0
   );
 
-  window.scrollTo({ top: scrollTarget, behavior: 'smooth' });
+  window.scrollTo({ top: scrollTarget, behavior: 'auto' });
+  window.scrollBy(0, 1500);
 
   // Also check if primary column has an independent scroll container
   const primaryColumn = document.querySelector('[data-testid="primaryColumn"]');
@@ -187,10 +197,11 @@ export function scrollBookmarksToBottom(): void {
   const bottomSentinel =
     document.querySelector('div[data-testid="primaryColumn"] [role="progressbar"]') ||
     document.querySelector('div[data-testid="cellInnerDiv"]:last-child') ||
+    document.querySelector('section[role="region"] > div > div:last-child') ||
     document.querySelector('article[data-testid="tweet"]:last-of-type');
 
   if (bottomSentinel && typeof (bottomSentinel as HTMLElement).scrollIntoView === 'function') {
-    (bottomSentinel as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'end' });
+    (bottomSentinel as HTMLElement).scrollIntoView({ behavior: 'auto', block: 'end' });
   }
 
   window.dispatchEvent(new Event('scroll'));
@@ -199,6 +210,33 @@ export function scrollBookmarksToBottom(): void {
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+let activeFetchTimer: any = null;
+
+export function stopDirectGraphqlSync(): void {
+  if (activeFetchTimer) {
+    clearTimeout(activeFetchTimer);
+    activeFetchTimer = null;
+  }
+}
+
+export function triggerNextPageFetch(cursor: string, delayMs = 300): void {
+  stopDirectGraphqlSync();
+
+  activeFetchTimer = setTimeout(async () => {
+    const syncState = await bookmarkSyncItem.getValue();
+    if (syncState.status !== 'syncing') return;
+
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      if (!isBookmarksRoute(path)) {
+        return;
+      }
+    }
+
+    requestBookmarksPage(cursor);
+  }, delayMs);
 }
 
 let isSyncLoopRunning = false;
@@ -228,6 +266,10 @@ async function runAutoScrollLoop(): Promise<void> {
 
   let consecutiveEmptyChecks = 0;
   let lastCapturedCount = -1;
+  const seenTweetIds = new Set<string>();
+
+  const initialBookmarks = await bookmarksItem.getValue();
+  Object.keys(initialBookmarks).forEach((id) => seenTweetIds.add(id));
 
   while (isSyncLoopRunning) {
     if (typeof window === 'undefined' || typeof document === 'undefined') {
@@ -241,6 +283,19 @@ async function runAutoScrollLoop(): Promise<void> {
       return;
     }
 
+    // Auto-switch to Bookmarks tab on /i/history if another subtab is currently active
+    if (!isBookmarksTabActive()) {
+      const tablist = document.querySelector('div[role="tablist"]');
+      if (tablist) {
+        const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+        const bTab = tabs.find((t) => t.textContent?.toLowerCase().includes('bookmark'));
+        if (bTab) {
+          (bTab as HTMLElement).click();
+          await sleep(800);
+        }
+      }
+    }
+
     const syncState = await bookmarkSyncItem.getValue();
     if (syncState.status !== 'syncing') {
       break;
@@ -249,7 +304,7 @@ async function runAutoScrollLoop(): Promise<void> {
     // 1. Wait if initial page load is still in flight (0 tweets rendered)
     const tweetElements = document.querySelectorAll('article[data-testid="tweet"]');
     if (tweetElements.length === 0) {
-      await sleep(1000);
+      await sleep(800);
       continue;
     }
 
@@ -259,13 +314,12 @@ async function runAutoScrollLoop(): Promise<void> {
     // 3. Track captured count progress
     const bookmarks = await bookmarksItem.getValue();
     const currentCount = Object.keys(bookmarks).length;
+    Object.keys(bookmarks).forEach((id) => seenTweetIds.add(id));
 
     if (currentCount > lastCapturedCount) {
       lastCapturedCount = currentCount;
       consecutiveEmptyChecks = 0;
-      // Newly loaded batch detected!
-      // Crucial: wait for Twitter to fully finish mounting and rendering tweets before scrolling again!
-      await sleep(1500);
+      await sleep(1000);
     }
 
     // 4. Check if GraphQL already signaled completion
@@ -281,44 +335,65 @@ async function runAutoScrollLoop(): Promise<void> {
     let batchArrived = false;
     const scrollTime = Date.now();
 
-    while (Date.now() - scrollTime < 10000 && isSyncLoopRunning) {
-      await sleep(600);
+    while (Date.now() - scrollTime < 8000 && isSyncLoopRunning) {
+      await sleep(400);
 
       // Check if spinner is visible (Twitter is actively loading)
       const spinnerActive = Boolean(
         document.querySelector('[role="progressbar"]') ||
-        document.querySelector('[aria-label*="Loading" i]')
+        document.querySelector('[aria-label*="Loading" i]') ||
+        document.querySelector('svg[aria-label*="Loading" i]')
       );
+
+      // Actively scrape DOM on every interval
+      const newlyScraped = await scrapeVisibleBookmarksFromDom();
+      if (newlyScraped > 0) {
+        batchArrived = true;
+        break;
+      }
+
+      // Check if storage updated via background GraphQL interception
+      const freshBookmarks = await bookmarksItem.getValue();
+      const freshCount = Object.keys(freshBookmarks).length;
+      if (freshCount > currentCount) {
+        Object.keys(freshBookmarks).forEach((id) => seenTweetIds.add(id));
+        batchArrived = true;
+        break;
+      }
+
+      // Check for newly rendered tweet elements by unique tweet ID (resilient to DOM virtualization)
+      const currentTweets = document.querySelectorAll('article[data-testid="tweet"]');
+      let foundNewTweet = false;
+      for (const art of currentTweets) {
+        const link = art.querySelector('a[href*="/status/"]');
+        const match = link?.getAttribute('href')?.match(/\/status\/(\d+)/);
+        if (match && match[1] && !seenTweetIds.has(match[1])) {
+          seenTweetIds.add(match[1]);
+          foundNewTweet = true;
+        }
+      }
+
+      if (foundNewTweet) {
+        await scrapeVisibleBookmarksFromDom();
+        batchArrived = true;
+        break;
+      }
+
       if (spinnerActive) {
         // Keep waiting while Twitter is fetching over network
         continue;
-      }
-
-      // Check if new bookmarks were parsed and saved to storage
-      const freshBookmarks = await bookmarksItem.getValue();
-      if (Object.keys(freshBookmarks).length > currentCount) {
-        batchArrived = true;
-        break;
-      }
-
-      // Check if new tweet elements were added to the DOM
-      const currentTweets = document.querySelectorAll('article[data-testid="tweet"]');
-      if (currentTweets.length > tweetElements.length) {
-        batchArrived = true;
-        break;
       }
     }
 
     if (batchArrived) {
       consecutiveEmptyChecks = 0;
-      // Wait for the new tweets to finish rendering and layout to settle before next scroll
-      await sleep(1500);
+      await sleep(1000);
     } else {
       consecutiveEmptyChecks++;
 
-      // If we waited at the bottom across 3 cycles (~30 seconds) with no spinner and no new tweets,
+      // If we waited at the bottom across 4 cycles with no spinner and no new tweets,
       // all available bookmarks have been loaded
-      if (consecutiveEmptyChecks >= 3) {
+      if (consecutiveEmptyChecks >= 4) {
         const finalSync = await bookmarkSyncItem.getValue();
         await bookmarkSyncItem.setValue({
           ...finalSync,
@@ -378,15 +453,21 @@ export async function syncBookmarksBackground(): Promise<void> {
     typeof location !== 'undefined' && isBookmarksRoute(location.pathname);
 
   if (isBookmarksPage) {
-    startAutoScrollSync();
-    scrollBookmarksToBottom();
+    await scrapeVisibleBookmarksFromDom();
+
+    if (syncState.cursor) {
+      triggerNextPageFetch(syncState.cursor, 100);
+    } else {
+      requestBookmarksPage('');
+      scrollBookmarksToBottom();
+    }
   } else {
     // Outside bookmarks page, try updating active tab first, then fallback to message
     try {
       if (typeof browser !== 'undefined' && browser.tabs?.query) {
         const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
         if (activeTab?.id) {
-          await browser.tabs.update(activeTab.id, { url: 'https://x.com/i/bookmarks' });
+          await browser.tabs.update(activeTab.id, { url: BOOKMARKS_URL });
           return;
         }
       }
@@ -421,6 +502,11 @@ export const captureEngine = {
       onBookmarksResponse((detail) => {
         handleBookmarksPayload(detail).catch(() => {});
       }),
+      onBookmarksError((detail) => {
+        if (detail.reason === 'no_template') {
+          startAutoScrollSync();
+        }
+      }),
       onBookmarkMutated((detail) => {
         handleBookmarkMutation(detail.operationName, detail.tweetId).catch(() => {});
       }),
@@ -434,8 +520,14 @@ export const captureEngine = {
         const currentPath = window.location.pathname;
         const onBookmarks = isBookmarksRoute(currentPath);
         if (state?.status === 'syncing' && onBookmarks) {
-          startAutoScrollSync();
+          if (state.cursor) {
+            triggerNextPageFetch(state.cursor, 100);
+          } else {
+            requestBookmarksPage('');
+            scrollBookmarksToBottom();
+          }
         } else if (state?.status !== 'syncing') {
+          stopDirectGraphqlSync();
           stopAutoScrollSync();
         }
       });
@@ -444,13 +536,19 @@ export const captureEngine = {
       if (isBookmarksPage) {
         bookmarkSyncItem.getValue().then((state) => {
           if (state?.status === 'syncing') {
-            startAutoScrollSync();
+            if (state.cursor) {
+              triggerNextPageFetch(state.cursor, 100);
+            } else {
+              requestBookmarksPage('');
+              scrollBookmarksToBottom();
+            }
           }
         });
       }
     }
 
     return () => {
+      stopDirectGraphqlSync();
       stopAutoScrollSync();
       unsubs.forEach((u) => u());
     };
@@ -461,5 +559,7 @@ export const captureEngine = {
   resumeSync,
   startAutoScrollSync,
   stopAutoScrollSync,
+  triggerNextPageFetch,
+  stopDirectGraphqlSync,
   scrollBookmarksToBottom,
 };
