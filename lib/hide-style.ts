@@ -90,6 +90,21 @@ html[data-bt-swap-tabs="true"] div[data-testid="primaryColumn"] [role="tablist"]
 html[data-bt-hide-for-you="true"] div[data-testid="primaryColumn"] [role="tablist"] > :nth-child(1) {
   display: none !important;
 }
+
+/* Floating Chat & Grok drawer buttons */
+html[data-bt-hide-drawers="true"] [data-testid="GrokDrawer"],
+html[data-bt-hide-drawers="true"] [data-testid="chat-drawer-root"],
+html[data-bt-hide-drawers="true"] [data-testid="BottomBar"],
+html[data-bt-hide-drawers="true"] div:has(> [data-testid="GrokDrawer"]),
+html[data-bt-hide-drawers="true"] div:has(> [data-testid="chat-drawer-root"]),
+html[data-bt-hide-drawers="true"] div:has(> div > [data-testid="GrokDrawer"]),
+html[data-bt-hide-drawers="true"] div:has(> div > [data-testid="chat-drawer-root"]),
+html[data-bt-hide-drawers="true"] div:has(> div > div > [data-testid="GrokDrawer"]),
+html[data-bt-hide-drawers="true"] div:has(> div > div > [data-testid="chat-drawer-root"]),
+html[data-bt-hide-drawers="true"] [data-testid="DMDrawer"],
+html[data-bt-hide-drawers="true"] [data-testid="floatingActionButton"] {
+  display: none !important;
+}
 `;
 
 /**

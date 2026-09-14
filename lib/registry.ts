@@ -88,6 +88,13 @@ export const features: FeatureEntry[] = [
     tooltip: 'Completely removes the algorithmic For You tab from the top navigation bar.',
     defaultEnabled: false,
   },
+  {
+    id: 'hideFloatingDrawers',
+    categoryId: 'timeline',
+    title: 'Hide floating Grok & Chat buttons',
+    tooltip: 'Removes the floating Grok AI and Messages/Chat drawer buttons from the bottom right corner.',
+    defaultEnabled: false,
+  },
 ];
 
 // Rule: hidePromotedTweets is ON by default per D-12; every toggle added by later phases defaults to false

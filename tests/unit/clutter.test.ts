@@ -84,4 +84,12 @@ describe('Right sidebar clutter stripper (CLEAN-02, CLEAN-03, D-08)', () => {
       expect(resolve('whoToFollowModule')).toBe(whoToFollow);
     });
   });
+
+  describe('Floating drawers cleaner', () => {
+    it('includes CSS rules for GrokDrawer, chat-drawer-root, and BottomBar', () => {
+      expect(CSS_RULES).toContain('html[data-bt-hide-drawers="true"] [data-testid="GrokDrawer"]');
+      expect(CSS_RULES).toContain('html[data-bt-hide-drawers="true"] [data-testid="chat-drawer-root"]');
+      expect(CSS_RULES).toContain('html[data-bt-hide-drawers="true"] [data-testid="BottomBar"]');
+    });
+  });
 });

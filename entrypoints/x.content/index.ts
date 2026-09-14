@@ -8,6 +8,7 @@ import { adStripper } from '@/features/ad-stripper';
 import { sidebarCleaner } from '@/features/sidebar-cleaner';
 import { metricsStripper, profileCountsStripper } from '@/features/metrics-stripper';
 import { tabReorder, hideForYou } from '@/features/tab-reorder';
+import { floatingDrawersCleaner } from '@/features/floating-drawers';
 import { layoutEngine } from '@/features/layout-engine';
 import { startBridge, onGraphqlShape } from './bridge-client';
 import { startRouteWatcher, onRouteChange } from './route-watcher';
@@ -69,6 +70,7 @@ export default defineContentScript({
       [profileCountsStripper.id]: profileCountsStripper,
       [tabReorder.id]: tabReorder,
       [hideForYou.id]: hideForYou,
+      [floatingDrawersCleaner.id]: floatingDrawersCleaner,
     });
 
     let currentSettings: Settings | null = null;
@@ -91,6 +93,9 @@ export default defineContentScript({
         }
         if (settings.features?.hideForYouTab) {
           document.documentElement.setAttribute('data-bt-hide-for-you', 'true');
+        }
+        if (settings.features?.hideFloatingDrawers) {
+          document.documentElement.setAttribute('data-bt-hide-drawers', 'true');
         }
       }
       // Apply theme + custom accent synchronously to prevent FOUC (THEME-07, D-13)

@@ -17,6 +17,7 @@ export interface Settings {
     hideProfileCounts?: boolean;
     swapHomeTabs?: boolean;
     hideForYouTab?: boolean;
+    hideFloatingDrawers?: boolean;
     [key: string]: boolean | undefined;
   };
   theme?: ThemeId;
@@ -52,6 +53,7 @@ export function migrateSettings(oldSettings: any): Settings {
       hideProfileCounts: oldFeatures.hideProfileCounts ?? false,
       swapHomeTabs: oldFeatures.swapHomeTabs ?? false,
       hideForYouTab: oldFeatures.hideForYouTab ?? false,
+      hideFloatingDrawers: oldFeatures.hideFloatingDrawers ?? false,
     },
     theme,
     customAccent: oldSettings?.customAccent ?? null,
@@ -68,6 +70,7 @@ export const settingsItem = storage.defineItem<Settings>('local:settings', {
       hideProfileCounts: false,
       swapHomeTabs: false,
       hideForYouTab: false,
+      hideFloatingDrawers: false,
     },
     theme: 'default',
     customAccent: null,
