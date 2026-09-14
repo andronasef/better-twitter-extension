@@ -1,14 +1,28 @@
-import { withFeature } from '@/lib/selectors';
+import { resolve } from '@/lib/selectors';
+import { recordHit } from '@/lib/diagnostics';
 import { onTweetSeen, replayKnownTweets } from '@/entrypoints/x.content/pipeline';
 import { hideTweetCell, clearAllHidden } from '@/lib/hide-style';
 
-const selectors = withFeature('hidePromotedTweets');
 let unsubscribe: (() => void) | null = null;
 
+/**
+ * A cell is promoted if X mounted the ad placement tracker, or — for ads whose
+ * card/video hasn't mounted yet — if the tweet header carries no timestamp.
+ * Every organic timeline tweet renders a <time>; ads render "Ad" instead.
+ * ponytail: the <time> check is language-independent, so no "Ad"/"Anzeige" text list.
+ */
+export function isPromoted(cell: Element): boolean {
+  // Plain resolve: a miss here is the normal case (organic tweet), not a broken selector.
+  if (resolve('promotedContainer', cell)) {
+    recordHit('hidePromotedTweets', 'promotedContainer');
+    return true;
+  }
+  const article = cell.querySelector('[data-testid="tweet"]');
+  return Boolean(article && !article.querySelector('time'));
+}
+
 function processTweet(cell: Element, _tweetId: string): void {
-  // Check if cell contains the promoted indicator
-  const promoted = selectors.resolve('promotedContainer', cell);
-  if (!promoted) {
+  if (!isPromoted(cell)) {
     return;
   }
 

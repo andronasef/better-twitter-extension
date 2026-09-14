@@ -40,7 +40,11 @@ function extractTweetId(cell: Element): string | null {
 function processTimelineChildren(timeline: Element): void {
   const children = Array.from(timeline.children);
   for (const child of children) {
-    const tweetId = extractTweetId(child);
+    // ponytail: ads often render no /status/ link at all; fall back to a constant id so the
+    // cell still reaches subscribers. Recycling ad -> ad then skips, which is the same outcome.
+    const tweetId =
+      extractTweetId(child) ||
+      (child.querySelector('[data-testid="tweet"]') ? 'bt-no-status' : null);
     if (!tweetId) {
       continue;
     }
