@@ -30,7 +30,7 @@ export function BookmarksEmptyState({
           <button
             type="button"
             onClick={onSyncNow}
-            className="h-10 px-5 rounded-full bg-[var(--bt-accent,#1d9bf0)] text-white font-semibold text-[14px] flex items-center gap-2 hover:opacity-90 transition-opacity"
+            className="h-10 px-5 rounded-full bg-[var(--bt-accent,#1d9bf0)] text-[var(--bt-accent-fg,#ffffff)] font-semibold text-[14px] flex items-center gap-2 hover:opacity-90 transition-opacity"
           >
             <RefreshCw className="w-4 h-4" />
             <span>Sync Bookmarks Now</span>
@@ -57,7 +57,7 @@ export function BookmarksEmptyState({
         <button
           type="button"
           onClick={onClearFilters}
-          className="h-9 px-4 rounded-full bg-[var(--bt-accent,#1d9bf0)] text-white font-semibold text-[13px] hover:opacity-90 transition-opacity"
+          className="h-9 px-4 rounded-full bg-[var(--bt-accent,#1d9bf0)] text-[var(--bt-accent-fg,#ffffff)] font-semibold text-[13px] hover:opacity-90 transition-opacity"
         >
           Clear Filters
         </button>

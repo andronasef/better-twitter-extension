@@ -175,6 +175,12 @@ export function FolderSelectorPopover({
         align="end"
         sideOffset={6}
         className="w-[280px] max-h-[360px] p-3 rounded-xl bg-[var(--bt-surface,#16181c)] border border-[var(--bt-border,#2f3336)] text-[var(--bt-fg,#e7e9ea)] shadow-xl z-[100000]"
+        style={{
+          backgroundColor: 'var(--bt-surface, #16181c)',
+          color: 'var(--bt-fg, #e7e9ea)',
+          borderColor: 'var(--bt-border, #2f3336)',
+          boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.6)',
+        }}
       >
         {/* Title */}
         <div className="pb-2 border-b border-[var(--bt-border,#2f3336)]">
@@ -193,6 +199,11 @@ export function FolderSelectorPopover({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full h-8 pl-8 pr-2.5 text-[13px] rounded-md bg-[var(--bt-surface-elevated,#000000)] text-[var(--bt-fg,#e7e9ea)] placeholder:text-[var(--bt-fg-muted,#71767b)] border border-[var(--bt-border,#2f3336)] focus:outline-none focus:border-[var(--bt-accent,#1d9bf0)]"
+            style={{
+              backgroundColor: 'var(--bt-bg, #000000)',
+              color: 'var(--bt-fg, #e7e9ea)',
+              borderColor: 'var(--bt-border, #2f3336)',
+            }}
           />
         </div>
 
@@ -283,7 +294,7 @@ export function FolderSelectorPopover({
                   <button
                     type="submit"
                     disabled={!newFolderName.trim()}
-                    className="text-[12px] px-2.5 py-1 rounded bg-[var(--bt-accent,#1d9bf0)] text-white font-semibold disabled:opacity-50 hover:opacity-90"
+                    className="text-[12px] px-2.5 py-1 rounded bg-[var(--bt-accent,#1d9bf0)] text-[var(--bt-accent-fg,#ffffff)] font-semibold disabled:opacity-50 hover:opacity-90"
                   >
                     Create Folder
                   </button>

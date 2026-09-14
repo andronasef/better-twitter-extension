@@ -41,6 +41,12 @@ function ensurePopoverContainer(): { host: HTMLDivElement; shadow: ShadowRoot; r
   if (!popoverHost || !document.body.contains(popoverHost)) {
     popoverHost = document.createElement('div');
     popoverHost.id = 'bt-folder-selector-root';
+    popoverHost.style.position = 'fixed';
+    popoverHost.style.top = '0';
+    popoverHost.style.left = '0';
+    popoverHost.style.width = '0';
+    popoverHost.style.height = '0';
+    popoverHost.style.zIndex = '2147483647';
     document.body.appendChild(popoverHost);
     popoverShadowRoot = popoverHost.attachShadow({ mode: 'open' });
     popoverRoot = createRoot(popoverShadowRoot);
@@ -56,8 +62,11 @@ function mountPopover(
   const rect = buttonEl.getBoundingClientRect();
 
   const handleClose = () => {
+    window.removeEventListener('scroll', handleClose, true);
     root.render(null);
   };
+
+  window.addEventListener('scroll', handleClose, { capture: true, once: true });
 
   root.render(
     React.createElement(ShadowRootProvider, {

@@ -16,6 +16,11 @@ let hubRoot: Root | null = null;
 let unwatchStorage: (() => void) | null = null;
 let scrapeObserver: MutationObserver | null = null;
 let tabObserver: MutationObserver | null = null;
+let primaryColumnObserver: MutationObserver | null = null;
+
+let currentQuery = '';
+let currentFolderId: string | null = null;
+let currentTag: string | null = null;
 
 export function mountBookmarksHub(): void {
   if (typeof window === 'undefined') return;
@@ -25,37 +30,64 @@ export function mountBookmarksHub(): void {
     return;
   }
 
-  // Setup tablist observer for history / tabbed views
-  setupTablistObserver();
-
-  if (document.getElementById('bt-bookmarks-hub-root')) {
-    if (hubHost) {
-      hubHost.style.display = isBookmarksTabActive() ? '' : 'none';
+  const primaryColumn = document.querySelector('div[data-testid="primaryColumn"]') as HTMLElement | null;
+  if (!primaryColumn) {
+    if (!primaryColumnObserver && document.body) {
+      primaryColumnObserver = new MutationObserver(() => {
+        const pc = document.querySelector('div[data-testid="primaryColumn"]') as HTMLElement | null;
+        if (pc) {
+          primaryColumnObserver?.disconnect();
+          primaryColumnObserver = null;
+          mountBookmarksHub();
+        }
+      });
+      primaryColumnObserver.observe(document.body, { childList: true, subtree: true });
     }
     return;
   }
 
-  const primaryColumn = document.querySelector('div[data-testid="primaryColumn"]');
-  if (!primaryColumn) return;
+  // Setup tablist observer for history / tabbed views
+  setupTablistObserver(primaryColumn);
+
+  const isTabActive = isBookmarksTabActive(primaryColumn);
+
+  // If already mounted and attached in primaryColumn
+  const existing = document.getElementById('bt-bookmarks-hub-root');
+  if (existing && hubHost === existing && primaryColumn.contains(existing)) {
+    hubHost.style.display = isTabActive ? '' : 'none';
+    if (primaryColumn.firstElementChild !== hubHost) {
+      primaryColumn.prepend(hubHost);
+    }
+    return;
+  }
+
+  // Clean up any stale host if detached or mismatched
+  if (existing) {
+    existing.remove();
+  }
+  if (hubHost) {
+    hubHost.remove();
+  }
 
   hubHost = document.createElement('div');
   hubHost.id = 'bt-bookmarks-hub-root';
-  if (!isBookmarksTabActive()) {
-    hubHost.style.display = 'none';
-  }
+  hubHost.style.display = isTabActive ? '' : 'none';
 
-  // Mount at top of primaryColumn below sticky header
-  const header = primaryColumn.querySelector('div[data-testid="TopNavBar"], section > h1, section > h2');
-  if (header && header.parentElement) {
-    header.parentElement.insertBefore(hubHost, header.nextSibling);
-  } else {
-    primaryColumn.prepend(hubHost);
-  }
+  // Always mount at top of primaryColumn
+  primaryColumn.prepend(hubHost);
 
   hubShadow = hubHost.attachShadow({ mode: 'open' });
   hubRoot = createRoot(hubShadow);
 
-  const renderHub = async (activeQuery = '', activeFolderId: string | null = null, activeTag: string | null = null) => {
+  const renderHub = async (
+    activeQuery = currentQuery,
+    activeFolderId = currentFolderId,
+    activeTag = currentTag
+  ) => {
+    currentQuery = activeQuery;
+    currentFolderId = activeFolderId;
+    currentTag = activeTag;
+
     const [folders, bookmarksMap] = await Promise.all([
       foldersItem.getValue(),
       bookmarksItem.getValue(),
@@ -82,9 +114,9 @@ export function mountBookmarksHub(): void {
     const tags = Object.entries(tagMap).map(([name, count]) => ({ name, count }));
 
     const handleFilterChange = (q: string, fid: string | null, tag: string | null) => {
-      activeQuery = q;
-      activeFolderId = fid;
-      activeTag = tag;
+      currentQuery = q;
+      currentFolderId = fid;
+      currentTag = tag;
 
       const isDefault = !q.trim() && (fid === null || fid === 'all') && !tag;
       if (isDefault) {
@@ -95,6 +127,9 @@ export function mountBookmarksHub(): void {
         applyFeedFilter(matchingIds, {
           totalBookmarks: totalCount,
           onClearFilters: () => {
+            currentQuery = '';
+            currentFolderId = null;
+            currentTag = null;
             renderHub('', null, null);
           },
           onSyncNow: () => {
@@ -113,9 +148,11 @@ export function mountBookmarksHub(): void {
             countsByFolder,
             totalCount,
             tags,
+            selectedFolderId: currentFolderId,
+            selectedTag: currentTag,
             onFilterChange: handleFilterChange,
-            onFolderSaved: () => renderHub(activeQuery, activeFolderId, activeTag),
-            onFolderDeleted: () => renderHub(activeQuery, null, null),
+            onFolderSaved: () => renderHub(currentQuery, currentFolderId, currentTag),
+            onFolderDeleted: () => renderHub(currentQuery, null, null),
           }),
         })
       );
@@ -125,17 +162,15 @@ export function mountBookmarksHub(): void {
   renderHub();
 
   // Scrape visible bookmarks from DOM as fallback if bookmarks tab is active
-  if (isBookmarksTabActive()) {
+  if (isBookmarksTabActive(primaryColumn)) {
     scrapeVisibleBookmarksFromDom().catch(() => {});
   }
-  if (primaryColumn) {
-    scrapeObserver = new MutationObserver(() => {
-      if (isBookmarksTabActive()) {
-        scrapeVisibleBookmarksFromDom().catch(() => {});
-      }
-    });
-    scrapeObserver.observe(primaryColumn, { childList: true, subtree: true });
-  }
+  scrapeObserver = new MutationObserver(() => {
+    if (isBookmarksTabActive(primaryColumn)) {
+      scrapeVisibleBookmarksFromDom().catch(() => {});
+    }
+  });
+  scrapeObserver.observe(primaryColumn, { childList: true, subtree: true });
 
   // Watch storage updates
   const unwatchFolders = foldersItem.watch(() => {
@@ -151,16 +186,17 @@ export function mountBookmarksHub(): void {
   };
 }
 
-function setupTablistObserver(): void {
+function setupTablistObserver(primaryColumn: HTMLElement): void {
   if (tabObserver) return;
-  const primaryColumn = document.querySelector('div[data-testid="primaryColumn"]') || document.body;
-  if (!primaryColumn) return;
 
   tabObserver = new MutationObserver(() => {
-    const isTabActive = isBookmarksTabActive();
+    const isTabActive = isBookmarksTabActive(primaryColumn);
     if (isTabActive) {
       if (hubHost) {
         hubHost.style.display = '';
+        if (primaryColumn.firstElementChild !== hubHost) {
+          primaryColumn.prepend(hubHost);
+        }
       }
     } else {
       if (hubHost) {
@@ -183,6 +219,11 @@ export { scrapeVisibleBookmarksFromDom };
 export function unmountBookmarksHub(): void {
   stopAutoScrollSync();
 
+  if (primaryColumnObserver) {
+    primaryColumnObserver.disconnect();
+    primaryColumnObserver = null;
+  }
+
   if (tabObserver) {
     tabObserver.disconnect();
     tabObserver = null;
@@ -200,14 +241,18 @@ export function unmountBookmarksHub(): void {
 
   if (hubRoot) {
     hubRoot.render(null);
-  }
-
-  if (hubHost && hubHost.parentElement) {
-    hubHost.remove();
-    hubHost = null;
-    hubShadow = null;
     hubRoot = null;
   }
+
+  const existing = document.getElementById('bt-bookmarks-hub-root');
+  if (existing) {
+    existing.remove();
+  }
+  if (hubHost) {
+    hubHost.remove();
+    hubHost = null;
+  }
+  hubShadow = null;
 
   clearFeedFilter();
 }
