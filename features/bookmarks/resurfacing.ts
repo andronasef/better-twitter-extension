@@ -130,15 +130,24 @@ export async function initResurfacing(): Promise<void> {
 
   isActive = true;
   tweetCounter = 0;
-  const interval = Math.max(5, Math.min(50, settings.resurfacingInterval ?? 20));
+  const interval = Math.max(1, Math.min(50, settings.resurfacingInterval ?? 20));
 
   unsubTweetSeen = onTweetSeen(async (cell) => {
     if (!isActive) return;
+
+    // Strict validation: cell must contain a real organic tweet article
+    const tweetArticle = cell.querySelector('article[data-testid="tweet"]');
+    if (!tweetArticle) return;
 
     tweetCounter++;
     if (tweetCounter < interval) {
       return;
     }
+
+    // Proximity guards: never inject if this cell or adjacent cells already have a card
+    if (cell.querySelector('[data-bt-resurfaced-cell]')) return;
+    if (cell.previousElementSibling?.querySelector('[data-bt-resurfaced-cell]')) return;
+    if (cell.nextElementSibling?.querySelector('[data-bt-resurfaced-cell]')) return;
 
     tweetCounter = 0;
 
@@ -153,17 +162,15 @@ export async function initResurfacing(): Promise<void> {
       return;
     }
 
-    // Virtualizer protection: contain: content and overflow-anchor: auto (BOOK-09)
+    // Virtualizer protection: contain: content and append inside cellInnerDiv (BOOK-09)
+    // Twitter's ResizeObserver on cellInnerDiv automatically accommodates the expanded
+    // height and shifts subsequent absolute translateY positions without overlap.
     const container = document.createElement('div');
     container.setAttribute('data-bt-resurfaced-cell', 'true');
     container.style.cssText =
-      'contain: content; min-height: 120px; overflow-anchor: auto; margin-bottom: 12px;';
+      'contain: content; width: 100%; padding: 10px 16px; box-sizing: border-box;';
 
-    if (cell.parentElement) {
-      cell.parentElement.insertBefore(container, cell.nextSibling);
-    } else {
-      return;
-    }
+    cell.appendChild(container);
 
     const shadow = container.attachShadow({ mode: 'open' });
     const root = createRoot(shadow);

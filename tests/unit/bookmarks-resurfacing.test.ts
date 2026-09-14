@@ -181,5 +181,159 @@ describe('Bookmarks Resurfacing Engine (BOOK-07, BOOK-08, BOOK-09, D-11, D-12, D
       expect(getResurfacingState().isActive).toBe(false);
       expect(document.querySelector('[data-bt-resurfaced-cell]')).toBeNull();
     });
+
+    it('injects candidate inside cellInnerDiv when interval is reached', async () => {
+      window.history.pushState({}, '', '/home');
+
+      // Create container matching selector: primaryColumn section > h1 + div[aria-label] > div[style]
+      const primaryColumn = document.createElement('div');
+      primaryColumn.setAttribute('data-testid', 'primaryColumn');
+      const section = document.createElement('section');
+      const h1 = document.createElement('h1');
+      const ariaDiv = document.createElement('div');
+      ariaDiv.setAttribute('aria-label', 'Timeline: Your Home Timeline');
+      const timeline = document.createElement('div');
+      timeline.setAttribute('style', 'position: relative; min-height: 500px;');
+
+      ariaDiv.appendChild(timeline);
+      section.appendChild(h1);
+      section.appendChild(ariaDiv);
+      primaryColumn.appendChild(section);
+      document.body.appendChild(primaryColumn);
+
+      const makeCell = (id: string) => {
+        const cell = document.createElement('div');
+        cell.setAttribute('data-testid', 'cellInnerDiv');
+        const article = document.createElement('article');
+        article.setAttribute('data-testid', 'tweet');
+        const a = document.createElement('a');
+        a.href = `https://x.com/user/status/${id}`;
+        article.appendChild(a);
+        cell.appendChild(article);
+        timeline.appendChild(cell);
+        return cell;
+      };
+
+      const c1 = makeCell('101');
+      const c2 = makeCell('102');
+      const c3 = makeCell('103');
+
+      const pipeline = await import('@/entrypoints/x.content/pipeline');
+      pipeline.resetPipeline();
+
+      await initResurfacing();
+      pipeline.startPipeline();
+
+      // Give microtasks time to run async storage resolution and createRoot
+      await new Promise((r) => setTimeout(r, 50));
+
+      expect(c1.querySelector('[data-bt-resurfaced-cell]')).toBeNull();
+      expect(c2.querySelector('[data-bt-resurfaced-cell]')).toBeNull();
+      expect(c3.querySelector('[data-bt-resurfaced-cell]')).not.toBeNull();
+
+      pipeline.resetPipeline();
+      primaryColumn.remove();
+    });
+
+    it('ignores non-tweet cells such as composers or prompts without tweet article', async () => {
+      window.history.pushState({}, '', '/home');
+
+      const primaryColumn = document.createElement('div');
+      primaryColumn.setAttribute('data-testid', 'primaryColumn');
+      const section = document.createElement('section');
+      const h1 = document.createElement('h1');
+      const ariaDiv = document.createElement('div');
+      ariaDiv.setAttribute('aria-label', 'Timeline: Your Home Timeline');
+      const timeline = document.createElement('div');
+      timeline.setAttribute('style', 'position: relative; min-height: 500px;');
+
+      ariaDiv.appendChild(timeline);
+      section.appendChild(h1);
+      section.appendChild(ariaDiv);
+      primaryColumn.appendChild(section);
+      document.body.appendChild(primaryColumn);
+
+      // Composer cell (no article[data-testid="tweet"])
+      const composerCell = document.createElement('div');
+      composerCell.setAttribute('data-testid', 'cellInnerDiv');
+      const input = document.createElement('div');
+      input.textContent = "What is happening?!";
+      composerCell.appendChild(input);
+      timeline.appendChild(composerCell);
+
+      const pipeline = await import('@/entrypoints/x.content/pipeline');
+      pipeline.resetPipeline();
+
+      await initResurfacing();
+      pipeline.startPipeline();
+
+      await new Promise((r) => setTimeout(r, 50));
+
+      expect(getResurfacingState().tweetCounter).toBe(0);
+      expect(composerCell.querySelector('[data-bt-resurfaced-cell]')).toBeNull();
+
+      pipeline.resetPipeline();
+      primaryColumn.remove();
+    });
+
+    it('does not inject into cell if an adjacent cell already has a resurfaced card', async () => {
+      window.history.pushState({}, '', '/home');
+
+      await bookmarksSettingsItem.setValue({
+        resurfacingEnabled: true,
+        resurfacingInterval: 1, // 1 to test immediate injection attempt
+        askFolderOnSave: true,
+      });
+
+      const primaryColumn = document.createElement('div');
+      primaryColumn.setAttribute('data-testid', 'primaryColumn');
+      const section = document.createElement('section');
+      const h1 = document.createElement('h1');
+      const ariaDiv = document.createElement('div');
+      ariaDiv.setAttribute('aria-label', 'Timeline: Your Home Timeline');
+      const timeline = document.createElement('div');
+      timeline.setAttribute('style', 'position: relative; min-height: 500px;');
+
+      ariaDiv.appendChild(timeline);
+      section.appendChild(h1);
+      section.appendChild(ariaDiv);
+      primaryColumn.appendChild(section);
+      document.body.appendChild(primaryColumn);
+
+      const makeCell = (id: string) => {
+        const cell = document.createElement('div');
+        cell.setAttribute('data-testid', 'cellInnerDiv');
+        const article = document.createElement('article');
+        article.setAttribute('data-testid', 'tweet');
+        const a = document.createElement('a');
+        a.href = `https://x.com/user/status/${id}`;
+        article.appendChild(a);
+        cell.appendChild(article);
+        timeline.appendChild(cell);
+        return cell;
+      };
+
+      const c1 = makeCell('201');
+      const c2 = makeCell('202');
+
+      // Pre-mark c1 with a resurfaced card
+      const preCard = document.createElement('div');
+      preCard.setAttribute('data-bt-resurfaced-cell', 'true');
+      c1.appendChild(preCard);
+
+      const pipeline = await import('@/entrypoints/x.content/pipeline');
+      pipeline.resetPipeline();
+
+      await initResurfacing();
+      pipeline.startPipeline();
+
+      await new Promise((r) => setTimeout(r, 50));
+
+      // c2 is immediately adjacent to c1 which already has a resurfaced card, so proximity guard skips c2
+      expect(c2.querySelector('[data-bt-resurfaced-cell]')).toBeNull();
+
+      pipeline.resetPipeline();
+      primaryColumn.remove();
+    });
   });
 });
