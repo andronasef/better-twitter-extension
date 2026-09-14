@@ -274,37 +274,45 @@ ${t} [data-testid="SearchBox_Search_Input"] {
   color: var(--bt-theme-text) !important;
 }
 
-/* Themed scrollbars */
-${t}::-webkit-scrollbar,
-${t} *::-webkit-scrollbar {
+`;
+}).join("");
+
+/**
+ * Scrollbars, global. Driven purely by the token contract, so every theme -
+ * Old Twitter's light palette included - gets a matching scrollbar without
+ * per-theme duplication. Unthemed pages fall back to the :root defaults.
+ */
+const SCROLLBAR_RULES = `
+html::-webkit-scrollbar,
+html *::-webkit-scrollbar {
   width: 12px;
   height: 12px;
 }
 
-${t}::-webkit-scrollbar-track,
-${t} *::-webkit-scrollbar-track,
-${t}::-webkit-scrollbar-corner,
-${t} *::-webkit-scrollbar-corner {
+html::-webkit-scrollbar-track,
+html *::-webkit-scrollbar-track,
+html::-webkit-scrollbar-corner,
+html *::-webkit-scrollbar-corner {
   background: var(--bt-theme-bg);
 }
 
-${t}::-webkit-scrollbar-thumb,
-${t} *::-webkit-scrollbar-thumb {
+html::-webkit-scrollbar-thumb,
+html *::-webkit-scrollbar-thumb {
   background: var(--bt-theme-border);
   border-radius: 9999px;
   border: 3px solid var(--bt-theme-bg);
 }
 
-${t}::-webkit-scrollbar-thumb:hover,
-${t} *::-webkit-scrollbar-thumb:hover {
+html::-webkit-scrollbar-thumb:hover,
+html *::-webkit-scrollbar-thumb:hover {
   background: var(--bt-theme-accent);
 }
 
-${t} {
+html {
   scrollbar-color: var(--bt-theme-border) var(--bt-theme-bg) !important;
+  scrollbar-width: thin !important;
 }
 `;
-}).join("");
 
 /**
  * Surface recoloring & atmospheric vibe styling (Dracula, Nord, Matrix)
@@ -312,6 +320,7 @@ ${t} {
 export const APPLY_SURFACE_RULES = `
 ${composerSelector}
 ${stubbornSelector}
+${SCROLLBAR_RULES}
 
 ${htmlBgSelector} {
   background-color: var(--bt-theme-bg) !important;
