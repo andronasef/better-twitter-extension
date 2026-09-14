@@ -1,5 +1,6 @@
 import React from 'react';
 import type { CategoryEntry, FeatureEntry } from '@/lib/registry';
+import { BetterTwitterLogo } from '@/components/BetterTwitterLogo';
 
 interface TileGridProps {
   categories: CategoryEntry[];
@@ -21,6 +22,7 @@ export function TileGrid({
   if (populatedCategories.length === 0) {
     return (
       <div className="view-enter-grid h-full flex flex-col items-center justify-center py-8 px-4 text-center">
+        <BetterTwitterLogo size={44} className="mb-3 opacity-80" />
         <h2 className="text-[20px] font-bold text-[var(--bt-fg)]">No settings yet</h2>
         <p className="text-[13px] font-normal leading-[18.2px] text-[var(--bt-fg-muted)] mt-2 max-w-[280px]">
           Features add their own settings here. If this screen is empty, the extension didn&apos;t load properly &mdash; reload it from chrome://extensions.

@@ -1,6 +1,6 @@
 import { injectHideStylesheet } from '@/lib/hide-style';
 import { injectThemeStylesheet, applyThemeAttributes } from '@/lib/theme-engine';
-import { settingsItem } from '@/lib/storage';
+import { settingsItem, bookmarkSyncItem } from '@/lib/storage';
 import type { Settings, ThemeId } from '@/lib/storage';
 import { startPipeline, stopPipeline } from './pipeline';
 import { createSettingsDispatcher } from './dispatcher';
@@ -42,6 +42,7 @@ export default defineContentScript({
     initActionBarIntegration();
 
     ctx.onInvalidated(() => {
+      captureEngine.stopAutoScrollSync();
       teardownActionBarIntegration();
       unmountBookmarksHub();
       teardownResurfacing();
@@ -124,8 +125,14 @@ export default defineContentScript({
         const path = window.location.pathname;
         if (path === '/bookmarks' || path.startsWith('/i/bookmarks')) {
           mountBookmarksHub();
+          bookmarkSyncItem.getValue().then((sync) => {
+            if (sync?.status === 'syncing') {
+              captureEngine.startAutoScrollSync();
+            }
+          });
         } else {
           unmountBookmarksHub();
+          captureEngine.stopAutoScrollSync();
         }
 
         if (path === '/home' || path === '/') {

@@ -99,11 +99,20 @@ export async function handleBookmarksPayload(detail: {
   await bookmarksItem.setValue(nextBookmarks);
 
   // 5. Update sync checkpoint (BOOK-02)
-  const isComplete = extraction.bottomCursor === null;
-  const nextStatus = isComplete ? 'complete' : (syncState.status === 'syncing' ? 'syncing' : 'idle');
+  const isComplete =
+    extraction.bottomCursor === null ||
+    extraction.items.length === 0 ||
+    (extraction.bottomCursor === syncState.cursor && extraction.items.length === 0);
+
+  const nextStatus = isComplete
+    ? 'complete'
+    : syncState.status === 'syncing'
+      ? 'syncing'
+      : 'idle';
+
   await bookmarkSyncItem.setValue({
     ...syncState,
-    cursor: extraction.bottomCursor,
+    cursor: isComplete ? null : extraction.bottomCursor,
     totalCaptured: Object.keys(nextBookmarks).length,
     lastCheckpointTime: Date.now(),
     lastSyncTime: Date.now(),
@@ -111,15 +120,114 @@ export async function handleBookmarksPayload(detail: {
     errorReason: null,
   });
 
-  // If still actively syncing on the bookmarks page, auto-scroll to fetch the next batch
-  if (!isComplete && syncState.status === 'syncing' && typeof window !== 'undefined') {
-    const isBookmarksPage =
-      window.location.pathname === '/i/bookmarks' || window.location.pathname === '/bookmarks';
-    if (isBookmarksPage) {
+  if (isComplete) {
+    stopAutoScrollSync();
+  } else if (nextStatus === 'syncing') {
+    startAutoScrollSync();
+    if (typeof window !== 'undefined') {
       setTimeout(() => {
-        window.scrollBy({ top: 1200, behavior: 'smooth' });
-      }, 800);
+        scrollBookmarksToBottom();
+      }, 500);
     }
+  }
+}
+
+/**
+ * Safely scrolls the bookmarks timeline to the bottom to trigger X's infinite-scroll sentinel.
+ */
+export function scrollBookmarksToBottom(): void {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
+  const scrollTarget = Math.max(
+    document.documentElement.scrollHeight,
+    document.body?.scrollHeight || 0
+  );
+
+  window.scrollTo({ top: scrollTarget, behavior: 'smooth' });
+
+  // Also check if primary column has an independent scroll container
+  const primaryColumn = document.querySelector('[data-testid="primaryColumn"]');
+  if (
+    primaryColumn &&
+    (primaryColumn as HTMLElement).scrollHeight > (primaryColumn as HTMLElement).clientHeight
+  ) {
+    (primaryColumn as HTMLElement).scrollTop = (primaryColumn as HTMLElement).scrollHeight;
+  }
+
+  window.dispatchEvent(new Event('scroll'));
+  document.dispatchEvent(new Event('scroll'));
+}
+
+let autoScrollTimer: ReturnType<typeof setInterval> | null = null;
+let lastCapturedCount = -1;
+let stagnantCycles = 0;
+
+/**
+ * Starts continuous auto-scrolling loop while bookmarks sync is active.
+ */
+export function startAutoScrollSync(): void {
+  if (autoScrollTimer) return;
+
+  stagnantCycles = 0;
+  lastCapturedCount = -1;
+
+  // Immediately trigger initial scroll
+  scrollBookmarksToBottom();
+
+  autoScrollTimer = setInterval(async () => {
+    if (typeof window === 'undefined') {
+      stopAutoScrollSync();
+      return;
+    }
+
+    const path = window.location.pathname;
+    const isBookmarksPage = path === '/bookmarks' || path.startsWith('/i/bookmarks');
+    if (!isBookmarksPage) {
+      stopAutoScrollSync();
+      return;
+    }
+
+    const syncState = await bookmarkSyncItem.getValue();
+    if (syncState.status !== 'syncing') {
+      stopAutoScrollSync();
+      return;
+    }
+
+    const bookmarks = await bookmarksItem.getValue();
+    const currentCount = Object.keys(bookmarks).length;
+
+    if (currentCount === lastCapturedCount) {
+      stagnantCycles++;
+    } else {
+      stagnantCycles = 0;
+      lastCapturedCount = currentCount;
+    }
+
+    // If 4 consecutive cycles (~6 seconds) yield no new items while scrolled to the bottom,
+    // we have reached the end of the user's bookmarks
+    if (stagnantCycles >= 4) {
+      stopAutoScrollSync();
+      await bookmarkSyncItem.setValue({
+        ...syncState,
+        status: 'complete',
+        cursor: null,
+        lastSyncTime: Date.now(),
+        errorReason: null,
+      });
+      return;
+    }
+
+    scrollBookmarksToBottom();
+  }, 1500);
+}
+
+/**
+ * Stops the continuous auto-scrolling loop.
+ */
+export function stopAutoScrollSync(): void {
+  if (autoScrollTimer) {
+    clearInterval(autoScrollTimer);
+    autoScrollTimer = null;
   }
 }
 
@@ -169,8 +277,8 @@ export async function syncBookmarksBackground(): Promise<void> {
     (location.pathname === '/i/bookmarks' || location.pathname === '/bookmarks');
 
   if (isBookmarksPage) {
-    // On the bookmarks page, scroll to trigger next chunk
-    window.scrollBy({ top: 1200, behavior: 'smooth' });
+    startAutoScrollSync();
+    scrollBookmarksToBottom();
   } else {
     // Outside bookmarks page, try updating active tab first, then fallback to message
     try {
@@ -208,7 +316,7 @@ export async function resumeSync(): Promise<void> {
  */
 export const captureEngine = {
   init(): () => void {
-    const unsubs = [
+    const unsubs: Array<() => void> = [
       onBookmarksResponse((detail) => {
         handleBookmarksPayload(detail).catch(() => {});
       }),
@@ -217,7 +325,32 @@ export const captureEngine = {
       }),
     ];
 
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      const isBookmarksPage = path === '/bookmarks' || path.startsWith('/i/bookmarks');
+
+      const unwatchSync = bookmarkSyncItem.watch((state) => {
+        const currentPath = window.location.pathname;
+        const onBookmarks = currentPath === '/bookmarks' || currentPath.startsWith('/i/bookmarks');
+        if (state?.status === 'syncing' && onBookmarks) {
+          startAutoScrollSync();
+        } else if (state?.status !== 'syncing') {
+          stopAutoScrollSync();
+        }
+      });
+      unsubs.push(unwatchSync);
+
+      if (isBookmarksPage) {
+        bookmarkSyncItem.getValue().then((state) => {
+          if (state?.status === 'syncing') {
+            startAutoScrollSync();
+          }
+        });
+      }
+    }
+
     return () => {
+      stopAutoScrollSync();
       unsubs.forEach((u) => u());
     };
   },
@@ -225,4 +358,7 @@ export const captureEngine = {
   handleBookmarkMutation,
   syncBookmarksBackground,
   resumeSync,
+  startAutoScrollSync,
+  stopAutoScrollSync,
+  scrollBookmarksToBottom,
 };

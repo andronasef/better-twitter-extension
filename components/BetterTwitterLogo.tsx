@@ -1,0 +1,130 @@
+import React, { useId } from 'react';
+
+export interface BetterTwitterLogoProps extends React.SVGProps<SVGSVGElement> {
+  /**
+   * Width and height of the icon. Defaults to 24.
+   */
+  size?: number | string;
+  /**
+   * Color variant:
+   * - 'original': Signature vibrant blue gradient (#005cff to #03befd) with white eye & blue sparkle.
+   * - 'accent': Matches theme accent color (var(--bt-accent) or custom accentColor).
+   * - 'monochrome': Uses currentColor for bird and sparkle.
+   */
+  variant?: 'original' | 'accent' | 'monochrome';
+  /**
+   * Custom color to override bird & sparkle fill when in 'accent' or custom mode.
+   */
+  accentColor?: string;
+  /**
+   * Custom color for the smiling eye path. Defaults to '#ffffff' in 'original' mode.
+   */
+  eyeColor?: string;
+  /**
+   * Whether to render the 4-point sparkle star in front of the bird's beak. Defaults to true.
+   */
+  showSparkle?: boolean;
+}
+
+export function BetterTwitterLogo({
+  size = 24,
+  width,
+  height,
+  variant = 'original',
+  accentColor,
+  eyeColor,
+  showSparkle = true,
+  className,
+  style,
+  ...restProps
+}: BetterTwitterLogoProps) {
+  const reactId = useId().replace(/[^a-zA-Z0-9_-]/g, '');
+  const g1Id = `bt-logo-g1-${reactId}`;
+  const g2Id = `bt-logo-g2-${reactId}`;
+  const pId = `bt-logo-p-${reactId}`;
+
+  const renderWidth = width ?? size;
+  const renderHeight = height ?? size;
+
+  let birdFill: string;
+  let sparkleFill: string;
+  let resolvedEyeColor: string;
+
+  if (variant === 'accent') {
+    const accent = accentColor || 'var(--bt-accent, #1D9BF0)';
+    birdFill = accent;
+    sparkleFill = accent;
+    resolvedEyeColor = eyeColor || 'var(--bt-bg, #ffffff)';
+  } else if (variant === 'monochrome') {
+    const mono = accentColor || 'currentColor';
+    birdFill = mono;
+    sparkleFill = mono;
+    resolvedEyeColor = eyeColor || 'var(--bt-bg, #ffffff)';
+  } else {
+    // 'original'
+    birdFill = `url(#${g1Id})`;
+    sparkleFill = `url(#${g2Id})`;
+    resolvedEyeColor = eyeColor || '#ffffff';
+  }
+
+  return (
+    <svg
+      viewBox="0 0 1254 1254"
+      width={renderWidth}
+      height={renderHeight}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={style}
+      aria-hidden={restProps['aria-label'] || restProps['aria-labelledby'] ? undefined : true}
+      role="img"
+      {...restProps}
+    >
+      {variant === 'original' && (
+        <defs>
+          <linearGradient id={pId} gradientUnits="userSpaceOnUse" />
+          <linearGradient
+            id={g1Id}
+            x2="1"
+            href={`#${pId}`}
+            gradientTransform="matrix(330.877,-924.716,914.981,327.393,280.47,1189.631)"
+          >
+            <stop stopColor="#005cff" />
+            <stop offset="1" stopColor="#03befd" />
+          </linearGradient>
+          <linearGradient
+            id={g2Id}
+            x2="1"
+            href={`#${pId}`}
+            gradientTransform="matrix(173.154,-197.817,190.747,166.966,991.363,401.031)"
+          >
+            <stop stopColor="#006cfe" />
+            <stop offset="1" stopColor="#02c9fd" />
+          </linearGradient>
+        </defs>
+      )}
+
+      {/* Bird Silhouette */}
+      <path
+        d="m712.4 289.4c-10.1-0.9-24.6-1.8-34.4-0.6-29.4-0.4-64 7.4-91.6 17.9-95.3 36.4-157.2 119.1-174.8 217.9-109.2-25.8-221.5-103.4-309-172.1-1.5-1.1-3.3-2.7-5.3-4.4-9.3-8.2-23.6-20.8-31.4-13.9-16.6 14.7-25 52.8-28.5 73.3-11.9 70.4 4.6 142.7 45.8 201 17.4 24.2 35.1 41 58.7 58.8-39-4.1-71.4-12.1-106.8-28.4-2.5-1.1-4.9-0.3-7.1 1.1-4.4 7.5-1.7 22.9 0.1 33.1q0.3 1.8 0.6 3.4c15 89.9 81.5 166.7 174.8 178.5-21.1 6.8-43.1 10.4-65.2 10.6-2.9 0.1-5.8 0.1-8.8 0-6.3 0-12.7-0.1-18.6 0.6-3.4 0.4-3.7 1.7-4.9 4 0 12.1 27.1 43.7 36.3 52.9 34.6 34.6 81.5 54.1 130.4 54.3 8.7 0 20-0.3 28.6-1.5-9.4 7.7-29.8 19.5-40.6 25.5-62.1 35.4-131.1 57.1-202.3 63.8-3.6 0.4-9.2 0.4-15.7 0.5-16.9 0.3-39 0.6-42.7 6.3-0.7 10.1 21.9 20.8 33.9 26.5 1.8 0.8 3.3 1.5 4.5 2.1 75.5 37.8 158.3 58.8 242.7 61.7 169.1 6.9 333.9-53.8 458.1-168.7 90.5-82.9 156.6-189.1 191-306.9q5.4-18.5 9.3-37.4c3-14 4.6-37.2 12.2-48.8 6.3-9.7 20-18.6 28.8-26.2 10.9-9.4 72.1-61.4 73.2-70.2 0.1-1.1-0.4-1.9-1-2.8q-0.2-0.4-0.4-0.8c-7.4-5.1-32.3-4.4-56-3.7-18.7 0.5-36.6 1-44.6-1.4-2.8-0.9-6.8-22.2-8.5-27.6-7.8-24.6-19.4-47.8-34.3-68.9-12.7-18.8-31.6-37.8-49.2-51.8-42.4-33.1-93.6-53.2-147.3-57.7z"
+        fill={birdFill}
+      />
+
+      {/* Smiling Eye */}
+      <path
+        d="m839.9 489.8c-18.5-24.9-50.2-40.5-81.3-37.8-26.6 2.6-49.5 13.7-66.6 34.6-11.3 14.1-27.8 41.1-8.4 55.3 10.5 7.6 25.3 4.8 31.4-6.3 13.6-24.4 25.8-37 56.4-35l1.3 0.2c41.4 6.9 32.2 40.4 55.8 44.8 6.1 1.1 12.3-0.3 17.4-3.8 18.9-13.4 4.4-38-6-52z"
+        fill={resolvedEyeColor}
+      />
+
+      {/* 4-Point Sparkle Star */}
+      {showSparkle && (
+        <path
+          d="m1246.8 301.7c-6-7-42.5-14.1-55.7-19.1-43.5-15.1-69-42.5-88.2-83.2-5.3-13.2-9.5-26.8-12.7-40.6-1.5-6.9-4.9-29.6-11.2-32.3-2.5 0.5-4.7 1.2-5.9 3.8-4.9 10.9-6.6 26.7-9.9 38.8-16.8 62.6-52.3 101.4-115.2 119.1-10.2 2.9-32 6-38.6 12.7-0.6 1.7-0.9 2.2-0.8 2.6 0 0.5 0.3 0.9 1 2.8 5.3 4.2 19.3 6.7 26.1 8.2 37.8 8.4 71.4 25.2 95.7 55.8 24.3 30.6 31.3 62.6 39.6 99.3 0.8 3.2 3.4 6.9 6.4 8.5 9.6-1.4 9.9-19.4 11.7-27.3 9.4-41.5 26.6-81.1 62.1-106.7 23.2-16.8 49.2-25.8 77-31.4q1.1-0.3 2.6-0.5c6.7-1.2 16.9-3 16-10.5z"
+          fill={sparkleFill}
+        />
+      )}
+    </svg>
+  );
+}
+
+export default BetterTwitterLogo;

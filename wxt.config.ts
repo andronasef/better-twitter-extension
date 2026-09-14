@@ -13,6 +13,7 @@ export default defineConfig({
     permissions: ['storage'],
     action: {
       default_popup: 'popup.html',
+      default_title: 'Better Twitter',
     },
     web_accessible_resources: [
       {

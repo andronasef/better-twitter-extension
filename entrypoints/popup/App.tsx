@@ -11,6 +11,7 @@ import { TileGrid } from './TileGrid';
 import { CategoryPanel } from './CategoryPanel';
 import { ThemesPanel } from './ThemesPanel';
 import { BookmarksPanel } from './BookmarksPanel';
+import { BetterTwitterLogo } from '@/components/BetterTwitterLogo';
 
 const lightVars: Record<string, string> = {
   '--bt-accent': '#1D9BF0',
@@ -190,9 +191,12 @@ export default function App({
               </h1>
             </div>
           ) : (
-            <h1 className="text-[15px] font-bold tracking-tight text-[var(--bt-fg)]">
-              Better Twitter
-            </h1>
+            <div className="flex items-center gap-2">
+              <BetterTwitterLogo size={22} className="shrink-0" />
+              <h1 className="text-[16px] font-bold tracking-tight text-[var(--bt-fg)]">
+                Better Twitter
+              </h1>
+            </div>
           )}
         </header>
 
@@ -203,6 +207,7 @@ export default function App({
         >
           {settingsError ? (
             <div className="h-full flex flex-col items-center justify-center py-8 px-4 text-center">
+              <BetterTwitterLogo size={44} className="mb-3 opacity-80" />
               <h2 className="text-[20px] font-bold text-[var(--bt-fg)]">
                 Couldn&apos;t load your settings
               </h2>

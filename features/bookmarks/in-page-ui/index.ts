@@ -4,7 +4,7 @@ import { BookmarksToolbar } from './BookmarksToolbar';
 import { applyFeedFilter, clearFeedFilter } from './feed-filter';
 import { foldersItem, bookmarksItem, bookmarkSyncItem } from '@/lib/storage';
 import { searchBookmarks } from '../search';
-import { syncBookmarksBackground } from '../capture-engine';
+import { syncBookmarksBackground, stopAutoScrollSync } from '../capture-engine';
 import { extractBookmarkFromDom } from '../extractor';
 import { ShadowRootProvider } from '@/components/shadow-portal';
 import type { BookmarkFolder, BookmarkItem } from '../types';
@@ -161,7 +161,6 @@ export async function scrapeVisibleBookmarksFromDom(): Promise<number> {
       ...syncState,
       totalCaptured: Object.keys(next).length,
       lastSyncTime: Date.now(),
-      status: syncState.status === 'syncing' ? 'complete' : syncState.status,
       errorReason: null,
     });
   }
@@ -169,6 +168,8 @@ export async function scrapeVisibleBookmarksFromDom(): Promise<number> {
 }
 
 export function unmountBookmarksHub(): void {
+  stopAutoScrollSync();
+
   if (scrapeObserver) {
     scrapeObserver.disconnect();
     scrapeObserver = null;
