@@ -84,7 +84,7 @@ export function SubToggleRow({
               X changed its markup, so this toggle isn&apos;t finding anything right now. Everything else still works.
             </div>
             <a
-              href="https://github.com/thewh1teagle/better-twitter/issues"
+              href="https://bettertwitter.featurebase.app/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-[11px] text-[var(--bt-accent)] hover:underline inline-block mt-1"

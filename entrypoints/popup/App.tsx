@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Heart, Lightbulb, Bug } from 'lucide-react';
 import { categories as defaultCategories, features as defaultFeatures } from '@/lib/registry';
 import type { CategoryEntry, FeatureEntry } from '@/lib/registry';
 import { settingsItem, diagnosticsItem, xThemeItem } from '@/lib/storage';
 import type { Settings, Diagnostics, ThemeId } from '@/lib/storage';
 import { resolveScheme } from '@/lib/theme';
 import { browser } from 'wxt/browser';
-import { TooltipProvider } from '@/components/ui/tooltip';
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { TileGrid } from './TileGrid';
 import { CategoryPanel } from './CategoryPanel';
 import { ThemesPanel } from './ThemesPanel';
 import { BookmarksPanel } from './BookmarksPanel';
 import { BetterTwitterLogo } from '@/components/BetterTwitterLogo';
+import { GithubIcon } from '@/components/GithubIcon';
 
 const lightVars: Record<string, string> = {
   '--bt-accent': '#1D9BF0',
@@ -244,14 +245,91 @@ export default function App({
         {/* Footer - 40px fixed */}
         <footer className="h-[40px] min-h-[40px] px-4 flex items-center justify-between border-t border-[var(--bt-border)] text-[12px] text-[var(--bt-fg-muted)]">
           <span>{manifestVersion ? `v${manifestVersion}` : ''}</span>
-          <a
-            href="https://github.com/thewh1teagle/better-twitter/issues"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[12px] text-[var(--bt-accent)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bt-accent)] focus-visible:ring-offset-2 rounded-[2px]"
-          >
-            Report an issue
-          </a>
+          <div className="flex items-center gap-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <a
+                  href="https://andronasef.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Maker (Andro Nasef)"
+                  className="h-7 w-7 flex items-center justify-center rounded-[6px] text-[var(--bt-fg-muted)] hover:text-[var(--bt-destructive)] hover:bg-[var(--bt-surface)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bt-accent)] cursor-pointer"
+                >
+                  <Heart className="h-4 w-4" />
+                </a>
+              </TooltipTrigger>
+              <TooltipContent
+                side="top"
+                sideOffset={6}
+                className="bg-[var(--bt-surface)] text-[var(--bt-fg)] border border-[var(--bt-border)] rounded-[6px] px-2 py-1 text-[11px] font-medium shadow-sm z-50 pointer-events-none"
+              >
+                Maker (Andro Nasef)
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <a
+                  href="https://github.com/andronasef/better-twitter-extension"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="GitHub Repository"
+                  className="h-7 w-7 flex items-center justify-center rounded-[6px] text-[var(--bt-fg-muted)] hover:text-[var(--bt-fg)] hover:bg-[var(--bt-surface)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bt-accent)] cursor-pointer"
+                >
+                  <GithubIcon className="h-4 w-4" />
+                </a>
+              </TooltipTrigger>
+              <TooltipContent
+                side="top"
+                sideOffset={6}
+                className="bg-[var(--bt-surface)] text-[var(--bt-fg)] border border-[var(--bt-border)] rounded-[6px] px-2 py-1 text-[11px] font-medium shadow-sm z-50 pointer-events-none"
+              >
+                GitHub Repository
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <a
+                  href="https://bettertwitter.featurebase.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Suggest a Feature"
+                  className="h-7 w-7 flex items-center justify-center rounded-[6px] text-[var(--bt-fg-muted)] hover:text-[var(--bt-fg)] hover:bg-[var(--bt-surface)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bt-accent)] cursor-pointer"
+                >
+                  <Lightbulb className="h-4 w-4" />
+                </a>
+              </TooltipTrigger>
+              <TooltipContent
+                side="top"
+                sideOffset={6}
+                className="bg-[var(--bt-surface)] text-[var(--bt-fg)] border border-[var(--bt-border)] rounded-[6px] px-2 py-1 text-[11px] font-medium shadow-sm z-50 pointer-events-none"
+              >
+                Suggest a Feature
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <a
+                  href="https://bettertwitter.featurebase.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Report a Bug"
+                  className="h-7 w-7 flex items-center justify-center rounded-[6px] text-[var(--bt-fg-muted)] hover:text-[var(--bt-fg)] hover:bg-[var(--bt-surface)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bt-accent)] cursor-pointer"
+                >
+                  <Bug className="h-4 w-4" />
+                </a>
+              </TooltipTrigger>
+              <TooltipContent
+                side="top"
+                sideOffset={6}
+                className="bg-[var(--bt-surface)] text-[var(--bt-fg)] border border-[var(--bt-border)] rounded-[6px] px-2 py-1 text-[11px] font-medium shadow-sm z-50 pointer-events-none"
+              >
+                Report a Bug
+              </TooltipContent>
+            </Tooltip>
+          </div>
         </footer>
       </div>
     </TooltipProvider>

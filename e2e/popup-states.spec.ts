@@ -62,12 +62,15 @@ test.describe('Popup UI States & Interaction Contract', () => {
     await expect(header).toHaveText('Better Twitter');
     await expect(header.locator('button')).toHaveCount(0);
 
-    // 3. Assert footer (40px fixed) with runtime version and report link only
+    // 3. Assert footer (40px fixed) with runtime version and 4 icon links
     const footer = page.locator('footer');
     await expect(footer.locator('span')).toHaveText(/^v\d+\.\d+\.\d+/);
-    const reportLink = footer.locator('a');
-    await expect(reportLink).toHaveText('Report an issue');
-    await expect(reportLink).toHaveAttribute('href', /github\.com/);
+    const footerLinks = footer.locator('a');
+    await expect(footerLinks).toHaveCount(4);
+    await expect(footerLinks.nth(0)).toHaveAttribute('href', 'https://andronasef.com');
+    await expect(footerLinks.nth(1)).toHaveAttribute('href', 'https://github.com/andronasef/better-twitter-extension');
+    await expect(footerLinks.nth(2)).toHaveAttribute('href', 'https://bettertwitter.featurebase.app/');
+    await expect(footerLinks.nth(3)).toHaveAttribute('href', 'https://bettertwitter.featurebase.app/');
 
     // 4. Assert category tiles in 3-column grid (Timeline, Themes)
     const tiles = page.locator('main button');
@@ -226,7 +229,7 @@ test.describe('Popup UI States & Interaction Contract', () => {
 
     // Header and footer are still present
     await expect(page.locator('header')).toHaveText('Better Twitter');
-    await expect(page.locator('footer a')).toHaveText('Report an issue');
+    await expect(page.locator('footer a')).toHaveCount(4);
 
     await page.close();
   });
@@ -245,7 +248,7 @@ test.describe('Popup UI States & Interaction Contract', () => {
 
     // Header and footer remain rendered
     await expect(page.locator('header')).toHaveText('Better Twitter');
-    await expect(page.locator('footer a')).toHaveText('Report an issue');
+    await expect(page.locator('footer a')).toHaveCount(4);
 
     await page.close();
   });
