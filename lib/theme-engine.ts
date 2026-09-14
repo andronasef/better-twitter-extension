@@ -217,6 +217,20 @@ ${t} [style*="color: rgb(83, 100, 113)"] {
   color: var(--bt-theme-text-muted) !important;
 }
 
+/* Inline borders: the tab-strip "+" (Manage timelines) underline, the
+   audience/search pill outlines. Their inline color values need mapping too -
+   the color/background rules above never touch border-color. */
+${t} [style*="border-color: rgb(83, 100, 113)"],
+${t} [style*="border-color: rgb(51, 54, 57)"],
+${t} [style*="border-color: rgb(47, 51, 54)"] {
+  border-color: var(--bt-theme-border) !important;
+}
+
+${t} [style*="solid rgb(239, 243, 244)"],
+${t} [style*="solid rgb(231, 233, 234)"] {
+  border-color: var(--bt-theme-text) !important;
+}
+
 /* X ships its light pill buttons (Follow, Post, Reply, Subscribe) as a
    hardcoded near-white background with near-black text. */
 ${t} [style*="background-color: rgb(239, 243, 244)"] {
@@ -255,6 +269,30 @@ ${t} [data-testid="primaryColumn"] > div > div {
 ${t} [data-testid="toolBar"],
 ${t} [data-testid="toolBar"] div {
   background-color: transparent !important;
+}
+
+/* The composer's whole bottom bar (audience button + toolbar + Post) sits in
+   its own black wrapper. Blank every ancestor of the toolbar - the outer
+   composer wrapper above is more specific, so it keeps the surface colour. */
+${t} [data-testid="primaryColumn"] div:has([data-testid="toolBar"]) {
+  background-color: transparent !important;
+}
+
+/* ScrollSnap arrows on the tab strip and the toolbar carry an inline
+   translucent X-dark fill. */
+${t} [style*="background-color: rgba(15, 20, 25"] {
+  background-color: var(--bt-theme-surface) !important;
+}
+
+/* "See new posts" pill - X blue from its own classes, white label. */
+${t} [role="status"] button:has([data-testid="pillLabel"]) {
+  background-color: var(--bt-theme-accent) !important;
+}
+
+${t} [data-testid="pillLabel"],
+${t} [role="status"] button:has([data-testid="pillLabel"]) svg {
+  color: var(--bt-theme-bg) !important;
+  fill: var(--bt-theme-bg) !important;
 }
 
 ${t} [data-testid="trend"]:hover,
