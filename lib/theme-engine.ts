@@ -285,32 +285,48 @@ ${t} [data-testid="SearchBox_Search_Input"] {
 const SCROLLBAR_RULES = `
 html::-webkit-scrollbar,
 html *::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
 }
 
+/* Transparent track, and a thumb inset with a transparent border rather than a
+   --bt-theme-bg one: the page background is not what sits behind every
+   scroller (the left rail is a surface), so a solid inset border made the rail
+   scrollbar read as a different shape from the page one. */
 html::-webkit-scrollbar-track,
 html *::-webkit-scrollbar-track,
 html::-webkit-scrollbar-corner,
 html *::-webkit-scrollbar-corner {
-  background: var(--bt-theme-bg);
+  background: transparent !important;
 }
 
 html::-webkit-scrollbar-thumb,
 html *::-webkit-scrollbar-thumb {
-  background: var(--bt-theme-border);
-  border-radius: 9999px;
-  border: 3px solid var(--bt-theme-bg);
+  background: var(--bt-theme-text-muted) !important;
+  border-radius: 9999px !important;
+  border: 3px solid transparent !important;
+  background-clip: padding-box !important;
+  min-height: 40px;
 }
 
 html::-webkit-scrollbar-thumb:hover,
 html *::-webkit-scrollbar-thumb:hover {
-  background: var(--bt-theme-accent);
+  background: var(--bt-theme-accent) !important;
+  background-clip: padding-box !important;
 }
 
 html {
-  scrollbar-color: var(--bt-theme-border) var(--bt-theme-bg) !important;
-  scrollbar-width: thin !important;
+  scrollbar-width: auto !important;
+}
+
+/* X sets scrollbar-color on its own scrollers (the left rail gets
+   rgb(113,118,123)), and in Chrome that standard property wins over every
+   ::-webkit-scrollbar rule for that element - which is why the rail scrollbar
+   stayed grey while the page one was themed. Set it on every element.
+   scrollbar-width is left alone here so scrollers X deliberately hides stay hidden. */
+html,
+html * {
+  scrollbar-color: var(--bt-theme-text-muted) transparent !important;
 }
 `;
 
