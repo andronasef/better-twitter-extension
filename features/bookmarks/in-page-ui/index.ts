@@ -4,25 +4,34 @@ import { BookmarksToolbar } from './BookmarksToolbar';
 import { applyFeedFilter, clearFeedFilter } from './feed-filter';
 import { foldersItem, bookmarksItem, bookmarkSyncItem } from '@/lib/storage';
 import { searchBookmarks } from '../search';
-import { syncBookmarksBackground, stopAutoScrollSync } from '../capture-engine';
+import { syncBookmarksBackground, stopAutoScrollSync, scrapeVisibleBookmarksFromDom } from '../capture-engine';
 import { extractBookmarkFromDom } from '../extractor';
 import { ShadowRootProvider } from '@/components/shadow-portal';
+import { isBookmarksRoute, isBookmarksTabActive } from '../routes';
 import type { BookmarkFolder, BookmarkItem } from '../types';
 
 let hubHost: HTMLDivElement | null = null;
 let hubShadow: ShadowRoot | null = null;
 let hubRoot: Root | null = null;
 let unwatchStorage: (() => void) | null = null;
+let scrapeObserver: MutationObserver | null = null;
+let tabObserver: MutationObserver | null = null;
 
 export function mountBookmarksHub(): void {
   if (typeof window === 'undefined') return;
 
   const pathname = window.location.pathname;
-  if (pathname !== '/bookmarks' && !pathname.startsWith('/i/bookmarks')) {
+  if (!isBookmarksRoute(pathname)) {
     return;
   }
 
+  // Setup tablist observer for history / tabbed views
+  setupTablistObserver();
+
   if (document.getElementById('bt-bookmarks-hub-root')) {
+    if (hubHost) {
+      hubHost.style.display = isBookmarksTabActive() ? '' : 'none';
+    }
     return;
   }
 
@@ -31,6 +40,9 @@ export function mountBookmarksHub(): void {
 
   hubHost = document.createElement('div');
   hubHost.id = 'bt-bookmarks-hub-root';
+  if (!isBookmarksTabActive()) {
+    hubHost.style.display = 'none';
+  }
 
   // Mount at top of primaryColumn below sticky header
   const header = primaryColumn.querySelector('div[data-testid="TopNavBar"], section > h1, section > h2');
@@ -112,11 +124,15 @@ export function mountBookmarksHub(): void {
 
   renderHub();
 
-  // Scrape visible bookmarks from DOM as fallback
-  scrapeVisibleBookmarksFromDom().catch(() => {});
+  // Scrape visible bookmarks from DOM as fallback if bookmarks tab is active
+  if (isBookmarksTabActive()) {
+    scrapeVisibleBookmarksFromDom().catch(() => {});
+  }
   if (primaryColumn) {
     scrapeObserver = new MutationObserver(() => {
-      scrapeVisibleBookmarksFromDom().catch(() => {});
+      if (isBookmarksTabActive()) {
+        scrapeVisibleBookmarksFromDom().catch(() => {});
+      }
     });
     scrapeObserver.observe(primaryColumn, { childList: true, subtree: true });
   }
@@ -135,40 +151,42 @@ export function mountBookmarksHub(): void {
   };
 }
 
-let scrapeObserver: MutationObserver | null = null;
+function setupTablistObserver(): void {
+  if (tabObserver) return;
+  const primaryColumn = document.querySelector('div[data-testid="primaryColumn"]') || document.body;
+  if (!primaryColumn) return;
 
-export async function scrapeVisibleBookmarksFromDom(): Promise<number> {
-  if (typeof document === 'undefined') return 0;
-  const articles = document.querySelectorAll('article[data-testid="tweet"]');
-  if (articles.length === 0) return 0;
-
-  const currentBookmarks = await bookmarksItem.getValue();
-  let added = 0;
-  const next = { ...currentBookmarks };
-
-  articles.forEach((art) => {
-    const item = extractBookmarkFromDom(art);
-    if (item && item.id && !next[item.id]) {
-      next[item.id] = item;
-      added++;
+  tabObserver = new MutationObserver(() => {
+    const isTabActive = isBookmarksTabActive();
+    if (isTabActive) {
+      if (hubHost) {
+        hubHost.style.display = '';
+      }
+    } else {
+      if (hubHost) {
+        hubHost.style.display = 'none';
+      }
+      clearFeedFilter();
     }
   });
 
-  if (added > 0) {
-    await bookmarksItem.setValue(next);
-    const syncState = await bookmarkSyncItem.getValue();
-    await bookmarkSyncItem.setValue({
-      ...syncState,
-      totalCaptured: Object.keys(next).length,
-      lastSyncTime: Date.now(),
-      errorReason: null,
-    });
-  }
-  return added;
+  tabObserver.observe(primaryColumn, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['aria-selected'],
+  });
 }
+
+export { scrapeVisibleBookmarksFromDom };
 
 export function unmountBookmarksHub(): void {
   stopAutoScrollSync();
+
+  if (tabObserver) {
+    tabObserver.disconnect();
+    tabObserver = null;
+  }
 
   if (scrapeObserver) {
     scrapeObserver.disconnect();

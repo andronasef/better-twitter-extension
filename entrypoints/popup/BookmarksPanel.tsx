@@ -24,6 +24,7 @@ import type {
   BookmarkSyncState,
   BookmarksSettings,
 } from '@/features/bookmarks/types';
+import { isBookmarksRoute } from '@/features/bookmarks/routes';
 
 function formatRelativeTime(timestamp: number): string {
   if (!timestamp) return 'Never synced';
@@ -176,8 +177,17 @@ export function BookmarksPanel() {
     try {
       const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
       if (activeTab?.id) {
-        await browser.tabs.update(activeTab.id, { url: 'https://x.com/i/bookmarks' });
-        return;
+        let isAlreadyOnBookmarks = false;
+        if (activeTab.url) {
+          try {
+            const urlObj = new URL(activeTab.url);
+            isAlreadyOnBookmarks = isBookmarksRoute(urlObj.pathname);
+          } catch {}
+        }
+        if (!isAlreadyOnBookmarks) {
+          await browser.tabs.update(activeTab.id, { url: 'https://x.com/i/bookmarks' });
+          return;
+        }
       }
     } catch {}
 

@@ -18,6 +18,7 @@ import { startThemeProbe } from './theme-probe';
 import { initActionBarIntegration, teardownActionBarIntegration } from '@/features/bookmarks/action-bar';
 import { captureEngine } from '@/features/bookmarks/capture-engine';
 import { mountBookmarksHub, unmountBookmarksHub } from '@/features/bookmarks/in-page-ui';
+import { isBookmarksRoute } from '@/features/bookmarks/routes';
 import { initResurfacing, teardownResurfacing } from '@/features/bookmarks/resurfacing';
 
 export default defineContentScript({
@@ -123,7 +124,7 @@ export default defineContentScript({
         }
 
         const path = window.location.pathname;
-        if (path === '/bookmarks' || path.startsWith('/i/bookmarks')) {
+        if (isBookmarksRoute(path)) {
           mountBookmarksHub();
           bookmarkSyncItem.getValue().then((sync) => {
             if (sync?.status === 'syncing') {

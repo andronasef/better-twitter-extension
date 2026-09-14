@@ -13,6 +13,7 @@ import {
   type BookmarksResponseDetail,
   type BookmarkMutationDetail,
 } from '@/entrypoints/x.content/bridge-client';
+import { isBookmarksRoute } from './routes';
 import type { BookmarkSyncState } from './types';
 
 export const ERROR_COPY = {
@@ -124,12 +125,40 @@ export async function handleBookmarksPayload(detail: {
     stopAutoScrollSync();
   } else if (nextStatus === 'syncing') {
     startAutoScrollSync();
-    if (typeof window !== 'undefined') {
-      setTimeout(() => {
-        scrollBookmarksToBottom();
-      }, 500);
-    }
   }
+}
+
+/**
+ * Scrapes all visible tweet articles from the DOM on the bookmarks page.
+ */
+export async function scrapeVisibleBookmarksFromDom(): Promise<number> {
+  if (typeof document === 'undefined') return 0;
+  const articles = document.querySelectorAll('article[data-testid="tweet"]');
+  if (articles.length === 0) return 0;
+
+  const currentBookmarks = await bookmarksItem.getValue();
+  let added = 0;
+  const next = { ...currentBookmarks };
+
+  articles.forEach((art) => {
+    const item = extractBookmarkFromDom(art);
+    if (item && item.id && !next[item.id]) {
+      next[item.id] = item;
+      added++;
+    }
+  });
+
+  if (added > 0) {
+    await bookmarksItem.setValue(next);
+    const syncState = await bookmarkSyncItem.getValue();
+    await bookmarkSyncItem.setValue({
+      ...syncState,
+      totalCaptured: Object.keys(next).length,
+      lastSyncTime: Date.now(),
+      errorReason: null,
+    });
+  }
+  return added;
 }
 
 /**
@@ -154,34 +183,59 @@ export function scrollBookmarksToBottom(): void {
     (primaryColumn as HTMLElement).scrollTop = (primaryColumn as HTMLElement).scrollHeight;
   }
 
+  // Scroll bottom sentinel / last cell into view to trigger IntersectionObserver
+  const bottomSentinel =
+    document.querySelector('div[data-testid="primaryColumn"] [role="progressbar"]') ||
+    document.querySelector('div[data-testid="cellInnerDiv"]:last-child') ||
+    document.querySelector('article[data-testid="tweet"]:last-of-type');
+
+  if (bottomSentinel && typeof (bottomSentinel as HTMLElement).scrollIntoView === 'function') {
+    (bottomSentinel as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }
+
   window.dispatchEvent(new Event('scroll'));
   document.dispatchEvent(new Event('scroll'));
 }
 
-let autoScrollTimer: ReturnType<typeof setInterval> | null = null;
-let lastCapturedCount = -1;
-let stagnantCycles = 0;
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+let isSyncLoopRunning = false;
 
 /**
  * Starts continuous auto-scrolling loop while bookmarks sync is active.
+ * Intelligently waits for each batch of tweets to finish loading and rendering before scrolling again.
  */
 export function startAutoScrollSync(): void {
-  if (autoScrollTimer) return;
+  if (isSyncLoopRunning) return;
+  isSyncLoopRunning = true;
+  runAutoScrollLoop().finally(() => {
+    isSyncLoopRunning = false;
+  });
+}
 
-  stagnantCycles = 0;
-  lastCapturedCount = -1;
+/**
+ * Stops the continuous auto-scrolling loop.
+ */
+export function stopAutoScrollSync(): void {
+  isSyncLoopRunning = false;
+}
 
-  // Immediately trigger initial scroll
-  scrollBookmarksToBottom();
+async function runAutoScrollLoop(): Promise<void> {
+  // Give the page a brief moment to initialize if just opened
+  await sleep(1000);
 
-  autoScrollTimer = setInterval(async () => {
-    if (typeof window === 'undefined') {
-      stopAutoScrollSync();
-      return;
+  let consecutiveEmptyChecks = 0;
+  let lastCapturedCount = -1;
+
+  while (isSyncLoopRunning) {
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+      break;
     }
 
     const path = window.location.pathname;
-    const isBookmarksPage = path === '/bookmarks' || path.startsWith('/i/bookmarks');
+    const isBookmarksPage = isBookmarksRoute(path);
     if (!isBookmarksPage) {
       stopAutoScrollSync();
       return;
@@ -189,45 +243,93 @@ export function startAutoScrollSync(): void {
 
     const syncState = await bookmarkSyncItem.getValue();
     if (syncState.status !== 'syncing') {
-      stopAutoScrollSync();
-      return;
+      break;
     }
 
+    // 1. Wait if initial page load is still in flight (0 tweets rendered)
+    const tweetElements = document.querySelectorAll('article[data-testid="tweet"]');
+    if (tweetElements.length === 0) {
+      await sleep(1000);
+      continue;
+    }
+
+    // 2. Ingest any visible tweets from DOM
+    await scrapeVisibleBookmarksFromDom();
+
+    // 3. Track captured count progress
     const bookmarks = await bookmarksItem.getValue();
     const currentCount = Object.keys(bookmarks).length;
 
-    if (currentCount === lastCapturedCount) {
-      stagnantCycles++;
-    } else {
-      stagnantCycles = 0;
+    if (currentCount > lastCapturedCount) {
       lastCapturedCount = currentCount;
+      consecutiveEmptyChecks = 0;
+      // Newly loaded batch detected!
+      // Crucial: wait for Twitter to fully finish mounting and rendering tweets before scrolling again!
+      await sleep(1500);
     }
 
-    // If 4 consecutive cycles (~6 seconds) yield no new items while scrolled to the bottom,
-    // we have reached the end of the user's bookmarks
-    if (stagnantCycles >= 4) {
-      stopAutoScrollSync();
-      await bookmarkSyncItem.setValue({
-        ...syncState,
-        status: 'complete',
-        cursor: null,
-        lastSyncTime: Date.now(),
-        errorReason: null,
-      });
-      return;
+    // 4. Check if GraphQL already signaled completion
+    const checkState = await bookmarkSyncItem.getValue();
+    if (checkState.status === 'complete') {
+      break;
     }
 
+    // 5. Scroll down to trigger the next batch
     scrollBookmarksToBottom();
-  }, 1500);
-}
 
-/**
- * Stops the continuous auto-scrolling loop.
- */
-export function stopAutoScrollSync(): void {
-  if (autoScrollTimer) {
-    clearInterval(autoScrollTimer);
-    autoScrollTimer = null;
+    // 6. Wait for Twitter to respond, fetch, and render the next batch of tweets
+    let batchArrived = false;
+    const scrollTime = Date.now();
+
+    while (Date.now() - scrollTime < 10000 && isSyncLoopRunning) {
+      await sleep(600);
+
+      // Check if spinner is visible (Twitter is actively loading)
+      const spinnerActive = Boolean(
+        document.querySelector('[role="progressbar"]') ||
+        document.querySelector('[aria-label*="Loading" i]')
+      );
+      if (spinnerActive) {
+        // Keep waiting while Twitter is fetching over network
+        continue;
+      }
+
+      // Check if new bookmarks were parsed and saved to storage
+      const freshBookmarks = await bookmarksItem.getValue();
+      if (Object.keys(freshBookmarks).length > currentCount) {
+        batchArrived = true;
+        break;
+      }
+
+      // Check if new tweet elements were added to the DOM
+      const currentTweets = document.querySelectorAll('article[data-testid="tweet"]');
+      if (currentTweets.length > tweetElements.length) {
+        batchArrived = true;
+        break;
+      }
+    }
+
+    if (batchArrived) {
+      consecutiveEmptyChecks = 0;
+      // Wait for the new tweets to finish rendering and layout to settle before next scroll
+      await sleep(1500);
+    } else {
+      consecutiveEmptyChecks++;
+
+      // If we waited at the bottom across 3 cycles (~30 seconds) with no spinner and no new tweets,
+      // all available bookmarks have been loaded
+      if (consecutiveEmptyChecks >= 3) {
+        const finalSync = await bookmarkSyncItem.getValue();
+        await bookmarkSyncItem.setValue({
+          ...finalSync,
+          status: 'complete',
+          cursor: null,
+          lastSyncTime: Date.now(),
+          errorReason: null,
+        });
+        break;
+      }
+    }
   }
 }
 
@@ -273,8 +375,7 @@ export async function syncBookmarksBackground(): Promise<void> {
   });
 
   const isBookmarksPage =
-    typeof location !== 'undefined' &&
-    (location.pathname === '/i/bookmarks' || location.pathname === '/bookmarks');
+    typeof location !== 'undefined' && isBookmarksRoute(location.pathname);
 
   if (isBookmarksPage) {
     startAutoScrollSync();
@@ -327,11 +428,11 @@ export const captureEngine = {
 
     if (typeof window !== 'undefined') {
       const path = window.location.pathname;
-      const isBookmarksPage = path === '/bookmarks' || path.startsWith('/i/bookmarks');
+      const isBookmarksPage = isBookmarksRoute(path);
 
       const unwatchSync = bookmarkSyncItem.watch((state) => {
         const currentPath = window.location.pathname;
-        const onBookmarks = currentPath === '/bookmarks' || currentPath.startsWith('/i/bookmarks');
+        const onBookmarks = isBookmarksRoute(currentPath);
         if (state?.status === 'syncing' && onBookmarks) {
           startAutoScrollSync();
         } else if (state?.status !== 'syncing') {
