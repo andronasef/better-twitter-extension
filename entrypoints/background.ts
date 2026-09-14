@@ -1,4 +1,5 @@
 import { diagnosticsItem } from '@/lib/storage';
+import { BOOKMARKS_URL } from '@/features/bookmarks/routes';
 
 export default defineBackground(() => {
   const syncBadge = async () => {
@@ -42,12 +43,12 @@ export default defineBackground(() => {
       try {
         browser.tabs.query({ active: true, currentWindow: true }).then(([activeTab]) => {
           if (activeTab?.id) {
-            browser.tabs.update(activeTab.id, { url: 'https://x.com/i/bookmarks' });
+            browser.tabs.update(activeTab.id, { url: BOOKMARKS_URL });
           } else {
-            browser.tabs.create({ url: 'https://x.com/i/bookmarks', active: true });
+            browser.tabs.create({ url: BOOKMARKS_URL, active: true });
           }
         }).catch(() => {
-          browser.tabs.create({ url: 'https://x.com/i/bookmarks', active: true });
+          browser.tabs.create({ url: BOOKMARKS_URL, active: true });
         });
       } catch (err) {
         console.error('[BetterTwitter] Failed to navigate to bookmarks tab:', err);

@@ -3,6 +3,11 @@
  */
 
 /**
+ * Primary canonical URL for Bookmarks on X/Twitter (unified under History hub).
+ */
+export const BOOKMARKS_URL = 'https://x.com/i/history';
+
+/**
  * Determines whether a URL pathname corresponds to a Bookmarks or History Bookmarks view.
  */
 export function isBookmarksRoute(pathname?: string | null): boolean {
@@ -43,15 +48,27 @@ export function isBookmarksRoute(pathname?: string | null): boolean {
  */
 export function isBookmarksTabActive(root: ParentNode = document): boolean {
   if (typeof document === 'undefined') return true;
-  const tablist = root.querySelector('div[role="tablist"]');
+  const primary = (root as HTMLElement).matches?.('div[data-testid="primaryColumn"]')
+    ? (root as HTMLElement)
+    : root.querySelector('div[data-testid="primaryColumn"]') || root;
+
+  const tablist = primary.querySelector('[role="tablist"]');
   if (!tablist) return true;
 
   const selectedTab = tablist.querySelector('[role="tab"][aria-selected="true"]');
   if (!selectedTab) return true;
 
   const text = (selectedTab.textContent || '').trim().toLowerCase();
+  const href = (selectedTab.getAttribute('href') || '').toLowerCase();
   // If explicitly on Likes, Videos, or Articles, bookmarks is not active
-  if (text.includes('like') || text.includes('video') || text.includes('article')) {
+  if (
+    text.includes('like') ||
+    href.includes('/likes') ||
+    text.includes('video') ||
+    href.includes('/videos') ||
+    text.includes('article') ||
+    href.includes('/articles')
+  ) {
     return false;
   }
   return true;

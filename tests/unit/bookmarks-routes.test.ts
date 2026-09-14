@@ -1,7 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { isBookmarksRoute, isBookmarksTabActive } from '@/features/bookmarks/routes';
+import { isBookmarksRoute, isBookmarksTabActive, BOOKMARKS_URL } from '@/features/bookmarks/routes';
 
 describe('Bookmarks Routes & History Detection', () => {
+  it('points BOOKMARKS_URL to https://x.com/i/history', () => {
+    expect(BOOKMARKS_URL).toBe('https://x.com/i/history');
+  });
   it('identifies classic bookmark routes', () => {
     expect(isBookmarksRoute('/bookmarks')).toBe(true);
     expect(isBookmarksRoute('/i/bookmarks')).toBe(true);

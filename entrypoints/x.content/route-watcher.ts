@@ -107,6 +107,9 @@ export function startRouteWatcher(options?: RouteWatcherOptions): void {
 
   if (started) return;
   started = true;
+  if (!lastSeenUrl && typeof window !== 'undefined' && window.location?.href) {
+    lastSeenUrl = window.location.href;
+  }
 
   // Source 1: MAIN-world bridge (Primary)
   onBridgeNavigate(({ url }) => {
