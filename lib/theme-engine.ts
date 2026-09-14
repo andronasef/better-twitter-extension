@@ -156,9 +156,54 @@ const primaryContainerSelector = COLOR_ENGINE_THEME_IDS.flatMap((id) =>
 ).join(',\n');
 
 /**
+ * Inline composer ("What is happening?") - X ships it with its own hardcoded
+ * palette, so without this it stays default-blue/white in every theme.
+ * Keyed on data-testid only (D-16).
+ */
+const composerSelector = COLOR_ENGINE_THEME_IDS.map((id) => {
+  const t = `html[data-bt-theme="${id}"]`;
+  return `
+${t} [data-testid="tweetTextarea_0_label"] {
+  color: var(--bt-theme-text-muted) !important;
+}
+
+${t} [data-testid="tweetTextarea_0"] {
+  color: var(--bt-theme-text) !important;
+  caret-color: var(--bt-theme-accent) !important;
+}
+
+${t} [data-testid="tweetTextarea_0RichTextInputContainer"] {
+  background-color: transparent !important;
+}
+
+${t} [data-testid="toolBar"] {
+  border-top: 1px solid var(--bt-theme-border) !important;
+  padding-top: 6px !important;
+}
+
+${t} [data-testid="toolBar"] svg {
+  color: var(--bt-theme-accent) !important;
+  fill: var(--bt-theme-accent) !important;
+}
+
+${t} [data-testid="tweetButtonInline"] {
+  background-color: var(--bt-theme-accent) !important;
+  border-color: var(--bt-theme-accent) !important;
+}
+
+${t} [data-testid="tweetButtonInline"] div,
+${t} [data-testid="tweetButtonInline"] span {
+  color: var(--bt-theme-bg) !important;
+}
+`;
+}).join("");
+
+/**
  * Surface recoloring & atmospheric vibe styling (Dracula, Nord, Matrix)
  */
 export const APPLY_SURFACE_RULES = `
+${composerSelector}
+
 ${htmlBgSelector} {
   background-color: var(--bt-theme-bg) !important;
 }
