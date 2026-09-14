@@ -6,7 +6,7 @@
     {
       "number": "1",
       "name": "Foundation & Settings Popup",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "number": "2",
@@ -15,7 +15,7 @@
     },
     {
       "number": "3",
-      "name": "Bookmarks: Capture, Management & Resurfacing",
+      "name": "Bookmarks (Capture, Management & Resurfacing)",
       "status": "pending"
     },
     {
@@ -32,7 +32,7 @@
   "next": {
     "command": "/gsd-progress --next",
     "label": "Advance to the next step",
-    "reason": "Phase 01 of 6 · 0% · executing"
+    "reason": "Phase 03 of 5 · 0% · executing"
   },
-  "updated_at": "2026-09-13T10:43:15.320Z"
+  "updated_at": "2026-09-14T15:40:06.238Z"
 }

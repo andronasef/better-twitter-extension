@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { migrateSettings } from '@/lib/storage';
 
-describe('Settings migration v1 -> v2 (CLEAN-05, D-08)', () => {
-  it('migrates v1 settings with default values to v2 schema', () => {
+describe('Settings migration v1..v3 -> v4 (CLEAN-05, D-08, Phase 3)', () => {
+  it('migrates v1 settings with default values to v4 schema', () => {
     const v1Settings = {
       version: 1,
       features: {
@@ -10,13 +10,13 @@ describe('Settings migration v1 -> v2 (CLEAN-05, D-08)', () => {
       },
     };
 
-    const v2Settings = migrateSettings(v1Settings);
+    const v4Settings = migrateSettings(v1Settings);
 
-    expect(v2Settings.version).toBe(3);
-    expect(v2Settings.features.hidePromotedTweets).toBe(true);
-    expect(v2Settings.features.cleanSidebar).toBe(false);
-    expect(v2Settings.features.hideVanityMetrics).toBe(false);
-    expect(v2Settings.features.hideProfileCounts).toBe(false);
+    expect(v4Settings.version).toBe(4);
+    expect(v4Settings.features.hidePromotedTweets).toBe(true);
+    expect(v4Settings.features.cleanSidebar).toBe(false);
+    expect(v4Settings.features.hideVanityMetrics).toBe(false);
+    expect(v4Settings.features.hideProfileCounts).toBe(false);
   });
 
   it('preserves customized false value for existing v1 toggles', () => {
@@ -27,31 +27,31 @@ describe('Settings migration v1 -> v2 (CLEAN-05, D-08)', () => {
       },
     };
 
-    const v2Settings = migrateSettings(v1Settings);
+    const v4Settings = migrateSettings(v1Settings);
 
-    expect(v2Settings.version).toBe(3);
-    expect(v2Settings.features.hidePromotedTweets).toBe(false);
-    expect(v2Settings.features.cleanSidebar).toBe(false);
-    expect(v2Settings.features.hideVanityMetrics).toBe(false);
-    expect(v2Settings.features.hideProfileCounts).toBe(false);
+    expect(v4Settings.version).toBe(4);
+    expect(v4Settings.features.hidePromotedTweets).toBe(false);
+    expect(v4Settings.features.cleanSidebar).toBe(false);
+    expect(v4Settings.features.hideVanityMetrics).toBe(false);
+    expect(v4Settings.features.hideProfileCounts).toBe(false);
   });
 
-  it('handles null, undefined, or empty v1 settings gracefully', () => {
-    const v2Null = migrateSettings(null);
-    expect(v2Null.version).toBe(3);
-    expect(v2Null.features.hidePromotedTweets).toBe(true);
-    expect(v2Null.features.cleanSidebar).toBe(false);
-    expect(v2Null.features.hideVanityMetrics).toBe(false);
-    expect(v2Null.features.hideProfileCounts).toBe(false);
+  it('handles null, undefined, or empty settings gracefully', () => {
+    const v4Null = migrateSettings(null);
+    expect(v4Null.version).toBe(4);
+    expect(v4Null.features.hidePromotedTweets).toBe(true);
+    expect(v4Null.features.cleanSidebar).toBe(false);
+    expect(v4Null.features.hideVanityMetrics).toBe(false);
+    expect(v4Null.features.hideProfileCounts).toBe(false);
 
-    const v2Empty = migrateSettings({});
-    expect(v2Empty.version).toBe(3);
-    expect(v2Empty.features.hidePromotedTweets).toBe(true);
+    const v4Empty = migrateSettings({});
+    expect(v4Empty.version).toBe(4);
+    expect(v4Empty.features.hidePromotedTweets).toBe(true);
   });
 
   it('preserves any existing or future feature flags', () => {
     const customSettings = {
-      version: 1,
+      version: 3,
       features: {
         hidePromotedTweets: false,
         cleanSidebar: true,
@@ -59,10 +59,11 @@ describe('Settings migration v1 -> v2 (CLEAN-05, D-08)', () => {
       },
     };
 
-    const v2Settings = migrateSettings(customSettings);
-    expect(v2Settings.features.cleanSidebar).toBe(true);
-    expect(v2Settings.features.customFlag).toBe(true);
-    expect(v2Settings.features.hideVanityMetrics).toBe(false);
+    const v4Settings = migrateSettings(customSettings);
+    expect(v4Settings.version).toBe(4);
+    expect(v4Settings.features.cleanSidebar).toBe(true);
+    expect(v4Settings.features.customFlag).toBe(true);
+    expect(v4Settings.features.hideVanityMetrics).toBe(false);
   });
 
   it('migrates archived old-twitter theme to default', () => {
@@ -73,6 +74,7 @@ describe('Settings migration v1 -> v2 (CLEAN-05, D-08)', () => {
     };
 
     const migrated = migrateSettings(oldTwitterSettings);
+    expect(migrated.version).toBe(4);
     expect(migrated.theme).toBe('default');
   });
 });
