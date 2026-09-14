@@ -227,14 +227,34 @@ ${t} [style*="color: rgb(15, 20, 25)"] {
   color: var(--bt-theme-bg) !important;
 }
 
-/* Right-column widget cards */
+/* Right-column widget cards. In lights-out mode X paints every card black
+   from its own atomic classes, so blank the column first and repaint only the
+   cards - otherwise half of them (Live on X, Today's News, Who to follow) stay
+   black while the themed ones sit next to them. */
+${t} [data-testid="sidebarColumn"] div {
+  background-color: transparent !important;
+}
+
 ${t} [data-testid="sidebarColumn"] section[role="region"],
 ${t} [data-testid="sidebarColumn"] aside[role="complementary"],
 ${t} [data-testid="sidebarColumn"] div:has(> section[role="region"]),
 ${t} [data-testid="sidebarColumn"] div:has(> aside[role="complementary"]),
+${t} [data-testid="sidebarColumn"] div:has(> div > aside[role="complementary"]),
+${t} [data-testid="sidebarColumn"] div:has(> div > h2[role="heading"]),
+${t} [data-testid="sidebarColumn"] div:has(> [data-testid="news_sidebar"]),
 ${t} [data-testid="news_sidebar"] {
   background-color: var(--bt-theme-surface) !important;
   border-color: var(--bt-theme-border) !important;
+}
+
+/* Composer block: X paints its wrapper and its toolbar row black. */
+${t} [data-testid="primaryColumn"] > div > div {
+  background-color: var(--bt-theme-surface) !important;
+}
+
+${t} [data-testid="toolBar"],
+${t} [data-testid="toolBar"] div {
+  background-color: transparent !important;
 }
 
 ${t} [data-testid="trend"]:hover,
