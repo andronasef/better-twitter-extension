@@ -27,6 +27,29 @@ export const SELECTORS = {
   // Tweet article element
   tweet: ['[data-testid="tweet"]'],
 
+  // Native bookmark button in tweet action bar (BOOK-01, D-05)
+  // Justification: X labels the save button with data-testid="bookmark" or aria-label; fallback checks SVG path
+  bookmarkButton: [
+    '[data-testid="bookmark"]',
+    'button[aria-label*="Bookmark" i]',
+    '[role="group"] button:has(svg path[d*="M4 4.5C4 3.12"])',
+  ],
+
+  // Native remove bookmark button (active saved state, D-09)
+  // Justification: When saved, X toggles data-testid to removeBookmark or aria-label to Remove from Bookmarks
+  removeBookmarkButton: [
+    '[data-testid="removeBookmark"]',
+    'button[aria-label*="Remove from Bookmarks" i]',
+    'button[aria-label*="Bookmarked" i]',
+  ],
+
+  // Tweet article element enclosing tweet content and action bar
+  // Justification: standard tweet root article element
+  tweetArticle: [
+    'article[data-testid="tweet"]',
+    'article[role="article"]',
+  ],
+
   // Promoted / ad indicator container element
   promotedContainer: ['[data-testid="placementTracking"]'],
 
