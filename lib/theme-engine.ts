@@ -677,6 +677,66 @@ svg [fill="#1d9bf0" i] {
 }
 `;
 
+export const POST_BUTTON_RULES = `
+/* Sidebar Post button: adopt theme accent and ensure text/icon is never invisible/blank */
+html:not([data-bt-theme="minimal"]):not([data-bt-theme="old-twitter"]) [data-testid="SideNav_NewTweet_Button"] {
+  background-color: var(--bt-theme-accent) !important;
+  border-color: var(--bt-theme-accent) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  transition: background-color 0.15s ease, filter 0.15s ease, transform 0.15s ease !important;
+}
+
+html:not([data-bt-theme="minimal"]):not([data-bt-theme="old-twitter"]) [data-testid="SideNav_NewTweet_Button"]:hover {
+  filter: brightness(0.92) !important;
+}
+
+html:not([data-bt-theme="minimal"]):not([data-bt-theme="old-twitter"]) [data-testid="SideNav_NewTweet_Button"]:active {
+  filter: brightness(0.85) !important;
+}
+
+html:not([data-bt-theme="minimal"]):not([data-bt-theme="old-twitter"]) [data-testid="SideNav_NewTweet_Button"] span,
+html:not([data-bt-theme="minimal"]):not([data-bt-theme="old-twitter"]) [data-testid="SideNav_NewTweet_Button"] div,
+html:not([data-bt-theme="minimal"]):not([data-bt-theme="old-twitter"]) [data-testid="SideNav_NewTweet_Button"] [dir] {
+  color: var(--bt-theme-accent-fg, #ffffff) !important;
+  font-weight: 700 !important;
+}
+
+/* Fix X desktop responsive bug where inner text container gets collapsed to height: 0 */
+html:not([data-bt-theme="minimal"]):not([data-bt-theme="old-twitter"]) [data-testid="SideNav_NewTweet_Button"] [style*="height: 0"],
+html:not([data-bt-theme="minimal"]):not([data-bt-theme="old-twitter"]) [data-testid="SideNav_NewTweet_Button"] [style*="height:0"] {
+  height: auto !important;
+  min-height: auto !important;
+  overflow: visible !important;
+}
+
+html:not([data-bt-theme="minimal"]):not([data-bt-theme="old-twitter"]) [data-testid="SideNav_NewTweet_Button"] svg,
+html:not([data-bt-theme="minimal"]):not([data-bt-theme="old-twitter"]) [data-testid="SideNav_NewTweet_Button"] svg * {
+  color: var(--bt-theme-accent-fg, #ffffff) !important;
+  fill: var(--bt-theme-accent-fg, #ffffff) !important;
+}
+
+/* Also ensure inline composer and modal Post buttons adopt theme accent */
+html:not([data-bt-theme="old-twitter"]) [data-testid="tweetButtonInline"],
+html:not([data-bt-theme="old-twitter"]) [data-testid="tweetButton"] {
+  background-color: var(--bt-theme-accent) !important;
+  border-color: var(--bt-theme-accent) !important;
+}
+
+html:not([data-bt-theme="old-twitter"]) [data-testid="tweetButtonInline"] div,
+html:not([data-bt-theme="old-twitter"]) [data-testid="tweetButtonInline"] span,
+html:not([data-bt-theme="old-twitter"]) [data-testid="tweetButton"] div,
+html:not([data-bt-theme="old-twitter"]) [data-testid="tweetButton"] span {
+  color: var(--bt-theme-accent-fg, #ffffff) !important;
+}
+
+html:not([data-bt-theme="old-twitter"]) [data-testid="tweetButtonInline"][aria-disabled="true"],
+html:not([data-bt-theme="old-twitter"]) [data-testid="tweetButtonInline"]:disabled,
+html:not([data-bt-theme="old-twitter"]) [data-testid="tweetButton"][aria-disabled="true"],
+html:not([data-bt-theme="old-twitter"]) [data-testid="tweetButton"]:disabled {
+  opacity: 0.5 !important;
+}
+`;
+
 /**
  * Minimal Layout Transform Rules (THEME-05, D-14)
  * Collapses navigation to a clean 68px icon rail with all SVG icons intact,
@@ -1400,6 +1460,8 @@ export function generateThemeCss(): string {
     APPLY_SURFACE_RULES,
     '/* Universal accent color overrides (THEME-04, D-11) */',
     ACCENT_OVERRIDE_RULES,
+    '/* Compose & Post button styling across presets */',
+    POST_BUTTON_RULES,
     '/* Minimal Layout (THEME-05, D-14) */',
     MINIMAL_LAYOUT_CSS,
     '/* Old Twitter 2015 classic palette tokens (THEME-06, D-15) */',

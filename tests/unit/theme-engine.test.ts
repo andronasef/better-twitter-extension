@@ -156,4 +156,18 @@ describe('Theme engine CSS generator (THEME-01..04, THEME-07, D-09..D-11)', () =
       expect(APPLY_SURFACE_RULES).toContain('border-color: var(--bt-theme-border) !important;');
     });
   });
+
+  describe('Post and compose buttons styling across presets', () => {
+    it('styles SideNav_NewTweet_Button with theme accent and uncollapses height', () => {
+      expect(css).toContain('[data-testid="SideNav_NewTweet_Button"]');
+      expect(css).toContain('background-color: var(--bt-theme-accent) !important;');
+      expect(css).toContain('color: var(--bt-theme-accent-fg, #ffffff) !important;');
+      expect(css).toContain('height: auto !important;');
+    });
+
+    it('styles inline and modal compose buttons with theme accent', () => {
+      expect(css).toContain('[data-testid="tweetButtonInline"]');
+      expect(css).toContain('[data-testid="tweetButton"]');
+    });
+  });
 });
