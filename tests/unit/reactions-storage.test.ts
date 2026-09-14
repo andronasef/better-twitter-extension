@@ -50,8 +50,8 @@ describe('Reactions Storage, Constants & Selectors (REACT-06, D-09, D-11, D-13, 
       expect(updated.enabled).toBe(false);
       expect(updated.style).toBe('noto-animated');
       expect(updated.slots).toHaveLength(6);
-      expect(updated.slots[5].id).toBe('party');
-      expect(updated.slots[5].isCustom).toBe(true);
+      expect(updated.slots[5]!.id).toBe('party');
+      expect(updated.slots[5]!.isCustom).toBe(true);
     });
 
     it('initializes customEmojiCacheItem to empty record and persists cached entries', async () => {
