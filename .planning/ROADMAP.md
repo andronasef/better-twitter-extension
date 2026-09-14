@@ -172,7 +172,21 @@ Plans:
   - How to reliably open and prefill X's reply composer. X's composer is a rich-text editor (DraftJS/contenteditable lineage), so setting `.value` will not work — this needs the right sequence of focus and input events for the text to register in X's own state. Research flags this as unresolved and it is the load-bearing unknown for the entire phase.
   - Does the palette survive the virtualized feed recycling nodes underneath it — i.e. does an open palette anchored to a tweet that scrolls out of range detach cleanly rather than reattaching to a different tweet?
 
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+**Wave 1**
+- [ ] 04-01-PLAN.md — Asset Pipeline, Storage Definitions & Types (REACT-06, D-09, D-11, D-13, D-14)
+
+**Wave 2**
+- [ ] 04-02-PLAN.md — Reply Composer Prefiller & Fallback Mechanism (REACT-03, REACT-04, D-05, D-06, D-07, D-08)
+
+**Wave 3**
+- [ ] 04-03-PLAN.md — Floating Reaction Palette & Interaction Engine (REACT-01, REACT-02, D-01..04, D-15..18)
+- [ ] 04-04-PLAN.md — Popup Reactions Panel & Hybrid Catalog Caching (REACT-05, D-10, D-12..14)
+
+**Wave 4**
+- [ ] 04-05-PLAN.md — Playwright E2E Suite & Full Standing Verification Gate (REACT-01..06, D-01..18)
 **UI hint**: yes
 
 ### Phase 5: Chrome Web Store Packaging
