@@ -503,11 +503,13 @@ html[data-bt-theme="minimal"] header[role="banner"] {
   overflow: visible !important;
 }
 
-/* X makes this wrapper position:fixed, so width:100% resolves against the VIEWPORT,
-   not the 68px rail - that is what painted a full-width horizontal scrollbar across
-   the page and a stray vertical one over the timeline. Pin it to the rail instead.
-   justify-content:center keeps the pill off the viewport top/bottom edges. */
-html[data-bt-theme="minimal"] header[role="banner"] > div {
+/* Both the in-flow wrapper AND the position:fixed panel inside it (X class
+   r-1xcajam) must be pinned to the 68px rail. On a fixed element width:100%
+   resolves against the VIEWPORT, so leaving the inner one at 100% made a
+   full-viewport, full-height panel that sat over the timeline: it swallowed
+   clicks on posts and painted its scrollbars as stray white bars across the page. */
+html[data-bt-theme="minimal"] header[role="banner"] > div,
+html[data-bt-theme="minimal"] header[role="banner"] > div > div {
   width: 68px !important;
   min-width: 68px !important;
   max-width: 68px !important;
@@ -517,8 +519,10 @@ html[data-bt-theme="minimal"] header[role="banner"] > div {
   overflow: hidden !important;
 }
 
-html[data-bt-theme="minimal"] header[role="banner"] > div > div {
+/* The actual scroll container inside the fixed panel. */
+html[data-bt-theme="minimal"] header[role="banner"] > div > div > div {
   width: 100% !important;
+  max-width: 100% !important;
   align-items: center !important;
   justify-content: center !important;
   overflow-x: hidden !important;
@@ -540,10 +544,10 @@ html[data-bt-theme="minimal"] header[role="banner"] *::-webkit-scrollbar {
   display: none !important;
 }
 
-html[data-bt-theme="minimal"] header[role="banner"] > div > div > div {
+html[data-bt-theme="minimal"] header[role="banner"] > div > div > div > div {
   width: 100% !important;
+  max-width: 100% !important;
   align-items: center !important;
-  justify-content: flex-start !important;
 }
 
 /* Minimal X Logo icon sizing and spacing */
