@@ -167,6 +167,20 @@ export function BookmarksPanel() {
       status: 'syncing',
       errorReason: null,
     }));
+    await bookmarkSyncItem.setValue({
+      ...syncState,
+      status: 'syncing',
+      errorReason: null,
+    });
+
+    try {
+      const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
+      if (activeTab?.id) {
+        await browser.tabs.update(activeTab.id, { url: 'https://x.com/i/bookmarks' });
+        return;
+      }
+    } catch {}
+
     if (isErrorOrPaused) {
       await resumeSync();
     } else {

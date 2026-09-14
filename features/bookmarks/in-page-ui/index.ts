@@ -2,9 +2,10 @@ import React from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { BookmarksToolbar } from './BookmarksToolbar';
 import { applyFeedFilter, clearFeedFilter } from './feed-filter';
-import { foldersItem, bookmarksItem } from '@/lib/storage';
+import { foldersItem, bookmarksItem, bookmarkSyncItem } from '@/lib/storage';
 import { searchBookmarks } from '../search';
 import { syncBookmarksBackground } from '../capture-engine';
+import { extractBookmarkFromDom } from '../extractor';
 import { ShadowRootProvider } from '@/components/shadow-portal';
 import type { BookmarkFolder, BookmarkItem } from '../types';
 
@@ -111,6 +112,15 @@ export function mountBookmarksHub(): void {
 
   renderHub();
 
+  // Scrape visible bookmarks from DOM as fallback
+  scrapeVisibleBookmarksFromDom().catch(() => {});
+  if (primaryColumn) {
+    scrapeObserver = new MutationObserver(() => {
+      scrapeVisibleBookmarksFromDom().catch(() => {});
+    });
+    scrapeObserver.observe(primaryColumn, { childList: true, subtree: true });
+  }
+
   // Watch storage updates
   const unwatchFolders = foldersItem.watch(() => {
     renderHub();
@@ -125,7 +135,45 @@ export function mountBookmarksHub(): void {
   };
 }
 
+let scrapeObserver: MutationObserver | null = null;
+
+export async function scrapeVisibleBookmarksFromDom(): Promise<number> {
+  if (typeof document === 'undefined') return 0;
+  const articles = document.querySelectorAll('article[data-testid="tweet"]');
+  if (articles.length === 0) return 0;
+
+  const currentBookmarks = await bookmarksItem.getValue();
+  let added = 0;
+  const next = { ...currentBookmarks };
+
+  articles.forEach((art) => {
+    const item = extractBookmarkFromDom(art);
+    if (item && item.id && !next[item.id]) {
+      next[item.id] = item;
+      added++;
+    }
+  });
+
+  if (added > 0) {
+    await bookmarksItem.setValue(next);
+    const syncState = await bookmarkSyncItem.getValue();
+    await bookmarkSyncItem.setValue({
+      ...syncState,
+      totalCaptured: Object.keys(next).length,
+      lastSyncTime: Date.now(),
+      status: syncState.status === 'syncing' ? 'complete' : syncState.status,
+      errorReason: null,
+    });
+  }
+  return added;
+}
+
 export function unmountBookmarksHub(): void {
+  if (scrapeObserver) {
+    scrapeObserver.disconnect();
+    scrapeObserver = null;
+  }
+
   if (unwatchStorage) {
     unwatchStorage();
     unwatchStorage = null;

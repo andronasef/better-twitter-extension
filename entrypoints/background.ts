@@ -40,9 +40,17 @@ export default defineBackground(() => {
 
     if (message && message.type === 'bt:start-sync') {
       try {
-        browser.tabs.create({ url: 'https://x.com/i/bookmarks', active: false });
+        browser.tabs.query({ active: true, currentWindow: true }).then(([activeTab]) => {
+          if (activeTab?.id) {
+            browser.tabs.update(activeTab.id, { url: 'https://x.com/i/bookmarks' });
+          } else {
+            browser.tabs.create({ url: 'https://x.com/i/bookmarks', active: true });
+          }
+        }).catch(() => {
+          browser.tabs.create({ url: 'https://x.com/i/bookmarks', active: true });
+        });
       } catch (err) {
-        console.error('[BetterTwitter] Failed to create background sync tab:', err);
+        console.error('[BetterTwitter] Failed to navigate to bookmarks tab:', err);
       }
     }
   });

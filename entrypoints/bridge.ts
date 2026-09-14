@@ -66,7 +66,14 @@ export default defineUnlistedScript(() => {
       });
 
       // Intercept Bookmarks query response (BOOK-01, D-18)
-      if (operationName === 'Bookmarks' || urlPath.includes('/Bookmarks')) {
+      const isBookmarksQuery =
+        operationName === 'Bookmarks' ||
+        operationName === 'BookmarksTimeline' ||
+        operationName === 'BookmarkFolderTimeline' ||
+        /bookmarks/i.test(urlPath) ||
+        (operationName != null && /bookmarks/i.test(operationName));
+
+      if (isBookmarksQuery && operationName !== 'CreateBookmark' && operationName !== 'DeleteBookmark') {
         emitEvent('bt:graphql-bookmarks', {
           docId,
           operationName: operationName || 'Bookmarks',

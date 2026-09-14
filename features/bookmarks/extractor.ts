@@ -50,116 +50,154 @@ export function extractBookmarksFromGraphql(json: unknown): ExtractionResult {
     return { items: [], bottomCursor: null, schemaMismatch: true };
   }
 
-  const addEntriesInstruction = instructions.find(
-    (inst) => inst?.type === 'TimelineAddEntries'
-  );
+  // If instructions is an empty array, it's a valid empty timeline (not a schema mismatch)
+  if (instructions.length === 0) {
+    return { items: [], bottomCursor: null, schemaMismatch: false };
+  }
 
-  if (!addEntriesInstruction || !Array.isArray(addEntriesInstruction.entries)) {
-    return { items: [], bottomCursor: null, schemaMismatch: true };
+  // Collect all entries across all instructions (TimelineAddEntries, TimelineAddToModule, etc.)
+  const allEntries: any[] = [];
+  for (const inst of instructions) {
+    if (Array.isArray(inst?.entries)) {
+      allEntries.push(...inst.entries);
+    }
+  }
+
+  // If no entries at all in instructions, valid empty bookmarks feed
+  if (allEntries.length === 0) {
+    return { items: [], bottomCursor: null, schemaMismatch: false };
   }
 
   const items: BookmarkItem[] = [];
   let bottomCursor: string | null = null;
 
-  for (const entry of addEntriesInstruction.entries) {
+  for (const entry of allEntries) {
     if (!entry || typeof entry !== 'object') continue;
 
     const entryId = String(entry.entryId || '');
 
     // Check for bottom cursor
-    if (entryId.startsWith('cursor-bottom-') || entryId.startsWith('cursor-bottom')) {
+    const isBottom =
+      entryId.startsWith('cursor-bottom') ||
+      entry.content?.cursorType === 'Bottom' ||
+      entry.itemContent?.cursorType === 'Bottom';
+
+    if (isBottom) {
       const cursorVal =
         entry.content?.value ??
         entry.content?.operation?.cursor?.value ??
-        entry.itemContent?.value;
+        entry.itemContent?.value ??
+        entry.itemContent?.operation?.cursor?.value;
       if (cursorVal) {
         bottomCursor = String(cursorVal);
       }
       continue;
     }
 
-    // Check for tweet results
-    const tweetResult = entry.itemContent?.tweet_results?.result;
-    if (!tweetResult) continue;
+    // Collect all candidate tweet results in this entry
+    const candidateResults: any[] = [];
+    const directResult =
+      entry.content?.itemContent?.tweet_results?.result ??
+      entry.itemContent?.tweet_results?.result ??
+      entry.content?.tweet_results?.result ??
+      entry.tweet_results?.result;
 
-    // Handle Tweet vs TweetWithVisibilityResults
-    let tweetObj = tweetResult;
-    if (tweetResult.__typename === 'TweetWithVisibilityResults' && tweetResult.tweet) {
-      tweetObj = tweetResult.tweet;
-    } else if (tweetResult.tweet) {
-      tweetObj = tweetResult.tweet;
+    if (directResult) {
+      candidateResults.push(directResult);
+    } else if (Array.isArray(entry.content?.items)) {
+      for (const subItem of entry.content.items) {
+        const subRes =
+          subItem.item?.itemContent?.tweet_results?.result ??
+          subItem.itemContent?.tweet_results?.result ??
+          subItem.content?.itemContent?.tweet_results?.result;
+        if (subRes) candidateResults.push(subRes);
+      }
     }
 
-    const restId = tweetObj.rest_id || tweetObj.id;
-    if (!restId) continue;
+    if (candidateResults.length === 0) continue;
 
-    // Tweet text: check note_tweet first (expanded notes), then legacy.full_text
-    let text =
-      tweetObj.note_tweet?.note_tweet_results?.result?.text ??
-      tweetObj.legacy?.full_text ??
-      '';
+    for (const tweetResult of candidateResults) {
+      if (!tweetResult || typeof tweetResult !== 'object') continue;
 
-    // Strip trailing t.co media URLs if media entities exist
-    const mediaEntities =
-      tweetObj.legacy?.extended_entities?.media ??
-      tweetObj.legacy?.entities?.media;
+      // Handle Tweet vs TweetWithVisibilityResults
+      let tweetObj = tweetResult;
+      if (tweetResult.__typename === 'TweetWithVisibilityResults' && tweetResult.tweet) {
+        tweetObj = tweetResult.tweet;
+      } else if (tweetResult.tweet) {
+        tweetObj = tweetResult.tweet;
+      }
 
-    if (Array.isArray(mediaEntities) && mediaEntities.length > 0) {
-      for (const m of mediaEntities) {
-        if (m?.url && text.includes(m.url)) {
-          text = text.replace(m.url, '').trim();
+      const restId = tweetObj.rest_id || tweetObj.id;
+      if (!restId) continue;
+
+      // Tweet text: check note_tweet first (expanded notes), then legacy.full_text
+      let text =
+        tweetObj.note_tweet?.note_tweet_results?.result?.text ??
+        tweetObj.legacy?.full_text ??
+        '';
+
+      // Strip trailing t.co media URLs if media entities exist
+      const mediaEntities =
+        tweetObj.legacy?.extended_entities?.media ??
+        tweetObj.legacy?.entities?.media;
+
+      if (Array.isArray(mediaEntities) && mediaEntities.length > 0) {
+        for (const m of mediaEntities) {
+          if (m?.url && text.includes(m.url)) {
+            text = text.replace(m.url, '').trim();
+          }
         }
       }
-    }
 
-    // Author details
-    const userResult =
-      tweetObj.core?.user_results?.result?.legacy ??
-      tweetObj.core?.user_results?.result?.core ??
-      tweetObj.core?.user_results?.result;
+      // Author details
+      const userResult = tweetObj.core?.user_results?.result;
+      const legacyUser = userResult?.legacy ?? userResult?.core ?? userResult;
 
-    const authorName = String(userResult?.name || 'Unknown');
-    let authorHandle = String(userResult?.screen_name || '');
-    if (authorHandle.startsWith('@')) {
-      authorHandle = authorHandle.slice(1);
-    }
-    const authorAvatarUrl = String(userResult?.profile_image_url_https || '');
-
-    // Created At
-    let createdAt = Date.now();
-    if (tweetObj.legacy?.created_at) {
-      const parsed = Date.parse(tweetObj.legacy.created_at);
-      if (!isNaN(parsed)) {
-        createdAt = parsed;
+      const authorName = String(legacyUser?.name || userResult?.name || 'Unknown');
+      let authorHandle = String(legacyUser?.screen_name || userResult?.screen_name || '');
+      if (authorHandle.startsWith('@')) {
+        authorHandle = authorHandle.slice(1);
       }
-    }
+      const authorAvatarUrl = String(
+        legacyUser?.profile_image_url_https || userResult?.profile_image_url_https || ''
+      );
 
-    // Media URLs (max 4, never store raw image data per D-15)
-    const mediaUrls: string[] = [];
-    if (Array.isArray(mediaEntities)) {
-      for (const m of mediaEntities) {
-        if (m?.media_url_https && typeof m.media_url_https === 'string') {
-          mediaUrls.push(m.media_url_https);
-          if (mediaUrls.length >= 4) break;
+      // Created At
+      let createdAt = Date.now();
+      if (tweetObj.legacy?.created_at) {
+        const parsed = Date.parse(tweetObj.legacy.created_at);
+        if (!isNaN(parsed)) {
+          createdAt = parsed;
         }
       }
+
+      // Media URLs (max 4, never store raw image data per D-15)
+      const mediaUrls: string[] = [];
+      if (Array.isArray(mediaEntities)) {
+        for (const m of mediaEntities) {
+          if (m?.media_url_https && typeof m.media_url_https === 'string') {
+            mediaUrls.push(m.media_url_https);
+            if (mediaUrls.length >= 4) break;
+          }
+        }
+      }
+
+      const item: BookmarkItem = {
+        id: String(restId),
+        text,
+        authorName,
+        authorHandle,
+        authorAvatarUrl,
+        createdAt,
+        savedAt: Date.now(),
+        folderIds: ['uncategorized'],
+        tags: [],
+        resurfaceCount: 0,
+        ...(mediaUrls.length > 0 ? { mediaUrls } : {}),
+      };
+
+      items.push(item);
     }
-
-    const item: BookmarkItem = {
-      id: String(restId),
-      text,
-      authorName,
-      authorHandle,
-      authorAvatarUrl,
-      createdAt,
-      savedAt: Date.now(),
-      folderIds: ['uncategorized'],
-      tags: [],
-      resurfaceCount: 0,
-      ...(mediaUrls.length > 0 ? { mediaUrls } : {}),
-    };
-
-    items.push(item);
   }
 
   return {

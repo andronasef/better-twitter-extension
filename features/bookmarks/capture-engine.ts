@@ -100,15 +100,27 @@ export async function handleBookmarksPayload(detail: {
 
   // 5. Update sync checkpoint (BOOK-02)
   const isComplete = extraction.bottomCursor === null;
+  const nextStatus = isComplete ? 'complete' : (syncState.status === 'syncing' ? 'syncing' : 'idle');
   await bookmarkSyncItem.setValue({
     ...syncState,
     cursor: extraction.bottomCursor,
     totalCaptured: Object.keys(nextBookmarks).length,
     lastCheckpointTime: Date.now(),
     lastSyncTime: Date.now(),
-    status: isComplete ? 'complete' : 'idle',
+    status: nextStatus,
     errorReason: null,
   });
+
+  // If still actively syncing on the bookmarks page, auto-scroll to fetch the next batch
+  if (!isComplete && syncState.status === 'syncing' && typeof window !== 'undefined') {
+    const isBookmarksPage =
+      window.location.pathname === '/i/bookmarks' || window.location.pathname === '/bookmarks';
+    if (isBookmarksPage) {
+      setTimeout(() => {
+        window.scrollBy({ top: 1200, behavior: 'smooth' });
+      }, 800);
+    }
+  }
 }
 
 /**
@@ -158,9 +170,19 @@ export async function syncBookmarksBackground(): Promise<void> {
 
   if (isBookmarksPage) {
     // On the bookmarks page, scroll to trigger next chunk
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    window.scrollBy({ top: 1200, behavior: 'smooth' });
   } else {
-    // Outside bookmarks page, notify background worker to open tab
+    // Outside bookmarks page, try updating active tab first, then fallback to message
+    try {
+      if (typeof browser !== 'undefined' && browser.tabs?.query) {
+        const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
+        if (activeTab?.id) {
+          await browser.tabs.update(activeTab.id, { url: 'https://x.com/i/bookmarks' });
+          return;
+        }
+      }
+    } catch {}
+
     if (typeof browser !== 'undefined' && browser.runtime?.sendMessage) {
       try {
         await browser.runtime.sendMessage({ type: 'bt:start-sync' });
