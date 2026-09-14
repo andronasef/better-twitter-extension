@@ -465,9 +465,13 @@ html[data-bt-theme="minimal"] [role="complementary"] {
   padding: 0 !important;
 }
 
-/* Center outer flex layout with zero gap blowout */
+/* Center outer flex layout with zero gap blowout.
+   Scoped with :has(main) - the bare depth selector also matched #layers
+   children (tooltips, toasts, overlays), which are position:fixed with a high
+   z-index, so forcing them to width:100% flex rows painted a stray full-width
+   bar over the timeline. */
 html[data-bt-theme="minimal"] #react-root > div > div > div.app-row,
-html[data-bt-theme="minimal"] #react-root > div > div > div {
+html[data-bt-theme="minimal"] #react-root > div > div > div:has(main[role="main"]) {
   width: 100% !important;
   max-width: 100% !important;
   justify-content: center !important;
@@ -656,9 +660,18 @@ html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"] span {
   display: none !important;
 }
 
-html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"] svg {
+html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"] {
+  background-color: var(--bt-theme-accent) !important;
+}
+
+/* Minimal accent is near-white, so the inherited white icon disappeared into
+   the white pill - punch it back to the page background colour. */
+html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"] svg,
+html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"] svg * {
   display: block !important;
   margin: 0 auto !important;
+  color: var(--bt-theme-bg) !important;
+  fill: var(--bt-theme-bg) !important;
 }
 
 /* Collapse Account Switcher to avatar-only */
