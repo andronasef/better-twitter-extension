@@ -55,39 +55,81 @@ export function extractBookmarksFromGraphql(json: unknown): ExtractionResult {
     return { items: [], bottomCursor: null, schemaMismatch: false };
   }
 
-  // Collect all entries across all instructions (TimelineAddEntries, TimelineAddToModule, etc.)
+  // Collect all entries across all instructions (TimelineAddEntries, TimelineReplaceEntry, TimelineAddToModule, etc.)
   const allEntries: any[] = [];
+  let bottomCursor: string | null = null;
+
   for (const inst of instructions) {
-    if (Array.isArray(inst?.entries)) {
+    if (!inst || typeof inst !== 'object') continue;
+
+    if (Array.isArray(inst.entries)) {
       allEntries.push(...inst.entries);
+    }
+    if (inst.entry && typeof inst.entry === 'object') {
+      allEntries.push(inst.entry);
+    }
+    if (Array.isArray(inst.items)) {
+      allEntries.push(...inst.items);
+    }
+    if (Array.isArray(inst.moduleItems)) {
+      allEntries.push(...inst.moduleItems);
+    }
+
+    // Explicit check for TimelineReplaceEntry containing updated pagination cursor
+    if (inst.type === 'TimelineReplaceEntry') {
+      const replaceId = String(inst.entry_id_to_replace || '').toLowerCase();
+      const entry = inst.entry;
+      const isReplaceBottom =
+        replaceId.includes('bottom') ||
+        entry?.content?.cursorType === 'Bottom' ||
+        entry?.itemContent?.cursorType === 'Bottom' ||
+        entry?.cursorType === 'Bottom';
+
+      if (isReplaceBottom && entry) {
+        const cursorVal =
+          entry.content?.value ??
+          entry.itemContent?.value ??
+          entry.value ??
+          entry.content?.operation?.cursor?.value ??
+          entry.itemContent?.operation?.cursor?.value ??
+          entry.item?.itemContent?.value;
+        if (cursorVal) {
+          bottomCursor = String(cursorVal);
+        }
+      }
     }
   }
 
   // If no entries at all in instructions, valid empty bookmarks feed
-  if (allEntries.length === 0) {
+  if (allEntries.length === 0 && !bottomCursor) {
     return { items: [], bottomCursor: null, schemaMismatch: false };
   }
 
   const items: BookmarkItem[] = [];
-  let bottomCursor: string | null = null;
 
   for (const entry of allEntries) {
     if (!entry || typeof entry !== 'object') continue;
 
-    const entryId = String(entry.entryId || '');
+    const entryId = String(entry.entryId || entry.id || '');
 
     // Check for bottom cursor
     const isBottom =
-      entryId.startsWith('cursor-bottom') ||
+      entryId.toLowerCase().includes('cursor-bottom') ||
+      entryId.toLowerCase().includes('bottomcursor') ||
       entry.content?.cursorType === 'Bottom' ||
-      entry.itemContent?.cursorType === 'Bottom';
+      entry.itemContent?.cursorType === 'Bottom' ||
+      entry.cursorType === 'Bottom' ||
+      (entry.content?.entryType === 'TimelineTimelineCursor' && entry.content?.cursorType === 'Bottom') ||
+      (entry.content?.entryType === 'TimelineTimelineCursor' && entryId.toLowerCase().includes('bottom'));
 
     if (isBottom) {
       const cursorVal =
         entry.content?.value ??
-        entry.content?.operation?.cursor?.value ??
         entry.itemContent?.value ??
-        entry.itemContent?.operation?.cursor?.value;
+        entry.value ??
+        entry.content?.operation?.cursor?.value ??
+        entry.itemContent?.operation?.cursor?.value ??
+        entry.item?.itemContent?.value;
       if (cursorVal) {
         bottomCursor = String(cursorVal);
       }

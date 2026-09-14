@@ -251,4 +251,58 @@ describe('Bookmarks Normalization & Extraction (BOOK-01, BOOK-02, D-15)', () => 
 
     expect(extractBookmarkFromDom(article)).toBeNull();
   });
+
+  it('extracts bottom cursor from TimelineReplaceEntry instruction (D-15)', () => {
+    const mockPayload = {
+      data: {
+        bookmark_timeline_v2: {
+          timeline: {
+            instructions: [
+              {
+                type: 'TimelineAddEntries',
+                entries: [
+                  {
+                    entryId: 'tweet-3001',
+                    itemContent: {
+                      tweet_results: {
+                        result: {
+                          rest_id: '3001',
+                          legacy: { full_text: 'Tweet on page 2' },
+                          core: {
+                            user_results: {
+                              result: {
+                                legacy: { name: 'Alice', screen_name: 'alice' },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+              {
+                type: 'TimelineReplaceEntry',
+                entry_id_to_replace: 'cursor-bottom-12345',
+                entry: {
+                  entryId: 'cursor-bottom-67890',
+                  content: {
+                    entryType: 'TimelineTimelineCursor',
+                    cursorType: 'Bottom',
+                    value: 'cursor_val_page_3',
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+    };
+
+    const result = extractBookmarksFromGraphql(mockPayload);
+    expect(result.schemaMismatch).toBe(false);
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0]!.id).toBe('3001');
+    expect(result.bottomCursor).toBe('cursor_val_page_3');
+  });
 });
