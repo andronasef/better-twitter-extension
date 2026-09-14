@@ -11,6 +11,7 @@ import { TileGrid } from './TileGrid';
 import { CategoryPanel } from './CategoryPanel';
 import { ThemesPanel } from './ThemesPanel';
 import { BookmarksPanel } from './BookmarksPanel';
+import { ReactionsPanel } from './ReactionsPanel';
 import { BetterTwitterLogo } from '@/components/BetterTwitterLogo';
 import { GithubIcon } from '@/components/GithubIcon';
 
@@ -225,6 +226,8 @@ export default function App({
             />
           ) : activeCategoryId === 'bookmarks' ? (
             <BookmarksPanel />
+          ) : activeCategoryId === 'reactions' ? (
+            <ReactionsPanel />
           ) : activeCategory ? (
             <CategoryPanel
               category={activeCategory}
