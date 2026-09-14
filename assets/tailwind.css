@@ -2,19 +2,21 @@
 
 @layer base {
   :root, :host {
-    --bt-accent: #1D9BF0;
-    --bt-bg: #FFFFFF;
-    --bt-surface: #F7F9F9;
-    --bt-fg: #0F1419;
-    --bt-fg-muted: #536471;
-    --bt-border: #EFF3F4;
-    --bt-warn: #E07C00;
+    --bt-accent: var(--bt-theme-accent, #1D9BF0);
+    --bt-accent-fg: var(--bt-theme-accent-fg, #FFFFFF);
+    --bt-bg: var(--bt-theme-bg, #000000);
+    --bt-surface: var(--bt-theme-surface, #16181C);
+    --bt-surface-hover: var(--bt-theme-surface-hover, #1E2025);
+    --bt-fg: var(--bt-theme-text, #E7E9EA);
+    --bt-fg-muted: var(--bt-theme-text-muted, #71767B);
+    --bt-border: var(--bt-theme-border, #2F3336);
+    --bt-warn: #FF9500;
     --bt-destructive: #F4212E;
 
     --background: var(--bt-bg);
     --foreground: var(--bt-fg);
     --primary: var(--bt-accent);
-    --primary-foreground: #FFFFFF;
+    --primary-foreground: var(--bt-accent-fg);
     --muted: var(--bt-surface);
     --muted-foreground: var(--bt-fg-muted);
     --border: var(--bt-border);
@@ -22,15 +24,16 @@
     --ring: var(--bt-accent);
   }
 
-  @media (prefers-color-scheme: dark) {
+  @media (prefers-color-scheme: light) {
     :root, :host {
-      --bt-accent: #1D9BF0;
-      --bt-bg: #000000;
-      --bt-surface: #16181C;
-      --bt-fg: #E7E9EA;
-      --bt-fg-muted: #71767B;
-      --bt-border: #2F3336;
-      --bt-warn: #FF9500;
+      --bt-accent: var(--bt-theme-accent, #1D9BF0);
+      --bt-bg: var(--bt-theme-bg, #FFFFFF);
+      --bt-surface: var(--bt-theme-surface, #F7F9F9);
+      --bt-surface-hover: var(--bt-theme-surface-hover, #EFF3F4);
+      --bt-fg: var(--bt-theme-text, #0F1419);
+      --bt-fg-muted: var(--bt-theme-text-muted, #536471);
+      --bt-border: var(--bt-theme-border, #EFF3F4);
+      --bt-warn: #E07C00;
       --bt-destructive: #F4212E;
 
       --background: var(--bt-bg);

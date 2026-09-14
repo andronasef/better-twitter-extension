@@ -109,10 +109,12 @@ const ROOT_TOKENS = `
   --bt-theme-text: #e7e9ea;
   --bt-theme-text-muted: #71767b;
   --bt-theme-accent: ${DEFAULT_ACCENT};
+  --bt-theme-accent-fg: #ffffff;
 }
 `;
 
 function presetTokenBlock(preset: ThemePreset): string {
+  const accentFg = preset.id === 'minimal' ? '#08090a' : '#ffffff';
   return `
 html[data-bt-theme="${preset.id}"] {
   --bt-theme-bg: ${preset.bg} !important;
@@ -122,6 +124,7 @@ html[data-bt-theme="${preset.id}"] {
   --bt-theme-text: ${preset.text} !important;
   --bt-theme-text-muted: ${preset.textMuted} !important;
   --bt-theme-accent: ${preset.accent} !important;
+  --bt-theme-accent-fg: ${accentFg} !important;
 }
 `;
 }
@@ -636,10 +639,16 @@ html[data-bt-theme="minimal"] header[role="banner"] nav {
   background: rgba(14, 16, 21, 0.75) !important;
   backdrop-filter: blur(20px) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  border-radius: 32px !important;
-  padding: 8px 4px !important;
+  border-radius: 28px !important;
+  width: 56px !important;
+  max-width: 56px !important;
+  padding: 6px 0 !important;
   margin: 4px auto !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
 }
 
 /* Suppress native separators and stray divider lines in Minimal mode */
@@ -741,7 +750,9 @@ html[data-bt-theme="minimal"] header[role="banner"] {
    r-1xcajam) must be pinned to the 68px rail. On a fixed element width:100%
    resolves against the VIEWPORT, so leaving the inner one at 100% made a
    full-viewport, full-height panel that sat over the timeline: it swallowed
-   clicks on posts and painted its scrollbars as stray white bars across the page. */
+   clicks on posts and painted its scrollbars as stray white bars across the page.
+   Width is constrained by explicit min/max-width; overflow stays visible so the
+   nav pill's notification dots and box-shadows are not clipped. */
 html[data-bt-theme="minimal"] header[role="banner"] > div,
 html[data-bt-theme="minimal"] header[role="banner"] > div > div {
   width: 68px !important;
@@ -750,7 +761,7 @@ html[data-bt-theme="minimal"] header[role="banner"] > div > div {
   align-items: center !important;
   justify-content: center !important;
   padding: 8px 0 !important;
-  overflow: hidden !important;
+  overflow: visible !important;
 }
 
 /* The actual scroll container inside the fixed panel. */
@@ -805,27 +816,53 @@ html[data-bt-theme="minimal"] header[role="banner"] h1 a {
 }
 
 html[data-bt-theme="minimal"] header[role="banner"] nav {
-  width: 100% !important;
+  width: 56px !important;
+  max-width: 56px !important;
   align-items: center !important;
-  margin-top: 0 !important;
+  margin: 4px auto !important;
 }
 
-html[data-bt-theme="minimal"] header[role="banner"] nav a span,
-html[data-bt-theme="minimal"] header[role="banner"] nav [role="button"] span {
+html[data-bt-theme="minimal"] header[role="banner"] nav a > div > div[dir],
+html[data-bt-theme="minimal"] header[role="banner"] nav [role="button"] > div > div[dir] {
   display: none !important;
 }
 
 html[data-bt-theme="minimal"] header[role="banner"] nav a,
 html[data-bt-theme="minimal"] header[role="banner"] nav [role="button"] {
-  width: 44px !important;
-  height: 44px !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-height: 40px !important;
   padding: 0 !important;
-  margin: 2px auto !important;
+  margin: 1px auto !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   border-radius: 9999px !important;
   transition: background-color 0.15s ease, transform 0.15s ease !important;
+  position: relative !important;
+}
+
+/* Ensure unread notification dots stay cleanly inside the nav item.
+   Twitter's dot uses CSS classes (not inline styles) for its blue background,
+   so we target by the aria-label attribute containing "unread". */
+html[data-bt-theme="minimal"] header[role="banner"] nav a div[aria-label*="unread"] {
+  position: absolute !important;
+  top: 2px !important;
+  right: 2px !important;
+  width: 8px !important;
+  height: 8px !important;
+  min-width: 8px !important;
+  min-height: 8px !important;
+  z-index: 2 !important;
+}
+
+/* Also catch dots that DO use inline styles (some Twitter A/B variants) */
+html[data-bt-theme="minimal"] header[role="banner"] nav a [style*="background-color: rgb(29, 155, 240)"],
+html[data-bt-theme="minimal"] header[role="banner"] nav a [style*="background-color: rgb(29,155,240)"],
+html[data-bt-theme="minimal"] header[role="banner"] nav a [style*="background-color: #1d9bf0"] {
+  position: absolute !important;
+  top: 2px !important;
+  right: 2px !important;
 }
 
 /* X keeps its own padded hover-pill div inside each nav item; that padding is
@@ -840,8 +877,11 @@ html[data-bt-theme="minimal"] header[role="banner"] nav [role="button"] > div {
   padding: 0 !important;
   margin: 0 !important;
   border-radius: 9999px !important;
+  display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+  position: relative !important;
+  overflow: visible !important;
 }
 
 html[data-bt-theme="minimal"] header[role="banner"] nav a:hover,
@@ -852,8 +892,8 @@ html[data-bt-theme="minimal"] header[role="banner"] nav [role="button"]:hover {
 html[data-bt-theme="minimal"] header[role="banner"] nav a svg,
 html[data-bt-theme="minimal"] header[role="banner"] nav [role="button"] svg {
   display: block !important;
-  width: 26px !important;
-  height: 26px !important;
+  width: 22px !important;
+  height: 22px !important;
   margin: 0 auto !important;
 }
 
@@ -892,7 +932,7 @@ html[data-bt-theme="minimal"] div[data-testid="primaryColumn"] > div {
   overflow: visible !important;
 }
 
-/* Collapse Post button to 50x50 round circle button */
+/* Collapse Post button to round circle button with feather icon */
 html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"] {
   width: 44px !important;
   height: 44px !important;
@@ -900,32 +940,61 @@ html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"] {
   padding: 0 !important;
   margin: 8px auto !important;
   border-radius: 9999px !important;
+  display: flex !important;
   justify-content: center !important;
   align-items: center !important;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
   transition: transform 0.15s ease !important;
+  background-color: var(--bt-theme-accent) !important;
+  position: relative !important;
 }
 
 html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"]:hover {
   transform: scale(1.08) !important;
 }
 
-html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"] span {
+/* Hide all inner content (nested divs, spans with "Post" text). Twitter wraps
+   the label in <div><div><span><div style="height:0">Post</div></span></div></div>
+   which still occupies flex space even with zero-height children. */
+html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"] > div {
   display: none !important;
 }
 
-html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"] {
-  background-color: var(--bt-theme-accent) !important;
+/* Feather / Compose Icon: on desktop x.com, Twitter does not render an SVG inside this button
+   (only <span>Post</span>). We render the native Twitter feather/quill icon via CSS mask so the
+   button always displays the compose icon in high resolution.
+   Absolutely positioned for guaranteed centering regardless of inner content. */
+html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"]::after {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 22px !important;
+  height: 22px !important;
+  background-color: var(--bt-theme-bg) !important;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M23 3c-6.62-.1-10.38 2.421-13.05 6.03C7.29 12.61 6 17.331 6 22h2c0-1.007.07-2.012.19-3H12c4.1 0 7.48-3.082 7.94-7.054C22.79 10.147 23.17 6.359 23 3zm-7 8h-1.5v2H16c.63-.016 1.2-.08 1.72-.188C16.95 15.24 14.68 17 12 17H8.55c.57-2.512 1.57-4.851 3-6.78 2.16-2.912 5.29-4.911 9.45-5.187C20.95 6.879 20.31 9.07 16 11zM4 20H2v2h2v-2z'/%3E%3C/svg%3E") no-repeat center / contain !important;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M23 3c-6.62-.1-10.38 2.421-13.05 6.03C7.29 12.61 6 17.331 6 22h2c0-1.007.07-2.012.19-3H12c4.1 0 7.48-3.082 7.94-7.054C22.79 10.147 23.17 6.359 23 3zm-7 8h-1.5v2H16c.63-.016 1.2-.08 1.72-.188C16.95 15.24 14.68 17 12 17H8.55c.57-2.512 1.57-4.851 3-6.78 2.16-2.912 5.29-4.911 9.45-5.187C20.95 6.879 20.31 9.07 16 11zM4 20H2v2h2v-2z'/%3E%3C/svg%3E") no-repeat center / contain !important;
+  pointer-events: none !important;
 }
 
-/* Minimal accent is near-white, so the inherited white icon disappeared into
-   the white pill - punch it back to the page background colour. */
-html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"] svg,
-html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"] svg * {
+/* When Twitter DOES render an SVG (mobile or narrow viewport), prefer the native
+   SVG and suppress the CSS mask fallback. */
+html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"]:has(svg) > div {
+  display: flex !important;
+}
+
+html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"]:has(svg) svg,
+html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"]:has(svg) svg * {
   display: block !important;
   margin: 0 auto !important;
   color: var(--bt-theme-bg) !important;
   fill: var(--bt-theme-bg) !important;
+}
+
+html[data-bt-theme="minimal"] [data-testid="SideNav_NewTweet_Button"]:has(svg)::after {
+  display: none !important;
 }
 
 /* Collapse Account Switcher to avatar-only */
@@ -944,7 +1013,16 @@ html[data-bt-theme="minimal"] [data-testid="SideNav_AccountSwitcher_Button"] > d
 
 /* Hide floating action buttons (DM drawer, Grok floating) in Minimal mode */
 html[data-bt-theme="minimal"] div[data-testid="DMDrawer"],
-html[data-bt-theme="minimal"] div[data-testid="floatingActionButton"] {
+html[data-bt-theme="minimal"] div[data-testid="floatingActionButton"],
+html[data-bt-theme="minimal"] [data-testid="GrokDrawer"],
+html[data-bt-theme="minimal"] [data-testid="chat-drawer-root"],
+html[data-bt-theme="minimal"] [data-testid="BottomBar"],
+html[data-bt-theme="minimal"] div:has(> [data-testid="GrokDrawer"]),
+html[data-bt-theme="minimal"] div:has(> [data-testid="chat-drawer-root"]),
+html[data-bt-theme="minimal"] div:has(> div > [data-testid="GrokDrawer"]),
+html[data-bt-theme="minimal"] div:has(> div > [data-testid="chat-drawer-root"]),
+html[data-bt-theme="minimal"] div:has(> div > div > [data-testid="GrokDrawer"]),
+html[data-bt-theme="minimal"] div:has(> div > div > [data-testid="chat-drawer-root"]) {
   display: none !important;
 }
 `;
