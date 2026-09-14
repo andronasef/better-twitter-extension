@@ -284,6 +284,23 @@ ${t} [style*="background-color: rgba(15, 20, 25"] {
   background-color: var(--bt-theme-surface) !important;
 }
 
+/* Sticky tab-strip header: X keeps a translucent black bar (rgba(0,0,0,.65)
+   plus a blur) behind the feed tabs and the "+" button, from its own classes -
+   nothing inline to map, so key off the tablist it wraps. */
+${t} [data-testid="primaryColumn"] div:has([role="tablist"]),
+${t} [data-testid="primaryColumn"] div:has([data-testid="app-bar-back"]),
+${t} [data-testid="primaryColumn"] div:has(h2[role="heading"]) {
+  background-color: var(--bt-theme-surface) !important;
+}
+
+/* ...and the icons in it carry a hardcoded grey on the svg itself, so they do
+   not inherit the themed colour their wrapper already has. */
+${t} [role="tablist"] svg,
+${t} [aria-label="Manage timelines"] svg {
+  color: var(--bt-theme-text) !important;
+  fill: currentColor !important;
+}
+
 /* "See new posts" pill - X blue from its own classes, white label. */
 ${t} [role="status"] button:has([data-testid="pillLabel"]) {
   background-color: var(--bt-theme-accent) !important;
