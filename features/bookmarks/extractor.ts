@@ -16,15 +16,33 @@ export function extractBookmarksFromGraphql(json: unknown): ExtractionResult {
   }
 
   const root = json as any;
+  const dataObj = root.data && typeof root.data === 'object' ? root.data : root;
+
   let instructions: any[] | undefined =
-    root.data?.bookmark_timeline_v2?.timeline?.instructions ??
-    root.data?.bookmark_timeline?.timeline?.instructions;
+    dataObj.bookmark_timeline_v2?.timeline?.instructions ??
+    dataObj.bookmark_timeline?.timeline?.instructions ??
+    dataObj.timeline?.instructions ??
+    dataObj.instructions;
 
   if (!instructions || !Array.isArray(instructions)) {
     if (Array.isArray(root.instructions)) {
       instructions = root.instructions;
     } else if (Array.isArray(root.data?.instructions)) {
       instructions = root.data.instructions;
+    } else {
+      // Recursive fallback searching for instructions array
+      const findInstructions = (obj: any): any[] | null => {
+        if (!obj || typeof obj !== 'object') return null;
+        if (Array.isArray(obj.instructions)) return obj.instructions;
+        for (const key of Object.keys(obj)) {
+          if (typeof obj[key] === 'object') {
+            const found = findInstructions(obj[key]);
+            if (found) return found;
+          }
+        }
+        return null;
+      };
+      instructions = findInstructions(dataObj) || undefined;
     }
   }
 

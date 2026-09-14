@@ -48,8 +48,8 @@ export function FolderManagerPopover({
     }
   }, [open, folderToEdit]);
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async (e?: React.FormEvent | React.MouseEvent) => {
+    if (e) e.preventDefault();
     const name = folderName.trim();
     if (!name) return;
 
@@ -173,6 +173,7 @@ export function FolderManagerPopover({
                 </button>
                 <button
                   type="submit"
+                  onClick={handleSave}
                   disabled={!folderName.trim()}
                   className="text-[13px] px-3 py-1 rounded bg-[var(--bt-accent,#1d9bf0)] text-white font-semibold disabled:opacity-50 hover:opacity-90"
                 >

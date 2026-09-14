@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bookmarks / X</title>
+  <style>
+    body { margin: 0; background: #000; color: #fff; font-family: sans-serif; }
+    article[data-testid="tweet"] { min-height: 120px; padding: 12px; }
+    [role="separator"] { height: 1px; background: #222; }
+    button { cursor: pointer; }
+    [data-bt-bookmark-filtered="true"] { display: none !important; }
+  </style>
+</head>
+<body>
+  <header role="banner">
+    <nav>
+      <a href="/home" role="link"><span>Home</span></a>
+      <a href="/notifications" role="link"><span>Notifications</span></a>
+      <a href="/messages" role="link"><span>Messages</span></a>
+      <a href="/i/bookmarks" role="link"><span>Bookmarks</span></a>
+    </nav>
+  </header>
+
+  <div data-testid="primaryColumn" style="max-width: 600px; margin: 0 auto; min-height: 100vh;">
+    <!-- Native Sticky Top Header -->
+    <div data-testid="TopNavBar" style="height: 53px; border-bottom: 1px solid #2f3336; display: flex; items-center; padding: 0 16px;">
+      <h1>Bookmarks</h1>
+    </div>
+
+    <!-- Bookmarks Feed -->
+    <div aria-label="Timeline: Bookmarks" role="region">
+      <div style="position: relative;">
+        <!-- Cell 1: TypeScript & React Tweet -->
+        <div data-testid="cellInnerDiv">
+          <div>
+            <article data-testid="tweet" id="tweet-1">
+              <div data-testid="User-Name">
+                <span>Alice Smith</span>
+                <span>@alice</span>
+                <time datetime="2025-05-14T00:00:00.000Z">May 14</time>
+              </div>
+              <div data-testid="tweetText">
+                <span>First saved bookmark text about typescript and react engineering</span>
+              </div>
+              <a href="https://x.com/alice/status/2000000000000000001">Status link</a>
+              <div role="group" style="display: flex; gap: 16px; margin-top: 8px;">
+                <button data-testid="reply">Reply</button>
+                <button data-testid="retweet">Repost</button>
+                <button data-testid="like">Like</button>
+                <button data-testid="bookmark" aria-label="Bookmark">Bookmark</button>
+              </div>
+            </article>
+          </div>
+        </div>
+        <div role="separator"></div>
+
+        <!-- Cell 2: AI & Python Tweet -->
+        <div data-testid="cellInnerDiv">
+          <div>
+            <article data-testid="tweet" id="tweet-2">
+              <div data-testid="User-Name">
+                <span>Bob Jones</span>
+                <span>@bob</span>
+                <time datetime="2025-05-14T00:00:00.000Z">May 14</time>
+              </div>
+              <div data-testid="tweetText">
+                <span>Second saved bookmark about artificial intelligence and python models</span>
+              </div>
+              <a href="https://x.com/bob/status/2000000000000000002">Status link</a>
+              <div role="group" style="display: flex; gap: 16px; margin-top: 8px;">
+                <button data-testid="reply">Reply</button>
+                <button data-testid="retweet">Repost</button>
+                <button data-testid="like">Like</button>
+                <button data-testid="bookmark" aria-label="Bookmark">Bookmark</button>
+              </div>
+            </article>
+          </div>
+        </div>
+        <div role="separator"></div>
+
+        <!-- Cell 3: CSS Tweet with active Remove Bookmark button -->
+        <div data-testid="cellInnerDiv">
+          <div>
+            <article data-testid="tweet" id="tweet-3">
+              <div data-testid="User-Name">
+                <span>Carol Danvers</span>
+                <span>@carol</span>
+                <time datetime="2025-05-14T00:00:00.000Z">May 14</time>
+              </div>
+              <div data-testid="tweetText">
+                <span>Third saved bookmark discussing css and modern web development</span>
+              </div>
+              <a href="https://x.com/carol/status/2000000000000000003">Status link</a>
+              <div role="group" style="display: flex; gap: 16px; margin-top: 8px;">
+                <button data-testid="reply">Reply</button>
+                <button data-testid="retweet">Repost</button>
+                <button data-testid="like">Like</button>
+                <button data-testid="removeBookmark" aria-label="Remove Tweet from Bookmarks">Remove Bookmark</button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

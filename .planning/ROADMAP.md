@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation & Settings Popup** - Shared plumbing plus a working popup, proven end-to-end by a live ad-stripping toggle
 - [x] **Phase 2: Clean Timeline & Themes** - Clutter toggles and the full theme engine — read-only DOM/CSS features on top of the pipeline
-- [ ] **Phase 3: Bookmarks (Capture, Management & Resurfacing)** - Multi-strategy capture, local storage/quota management, folder/tag organization, in-page search, and feed resurfacing
+- [x] **Phase 3: Bookmarks (Capture, Management & Resurfacing)** - Multi-strategy capture, local storage/quota management, folder/tag organization, in-page search, and feed resurfacing
 - [ ] **Phase 4: Twemoji Reactions** - Hover/long-press palette that prefills X's native reply composer for the user to send
 - [ ] **Phase 5: Chrome Web Store Packaging** - Permission audit, privacy policy, single-purpose listing, and a submittable package
 
@@ -135,7 +135,22 @@ Plans:
   - Resurfacing cadence: what value of N and what selection behavior actually feels good rather than nagging.
   - Re-verification, not new work: 60fps scroll (FOUND-08) and storage headroom (BOOK-10) under resurfacing load — this phase adds the most write-heavy DOM mutation in the project and repeatedly reads the largest dataset, so both are the most likely to regress here.
 
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+**Wave 1**
+- [x] 03-01-PLAN.md — Core Storage, Schema & Extraction Engine (BOOK-01, BOOK-02, BOOK-10, D-01..18)
+
+**Wave 2**
+- [x] 03-02-PLAN.md — MAIN Bridge, Background Sync, Action Row Dual-Save & Popover (BOOK-01, BOOK-03, D-05..10)
+- [x] 03-03-PLAN.md — In-Page Bookmarks Hub UI & Feed Filtering (BOOK-04, BOOK-05, BOOK-06, D-01..04)
+
+**Wave 3**
+- [x] 03-04-PLAN.md — Timeline Resurfacing Engine & Popup BookmarksPanel (BOOK-07, BOOK-08, BOOK-09, D-11..17)
+
+**Wave 4**
+- [x] 03-05-PLAN.md — Full Integration, E2E Playwright Verification, Build Security Audit (BOOK-01..10)
+
 **UI hint**: yes
 
 ### Phase 4: Twemoji Reactions

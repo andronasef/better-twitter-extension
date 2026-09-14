@@ -159,6 +159,19 @@ export async function removeBookmark(id: string): Promise<void> {
       totalCaptured: Object.keys(bookmarks).length,
     });
   }
+
+  // Also clean up legacy/accidental raw or prefixed keys if present in chrome.storage.local
+  try {
+    const raw = await (globalThis as any).chrome?.storage?.local?.get(['bookmarks', 'local:bookmarks']);
+    if (raw?.bookmarks && raw.bookmarks[id]) {
+      delete raw.bookmarks[id];
+      await (globalThis as any).chrome?.storage?.local?.set({ bookmarks: raw.bookmarks });
+    }
+    if (raw?.['local:bookmarks'] && raw['local:bookmarks'][id]) {
+      delete raw['local:bookmarks'][id];
+      await (globalThis as any).chrome?.storage?.local?.set({ 'local:bookmarks': raw['local:bookmarks'] });
+    }
+  } catch {}
 }
 
 export async function getBookmarksList(): Promise<BookmarkItem[]> {

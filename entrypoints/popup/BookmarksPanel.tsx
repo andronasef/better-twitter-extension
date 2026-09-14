@@ -162,6 +162,11 @@ export function BookmarksPanel() {
   // Primary Sync Button action
   const handleSyncClick = async () => {
     if (isSyncing) return;
+    setSyncState((prev) => ({
+      ...prev,
+      status: 'syncing',
+      errorReason: null,
+    }));
     if (isErrorOrPaused) {
       await resumeSync();
     } else {

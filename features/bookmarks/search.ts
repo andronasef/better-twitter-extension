@@ -34,15 +34,22 @@ export function searchBookmarks(
     const textLower = (item.text || '').toLowerCase();
     const nameLower = (item.authorName || '').toLowerCase();
     const handleLower = (item.authorHandle || '').toLowerCase();
-    const tagsLower = (item.tags || []).map((t) => t.toLowerCase());
+    const hasTags = item.tags && item.tags.length > 0;
 
-    return tokens.every(
-      (token) =>
+    for (const token of tokens) {
+      if (
         textLower.includes(token) ||
         nameLower.includes(token) ||
-        handleLower.includes(token) ||
-        tagsLower.some((t) => t.includes(token))
-    );
+        handleLower.includes(token)
+      ) {
+        continue;
+      }
+      if (hasTags && item.tags.some((t) => t.toLowerCase().includes(token))) {
+        continue;
+      }
+      return false;
+    }
+    return true;
   });
 }
 

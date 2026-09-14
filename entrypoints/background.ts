@@ -37,5 +37,13 @@ export default defineBackground(() => {
         browser.action.setTitle({ title: 'Better Twitter!' });
       }
     }
+
+    if (message && message.type === 'bt:start-sync') {
+      try {
+        browser.tabs.create({ url: 'https://x.com/i/bookmarks', active: false });
+      } catch (err) {
+        console.error('[BetterTwitter] Failed to create background sync tab:', err);
+      }
+    }
   });
 });
