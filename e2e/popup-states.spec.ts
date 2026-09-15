@@ -72,9 +72,9 @@ test.describe('Popup UI States & Interaction Contract', () => {
     await expect(footerLinks.nth(2)).toHaveAttribute('href', 'https://bettertwitter.featurebase.app/');
     await expect(footerLinks.nth(3)).toHaveAttribute('href', 'https://bettertwitter.featurebase.app/');
 
-    // 4. Assert category tiles in 3-column grid (Timeline, Themes)
+    // 4. Assert category tiles in 3-column grid (Timeline, Themes, Bookmarks, Reactions)
     const tiles = page.locator('main button');
-    await expect(tiles).toHaveCount(2);
+    await expect(tiles).toHaveCount(4);
     await expect(tiles.first()).toContainText('Timeline');
     await expect(tiles.nth(1)).toContainText('Themes');
 
@@ -98,7 +98,7 @@ test.describe('Popup UI States & Interaction Contract', () => {
     // Click back chevron -> returns to grid view
     await backBtn.click();
     await expect(page.locator('header')).toHaveText('Better Twitter');
-    await expect(page.locator('main button')).toHaveCount(2);
+    await expect(page.locator('main button')).toHaveCount(4);
 
     await page.close();
   });

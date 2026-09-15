@@ -82,9 +82,9 @@ test.describe('Bookmarks: capture, management, and resurfacing (BOOK-01..10, D-0
     const searchInput = page.locator('input[placeholder="Search bookmarks by text or author..."]');
     await expect(searchInput).toBeVisible();
 
-    // 3. Asserts filter chips row renders "All Bookmarks" and "+ New Folder"
+    // 3. Asserts filter chips row renders "All Bookmarks" and "New Folder"
     await expect(page.locator('button', { hasText: 'All Bookmarks' })).toBeVisible();
-    await expect(page.locator('button', { hasText: '+ New Folder' })).toBeVisible();
+    await expect(page.locator('button', { hasText: 'New Folder' })).toBeVisible();
 
     await page.close();
   });
@@ -167,12 +167,12 @@ test.describe('Bookmarks: capture, management, and resurfacing (BOOK-01..10, D-0
     const page = await context.newPage();
     await page.goto('https://x.com/i/bookmarks');
 
-    const newFolderBtn = page.locator('button', { hasText: '+ New Folder' });
+    const newFolderBtn = page.locator('button', { hasText: 'New Folder' });
     await expect(newFolderBtn).toBeVisible();
     await newFolderBtn.click();
 
     // Popover opens
-    const dialogTitle = page.locator('h3', { hasText: 'Create Folder' });
+    const dialogTitle = page.locator('h3', { hasText: 'New Folder' });
     await expect(dialogTitle).toBeVisible();
 
     // Fill folder name and submit
@@ -181,7 +181,7 @@ test.describe('Bookmarks: capture, management, and resurfacing (BOOK-01..10, D-0
     await nameInput.press('Enter');
 
     // New folder chip appears in toolbar
-    const newChip = page.locator('button', { hasText: 'Research Notes' });
+    const newChip = page.getByRole('button', { name: /Research Notes/ }).first();
     await expect(newChip).toBeVisible();
 
     await page.close();

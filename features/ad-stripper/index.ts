@@ -1,5 +1,5 @@
 import { resolve } from '@/lib/selectors';
-import { recordHit } from '@/lib/diagnostics';
+import { recordHit, recordMiss } from '@/lib/diagnostics';
 import { onTweetSeen, replayKnownTweets } from '@/entrypoints/x.content/pipeline';
 import { hideTweetCell, clearAllHidden } from '@/lib/hide-style';
 
@@ -18,7 +18,11 @@ export function isPromoted(cell: Element): boolean {
     return true;
   }
   const article = cell.querySelector('[data-testid="tweet"]');
-  return Boolean(article && !article.querySelector('time'));
+  if (article && !article.querySelector('time')) {
+    recordMiss('hidePromotedTweets', 'promotedContainer');
+    return true;
+  }
+  return false;
 }
 
 function processTweet(cell: Element, _tweetId: string): void {

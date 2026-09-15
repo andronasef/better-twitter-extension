@@ -57,19 +57,25 @@ async function launchExtensionContext() {
 /** Merges a partial Settings patch into whatever is currently stored, preserving version. */
 async function updateSettings(background: any, partial: Record<string, any>) {
   await background.evaluate(async (patch: Record<string, any>) => {
-    const stored = await (globalThis as any).chrome.storage.local.get('settings');
-    const current = stored.settings || {
-      version: 3,
+    const stored = await (globalThis as any).chrome.storage.local.get(['settings', 'local:settings']);
+    const current = stored['local:settings'] || stored.settings || {
+      version: 4,
       features: {},
       theme: 'default',
       customAccent: null,
     };
     const next = {
       ...current,
+      version: 4,
       ...patch,
       features: { ...current.features, ...(patch.features || {}) },
     };
-    await (globalThis as any).chrome.storage.local.set({ settings: next });
+    await (globalThis as any).chrome.storage.local.set({
+      'local:settings': next,
+      settings: next,
+      'local:settings$': { v: 4 },
+      'settings$': { v: 4 },
+    });
   }, partial);
 }
 

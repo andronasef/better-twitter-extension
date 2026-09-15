@@ -198,9 +198,9 @@ export class PaletteController {
 
   private onPointerOut(e: PointerEvent): void {
     const likeBtn = this.findLikeButton(e.target);
-    if (likeBtn && this.activeLikeButton === likeBtn) {
+    if (likeBtn) {
       this.clearHoverTimer();
-      if (this.isPaletteOpen) {
+      if (this.isPaletteOpen && this.activeLikeButton === likeBtn) {
         this.startExitGraceTimer();
       }
     }
@@ -221,7 +221,7 @@ export class PaletteController {
         (el) => (el as HTMLElement)?.id === 'bt-reactions-root'
       );
       if (this.isPaletteOpen && !isInsideOverlay) {
-        this.closePalette();
+        this.closePalette(true);
       }
     }
   }
