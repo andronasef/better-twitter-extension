@@ -16,7 +16,8 @@
     "postinstall": "wxt prepare",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "verify": "wxt build && node scripts/audit-build.mjs && vitest run"
+    "verify": "wxt build && node scripts/audit-build.mjs && vitest run",
+    "package:cws": "bun run scripts/package-cws.ts"
   },
   "dependencies": {
     "@tailwindcss/vite": "4.3.3",
