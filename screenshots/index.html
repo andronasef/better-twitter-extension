@@ -10,6 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
+    <script src="./images-data.js"></script>
     <style>
       :root {
         --bg-body: #07090e;
@@ -699,6 +700,7 @@ Hide ads, trends, and vanity numbers to enjoy a peaceful, quiet feed.</textarea>
       const SCREENSHOTS = [
         {
           id: "clean",
+          dataKey: "clean",
           name: "Clean Timeline",
           badge: "✦ DISTRACTION FREE",
           headline: "Focus on What Matters",
@@ -711,6 +713,7 @@ Hide ads, trends, and vanity numbers to enjoy a peaceful, quiet feed.</textarea>
         },
         {
           id: "bookmarks-manager",
+          dataKey: "bookmarksManager",
           name: "Bookmark Hub",
           badge: "✦ BOOKMARKS ORGANIZER",
           headline: "Find Any Saved Tweet Fast",
@@ -723,6 +726,7 @@ Hide ads, trends, and vanity numbers to enjoy a peaceful, quiet feed.</textarea>
         },
         {
           id: "bookmarks-timeline",
+          dataKey: "bookmarksTimeline",
           name: "Feed Resurfacing",
           badge: "✦ TIMELINE RESURFACING",
           headline: "Never Forget What You Save",
@@ -735,6 +739,7 @@ Hide ads, trends, and vanity numbers to enjoy a peaceful, quiet feed.</textarea>
         },
         {
           id: "reactions",
+          dataKey: "reactions",
           name: "Emoji Reactions",
           badge: "✦ EMOJI REACTIONS",
           headline: "React With Any Emoji",
@@ -746,6 +751,13 @@ Hide ads, trends, and vanity numbers to enjoy a peaceful, quiet feed.</textarea>
           offsetY: 45,
         },
       ];
+
+      function getImageSrc(item) {
+        return (
+          (window.SCREENSHOT_DATA && window.SCREENSHOT_DATA[item.dataKey]) ||
+          item.src
+        );
+      }
 
       // Theme definitions
       const THEMES = {
@@ -815,7 +827,7 @@ Hide ads, trends, and vanity numbers to enjoy a peaceful, quiet feed.</textarea>
       function preloadScreenshots() {
         SCREENSHOTS.forEach((item, index) => {
           const img = new Image();
-          img.src = item.src;
+          img.src = getImageSrc(item);
           img.onload = () => {
             loadedImages[item.id] = img;
             if (index === activeIndex) {
@@ -837,9 +849,10 @@ Hide ads, trends, and vanity numbers to enjoy a peaceful, quiet feed.</textarea>
         SCREENSHOTS.forEach((item, index) => {
           const card = document.createElement("div");
           card.className = `screenshot-card ${index === activeIndex ? "active" : ""}`;
+          const thumbSrc = getImageSrc(item);
           card.innerHTML = `
             <div class="screenshot-card-thumb">
-              <img src="${item.src}" alt="${item.name}" onerror="this.style.display='none'">
+              <img src="${thumbSrc}" alt="${item.name}" onerror="this.style.display='none'">
             </div>
             <div class="screenshot-card-name">${item.name}</div>
             <div class="screenshot-card-desc">${item.src.replace("./", "")}</div>
@@ -1116,19 +1129,40 @@ Hide ads, trends, and vanity numbers to enjoy a peaceful, quiet feed.</textarea>
       // Export helper
       function exportCanvasAsPNG(filename) {
         return new Promise((resolve) => {
-          canvas.toBlob((blob) => {
-            if (!blob) return resolve();
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(() => {
-              URL.revokeObjectURL(url);
+          try {
+            canvas.toBlob((blob) => {
+              if (!blob) return resolve();
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.download = filename;
+              a.href = url;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              setTimeout(() => {
+                URL.revokeObjectURL(url);
+                resolve();
+              }, 100);
+            }, "image/png");
+          } catch (err) {
+            console.error("toBlob export failed:", err);
+            try {
+              const dataUrl = canvas.toDataURL("image/png");
+              const a = document.createElement("a");
+              a.download = filename;
+              a.href = dataUrl;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
               resolve();
-            }, 100);
-          }, "image/png");
+            } catch (fallbackErr) {
+              console.error("Fallback export failed:", fallbackErr);
+              alert(
+                "Export blocked by browser local security policy.\n\nPlease open this page via an HTTP server or ensure images-data.js is loaded.",
+              );
+              resolve();
+            }
+          }
         });
       }
 
