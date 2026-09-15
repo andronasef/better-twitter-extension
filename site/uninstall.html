@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icon-32.png" />
   <link rel="stylesheet" href="./styles.css" />
   <!-- Cloudflare Turnstile API -->
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback&render=explicit" async defer></script>
 </head>
 <body>
   <!-- Navigation Header -->
@@ -29,40 +29,39 @@
   <!-- Main Survey Container -->
   <main class="site-container">
     <div class="form-container">
-      <!-- Intro Header -->
+      <!-- Header -->
       <div id="survey-header">
         <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
-          <span class="badge badge-blue">Offboarding Feedback</span>
+          <span class="badge badge-blue">Uninstall Survey</span>
           <span style="color: var(--text-dim); font-size: 0.8rem; font-weight: 600;">v0.1.0</span>
         </div>
-        <h1>We're sorry to see you go</h1>
-        <p style="margin-top: 0.75rem; font-size: 1.05rem;">
-          Your honest feedback helps us make Better Twitter better for everyone. Take 30 seconds to let us know why you decided to remove the extension.
+        <h1>Why did you remove Better Twitter?</h1>
+        <p style="margin-top: 0.5rem; font-size: 1rem; color: var(--text-muted);">
+          No hard feelings. If something was broken or didn't work as advertised, let us know so we can fix it.
         </p>
       </div>
 
       <!-- Feedback Form -->
-      <form id="uninstall-form" style="margin-top: 2.25rem;">
+      <form id="uninstall-form" style="margin-top: 2rem;">
         <!-- Question 1: Reason for leaving -->
         <div class="form-group">
-          <label class="form-label">What is the primary reason for uninstalling?</label>
-          <div class="form-sublabel">Select the option that best describes your experience:</div>
+          <label class="form-label">Primary reason for uninstalling</label>
           <div class="radio-options" id="reasons-container">
             <label class="radio-card">
               <input type="radio" name="reason" value="bug_or_broken" required />
-              <span>Encountered a bug or broken feature</span>
+              <span>Something broke or wasn't working</span>
             </label>
             <label class="radio-card">
               <input type="radio" name="reason" value="missing_feature" />
-              <span>Missing a feature I was looking for</span>
-            </label>
-            <label class="radio-card">
-              <input type="radio" name="reason" value="too_complex" />
-              <span>Settings or interface were confusing</span>
+              <span>Missing a feature I wanted</span>
             </label>
             <label class="radio-card">
               <input type="radio" name="reason" value="performance" />
-              <span>Made X feel sluggish or slowed down browsing</span>
+              <span>Slowed down scrolling or browsing</span>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="reason" value="too_complex" />
+              <span>Confusing settings / didn't like the UI</span>
             </label>
             <label class="radio-card">
               <input type="radio" name="reason" value="temporary_test" />
@@ -70,7 +69,7 @@
             </label>
             <label class="radio-card">
               <input type="radio" name="reason" value="switched_browser" />
-              <span>Switched to a different browser</span>
+              <span>Switched browsers</span>
             </label>
             <label class="radio-card">
               <input type="radio" name="reason" value="other" />
@@ -81,54 +80,54 @@
 
         <!-- Question 2: Which features caused issues? -->
         <div class="form-group">
-          <label class="form-label">Did any specific feature give you trouble?</label>
+          <label class="form-label">Which features did you have trouble with?</label>
           <div class="form-sublabel">Select all that apply (optional):</div>
           <div class="checkbox-options">
             <span class="checkbox-chip" data-value="Ad Stripper">
-              <span>🛡️</span> Ad & Promoted Post Stripper
+              <span>🛡️</span> Ad Stripper
             </span>
             <span class="checkbox-chip" data-value="Themes & Accents">
-              <span>🎨</span> Custom Themes (Dracula/Nord/Matrix)
+              <span>🎨</span> Custom Themes
             </span>
             <span class="checkbox-chip" data-value="Twemoji Reactions">
-              <span>😀</span> Twemoji Reactions Palette
+              <span>😀</span> Twemoji Reactions
             </span>
             <span class="checkbox-chip" data-value="Bookmarks Manager">
-              <span>🔖</span> Bookmark Folders & Resurfacing
+              <span>🔖</span> Bookmark Folders
             </span>
             <span class="checkbox-chip" data-value="Feed Decluttering">
-              <span>🧹</span> Tab Swapping / Sidebar Cleaner
+              <span>🧹</span> Tab Swap / Feed Declutter
             </span>
             <span class="checkbox-chip" data-value="Settings Popup">
-              <span>⚙️</span> Extension Popup Interface
+              <span>⚙️</span> Extension Popup
             </span>
           </div>
         </div>
 
         <!-- Question 3: Tell us more -->
         <div class="form-group">
-          <label class="form-label" for="feedback-text">What could we have done better?</label>
-          <div class="form-sublabel">Be as frank and direct as you like. We read every response.</div>
+          <label class="form-label" for="feedback-text">Details or suggestions</label>
+          <div class="form-sublabel">What specifically didn't work? What would make you come back?</div>
           <textarea
             id="feedback-text"
             class="form-textarea"
-            placeholder="e.g. The Dracula theme had low contrast in search results, or I wanted an option to auto-expand images..."
+            placeholder="e.g. The Ad stripper missed promoted posts in search results, or the Dracula theme had contrast issues on status pages..."
           ></textarea>
         </div>
 
         <!-- Question 4: Would try again -->
         <div class="form-group">
-          <label class="form-label">Would you consider trying Better Twitter again in the future?</label>
-          <div style="display: flex; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap;">
-            <label class="radio-card" style="flex: 1; min-width: 120px;">
+          <label class="form-label">Would you try Better Twitter again if these issues were fixed?</label>
+          <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
+            <label class="radio-card" style="flex: 1; min-width: 110px;">
               <input type="radio" name="would_return" value="yes" checked />
-              <span>Yes, definitely</span>
+              <span>Yes</span>
             </label>
-            <label class="radio-card" style="flex: 1; min-width: 120px;">
+            <label class="radio-card" style="flex: 1; min-width: 110px;">
               <input type="radio" name="would_return" value="maybe" />
-              <span>Maybe later</span>
+              <span>Maybe</span>
             </label>
-            <label class="radio-card" style="flex: 1; min-width: 120px;">
+            <label class="radio-card" style="flex: 1; min-width: 110px;">
               <input type="radio" name="would_return" value="no" />
               <span>No</span>
             </label>
@@ -137,8 +136,8 @@
 
         <!-- Question 5: Optional email for follow-up -->
         <div class="form-group">
-          <label class="form-label" for="contact-email">Email address <span style="font-weight: normal; color: var(--text-muted); font-size: 0.85rem;">(optional)</span></label>
-          <div class="form-sublabel">Only if you'd like a personal reply when your issue is resolved. Zero spam ever.</div>
+          <label class="form-label" for="contact-email">Email <span style="font-weight: normal; color: var(--text-dim); font-size: 0.85rem;">(optional)</span></label>
+          <div class="form-sublabel">Only if you want a note when the issue you reported is fixed.</div>
           <input
             type="email"
             id="contact-email"
@@ -147,31 +146,17 @@
           />
         </div>
 
-        <!-- Cloudflare Turnstile Widget -->
-        <div class="form-group">
-          <label class="form-label">Security Verification</label>
-          <div class="form-sublabel">Protecting our open survey from spam bots:</div>
+        <!-- Cloudflare Turnstile Verification -->
+        <div class="form-group" style="border-top: 1px solid var(--border-subtle); padding-top: 1.5rem;">
+          <label class="form-label">Spam Protection</label>
           <div class="turnstile-wrapper">
-            <div
-              class="cf-turnstile"
-              data-sitekey="0x4AAAAAAElv1dOFkB8Bk6iE"
-              data-theme="dark"
-              data-callback="onTurnstileSuccess"
-              data-expired-callback="onTurnstileExpired"
-            ></div>
+            <div id="cf-turnstile-box"></div>
+            <div id="turnstile-dev-notice" style="display: none; margin-top: 0.5rem; font-size: 0.78rem; color: var(--text-dim); text-align: center;"></div>
           </div>
         </div>
 
-        <!-- JSON Transparency Drawer -->
-        <div style="margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 1rem;">
-          <button type="button" id="preview-toggle" class="json-preview-toggle">
-            <span>&bull;</span> View exact JSON payload sent to Google Forms
-          </button>
-          <div id="preview-box" class="json-preview-box"></div>
-        </div>
-
         <!-- Submit Button -->
-        <div style="margin-top: 2rem; display: flex; flex-direction: column; gap: 0.75rem;">
+        <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
           <button
             type="submit"
             id="submit-btn"
@@ -179,15 +164,15 @@
             style="width: 100%;"
             disabled
           >
-            <span>Submit Feedback</span>
+            <span>Send Feedback</span>
           </button>
           <div id="status-hint" style="text-align: center; font-size: 0.8rem; color: var(--text-dim);">
-            Please complete the security check above to enable submission.
+            Complete verification above to submit.
           </div>
         </div>
       </form>
 
-      <!-- Fallback hidden iframe for resilient delivery -->
+      <!-- Fallback hidden iframe for guaranteed delivery -->
       <iframe name="gform_hidden_iframe" id="gform_hidden_iframe" style="display: none;"></iframe>
       <form
         id="gform-fallback"
@@ -206,17 +191,17 @@
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
         </div>
-        <h2>Thank you for your feedback!</h2>
-        <p style="margin: 1rem auto 2rem; font-size: 1.05rem;">
-          Your response has been safely recorded. We review community suggestions and bug reports continuously to ensure Better Twitter remains clean, fast, and respectful.
+        <h2>Feedback received. Thank you.</h2>
+        <p style="margin: 0.75rem auto 1.75rem; font-size: 1rem; color: var(--text-muted); max-width: 48ch;">
+          We read every submission directly. If you reported a bug or selector break on X, we'll investigate it for the next release.
         </p>
 
         <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
           <a href="https://github.com/andronasef/better-twitter-extension/issues" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
-            <span>View Open Issues on GitHub</span>
+            <span>View Issues on GitHub</span>
           </a>
           <a href="./index.html" class="btn btn-primary">
-            <span>Return to Homepage</span>
+            <span>Home</span>
           </a>
         </div>
       </div>
@@ -227,36 +212,43 @@
   <footer class="site-footer">
     <div class="site-container">
       <div class="footer-inner">
-        <div>Better Twitter &copy; 2026 &bull; Open-source & 100% private.</div>
+        <div>Better Twitter &bull; Open-source & 100% private.</div>
         <div class="footer-links">
           <a href="https://github.com/andronasef/better-twitter-extension" target="_blank" rel="noopener noreferrer">GitHub</a>
           <span>&bull;</span>
           <a href="https://github.com/andronasef/better-twitter-extension/blob/main/PRIVACY.md" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
           <span>&bull;</span>
-          <a href="https://bettertwitter.featurebase.app/" target="_blank" rel="noopener noreferrer">Community Board</a>
+          <a href="https://bettertwitter.featurebase.app/" target="_blank" rel="noopener noreferrer">Feedback Board</a>
         </div>
       </div>
     </div>
   </footer>
 
-  <!-- Survey & Submission Logic -->
+  <!-- Submission & Resilient Cloudflare Logic -->
   <script>
     (function () {
       const FORM_ACTION_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSe3XNSFOsJKIAI450EAgiVNgkVqw7l_kYbD9Dp5CJHPIXF5AA/formResponse';
       const JSON_FIELD_ENTRY = 'entry.1748802004';
 
+      const PROD_SITE_KEY = '0x4AAAAAAElv1dOFkB8Bk6iE';
+      // Official Cloudflare testing key (always passes on any domain, including localhost)
+      const TEST_SITE_KEY = '1x00000000000000000000AA';
+
+      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+
       let turnstileToken = '';
+      let turnstileWidgetId = null;
       const selectedFeatures = new Set();
 
       const form = document.getElementById('uninstall-form');
       const submitBtn = document.getElementById('submit-btn');
       const statusHint = document.getElementById('status-hint');
-      const previewToggle = document.getElementById('preview-toggle');
-      const previewBox = document.getElementById('preview-box');
       const surveyHeader = document.getElementById('survey-header');
       const successCard = document.getElementById('success-card');
       const gformFallback = document.getElementById('gform-fallback');
       const gformEntryValue = document.getElementById('gform_entry_value');
+      const turnstileBox = document.getElementById('cf-turnstile-box');
+      const devNotice = document.getElementById('turnstile-dev-notice');
 
       // Radio card styling handler
       document.querySelectorAll('.radio-card').forEach(card => {
@@ -268,7 +260,6 @@
           });
           input.checked = true;
           card.classList.add('selected');
-          updatePreview();
         });
         if (input.checked) card.classList.add('selected');
       });
@@ -284,28 +275,76 @@
             selectedFeatures.add(val);
             chip.classList.add('selected');
           }
-          updatePreview();
         });
       });
 
-      // Turnstile Callbacks
+      // Cloudflare Turnstile Callbacks
       window.onTurnstileSuccess = function (token) {
         turnstileToken = token;
         submitBtn.disabled = false;
-        statusHint.textContent = '✓ Security check verified. Ready to submit.';
+        statusHint.textContent = '✓ Verified. Ready to submit.';
         statusHint.style.color = 'var(--accent-green)';
-        updatePreview();
       };
 
       window.onTurnstileExpired = function () {
         turnstileToken = '';
         submitBtn.disabled = true;
-        statusHint.textContent = 'Verification expired. Please re-check the security box.';
+        statusHint.textContent = 'Verification expired. Please check the box again.';
         statusHint.style.color = 'var(--accent-danger)';
-        updatePreview();
       };
 
-      // Gather current form data as JSON object
+      function renderTurnstileWidget(keyToUse) {
+        if (!window.turnstile) return;
+        try {
+          if (turnstileWidgetId !== null) {
+            turnstile.remove(turnstileWidgetId);
+          }
+          turnstileBox.innerHTML = '';
+          turnstileWidgetId = turnstile.render('#cf-turnstile-box', {
+            sitekey: keyToUse,
+            theme: 'dark',
+            callback: window.onTurnstileSuccess,
+            'expired-callback': window.onTurnstileExpired,
+            'error-callback': function (errorCode) {
+              console.warn('[BetterTwitter] Turnstile error:', errorCode, 'for key:', keyToUse);
+              // If production key failed on localhost (e.g. domain not yet whitelisted in Cloudflare dashboard):
+              if (isLocalhost && keyToUse === PROD_SITE_KEY) {
+                devNotice.style.display = 'block';
+                devNotice.textContent = 'Localhost domain check failed on Cloudflare. Falling back to Cloudflare dev testing key...';
+                setTimeout(() => {
+                  renderTurnstileWidget(TEST_SITE_KEY);
+                  devNotice.textContent = 'Using Cloudflare dev key (always passes on localhost). To test your production key, add "localhost" under Hostnames in your Cloudflare dashboard.';
+                }, 300);
+              }
+            }
+          });
+        } catch (err) {
+          console.error('[BetterTwitter] Failed to render Turnstile:', err);
+        }
+      }
+
+      // Explicit onload callback for Turnstile
+      window.onloadTurnstileCallback = function () {
+        renderTurnstileWidget(PROD_SITE_KEY);
+      };
+
+      // Safety check: if script loaded before callback registered
+      if (window.turnstile && turnstileWidgetId === null) {
+        renderTurnstileWidget(PROD_SITE_KEY);
+      }
+
+      // Fallback if Turnstile script is completely blocked by client adblocker
+      setTimeout(() => {
+        if (!window.turnstile && !turnstileToken) {
+          console.warn('[BetterTwitter] Turnstile script blocked or unreachable.');
+          turnstileBox.innerHTML = '<div style="font-size: 0.85rem; color: var(--text-muted); padding: 0.5rem; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 8px; text-align: center;">Security script unavailable (adblocker detected). You may still submit.</div>';
+          turnstileToken = 'turnstile_client_unreachable';
+          submitBtn.disabled = false;
+          statusHint.textContent = '';
+        }
+      }, 3500);
+
+      // Gather form data as JSON object
       function gatherPayload() {
         const reasonInput = document.querySelector('input[name="reason"]:checked');
         const wouldReturnInput = document.querySelector('input[name="would_return"]:checked');
@@ -317,10 +356,10 @@
           version: '0.1.0',
           reason: reasonInput ? reasonInput.value : 'unspecified',
           troubledFeatures: Array.from(selectedFeatures),
-          feedback: feedback || '(none provided)',
+          feedback: feedback || null,
           wouldTryAgain: wouldReturnInput ? wouldReturnInput.value : 'unspecified',
           email: email || null,
-          turnstileToken: turnstileToken ? `${turnstileToken.slice(0, 16)}...` : null,
+          turnstileToken: turnstileToken,
           submittedAt: new Date().toISOString(),
           client: {
             userAgent: navigator.userAgent,
@@ -329,26 +368,6 @@
           }
         };
       }
-
-      function updatePreview() {
-        if (previewBox.classList.contains('open')) {
-          previewBox.textContent = JSON.stringify(gatherPayload(), null, 2);
-        }
-      }
-
-      // JSON preview drawer toggle
-      previewToggle.addEventListener('click', () => {
-        const isOpen = previewBox.classList.toggle('open');
-        if (isOpen) {
-          updatePreview();
-          previewToggle.textContent = '• Hide JSON payload preview';
-        } else {
-          previewToggle.textContent = '• View exact JSON payload sent to Google Forms';
-        }
-      });
-
-      document.getElementById('feedback-text').addEventListener('input', updatePreview);
-      document.getElementById('contact-email').addEventListener('input', updatePreview);
 
       // Form submission handler
       form.addEventListener('submit', async function (e) {
@@ -360,14 +379,11 @@
         }
 
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span>Submitting feedback...</span>';
+        submitBtn.innerHTML = '<span>Sending feedback...</span>';
 
         const payload = gatherPayload();
-        // include full token in sent payload
-        payload.turnstileToken = turnstileToken;
         const jsonString = JSON.stringify(payload);
 
-        // Prepare URL encoded form data
         const formData = new URLSearchParams();
         formData.append(JSON_FIELD_ENTRY, jsonString);
 
@@ -388,7 +404,7 @@
           console.warn('[BetterTwitter] Fetch submission failed, trying fallback iframe:', err);
         }
 
-        // Secondary fallback: iframe form post if fetch failed or threw
+        // Secondary fallback: iframe form post if fetch was blocked
         if (!submissionSuccessful && gformFallback && gformEntryValue) {
           try {
             gformEntryValue.value = jsonString;

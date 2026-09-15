@@ -3,102 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Better Twitter — A Clean, Fast, and Respectful Twitter Experience</title>
-  <meta name="description" content="Open-source Chrome extension that purges promoted tweets, brings back chronological feeds, custom themes, twemoji reactions, and local bookmark folders." />
+  <title>Better Twitter — X without the bloat</title>
+  <meta name="description" content="Open-source Chrome extension that removes promoted tweets, restores chronological feeds, adds local bookmark folders, and unlocks custom themes." />
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icon-32.png" />
   <link rel="stylesheet" href="./styles.css" />
-  <style>
-    /* Theme Studio Dynamic Presets */
-    .theme-swatch {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      border: 2px solid var(--border-subtle);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: var(--transition-smooth);
-      position: relative;
-    }
-    .theme-swatch.active {
-      border-color: #FFFFFF;
-      transform: scale(1.12);
-      box-shadow: 0 0 12px rgba(255, 255, 255, 0.25);
-    }
-    .theme-swatch span {
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    /* Comparison Table */
-    .comparison-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      margin-top: 1.5rem;
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      background-color: var(--bg-card);
-    }
-    .comparison-table th, .comparison-table td {
-      padding: 1rem 1.25rem;
-      text-align: left;
-      border-bottom: 1px solid var(--border-subtle);
-    }
-    .comparison-table th {
-      background-color: var(--bg-surface);
-      color: var(--text-bright);
-      font-weight: 700;
-      font-size: 0.9rem;
-    }
-    .comparison-table tr:last-child td {
-      border-bottom: none;
-    }
-    .check-yes {
-      color: var(--accent-green);
-      font-weight: 700;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-    }
-    .check-no {
-      color: var(--accent-danger);
-      font-weight: 700;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-    }
-
-    /* Composer Preview */
-    .sim-composer {
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border-focus);
-      border-radius: var(--radius-md);
-      padding: 1rem;
-      margin-top: 1rem;
-      display: none;
-      animation: fadeIn 0.25s ease-out forwards;
-    }
-    .sim-composer.active {
-      display: block;
-    }
-    .sim-composer textarea {
-      width: 100%;
-      background: none;
-      border: none;
-      color: var(--text-bright);
-      font-size: 0.95rem;
-      font-family: inherit;
-      resize: none;
-      height: 50px;
-      outline: none;
-    }
-  </style>
 </head>
 <body>
-  <!-- Top Navigation -->
+  <!-- Navigation Header -->
   <header class="site-nav">
     <div class="site-container">
       <div class="nav-inner">
@@ -107,12 +18,11 @@
           <span>Better Twitter</span>
         </a>
         <div class="nav-links">
-          <a href="#simulator" class="nav-link">Interactive Demo</a>
-          <a href="#themes" class="nav-link">Themes</a>
-          <a href="#reactions" class="nav-link">Reactions</a>
-          <a href="#privacy" class="nav-link">Privacy</a>
+          <a href="#simulator" class="nav-link">Live Demo</a>
+          <a href="#features" class="nav-link">Features</a>
+          <a href="#architecture" class="nav-link">Architecture</a>
           <a href="https://github.com/andronasef/better-twitter-extension" target="_blank" rel="noopener noreferrer" class="nav-link">GitHub</a>
-          <a href="#install" class="btn btn-primary btn-sm">Add to Chrome</a>
+          <a href="https://github.com/andronasef/better-twitter-extension/releases" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">Download v0.1.0</a>
         </div>
       </div>
     </div>
@@ -121,191 +31,266 @@
   <main>
     <!-- Hero Section -->
     <section class="hero site-container">
-      <div class="badge badge-green" style="margin-bottom: 1.25rem;">
+      <div class="badge badge-green">
         <span style="width: 6px; height: 6px; border-radius: 50%; background-color: var(--accent-green); display: inline-block;"></span>
         Open Source &bull; Manifest V3 Certified
       </div>
 
-      <h1>The Twitter experience you deserve.<br />Clean, fast, and completely private.</h1>
+      <h1>X without the bloat.</h1>
 
       <p>
-        Better Twitter is a client-side browser extension that strips sponsored posts, hides algorithmic noise, unlocks community themes, and organizes your bookmarks — without collecting a single byte of your data.
+        An open-source browser extension that strips sponsored posts, disables algorithmic feed hijacking, restores chronological tabs, and adds local bookmark folders. Zero tracking scripts. 100% client-side storage.
       </p>
 
       <div class="hero-actions">
-        <a href="#install" class="btn btn-primary btn-lg">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
-            <circle cx="12" cy="12" r="4"/>
+        <a href="https://github.com/andronasef/better-twitter-extension/releases" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
           </svg>
-          <span>Add to Chrome — Free</span>
+          <span>Get Better Twitter (v0.1.0)</span>
         </a>
 
         <a href="https://github.com/andronasef/better-twitter-extension" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-lg">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
           </svg>
           <span>Star on GitHub</span>
         </a>
       </div>
 
-      <div class="trust-row">
-        <div class="trust-item">
-          <span>✓</span> 100% Client-Side Local Storage
-        </div>
-        <div class="trust-item">
-          <span>✓</span> Zero External Trackers
-        </div>
-        <div class="trust-item">
-          <span>✓</span> No Background API Telemetry
-        </div>
-        <div class="trust-item">
-          <span>✓</span> Lightweight &lt; 3MB Package
-        </div>
+      <div class="spec-strip">
+        <span class="spec-item"><code>permissions: ['storage']</code></span>
+        <span>&bull;</span>
+        <span class="spec-item">0 host permissions beyond x.com</span>
+        <span>&bull;</span>
+        <span class="spec-item">2.68 MB standalone archive</span>
+        <span>&bull;</span>
+        <span class="spec-item">Zero telemetry</span>
       </div>
     </section>
 
-    <!-- Interactive Live Simulator -->
+    <!-- Interactive Live Simulator Section -->
     <section id="simulator" class="simulator-section site-container">
-      <div style="text-align: center; margin-bottom: 2rem;">
-        <h2>Experience the difference right here</h2>
-        <p style="margin: 0.75rem auto 0;">
-          Toggle Better Twitter features below to see how our DOM engine restores sanity to your timeline in real time.
+      <div style="margin-bottom: 1.5rem;">
+        <h2>Interactive timeline engine</h2>
+        <p style="margin-top: 0.35rem;">
+          Test the live DOM transforms below. Every toggle maps directly to an active observer or stylesheet rule in the extension:
         </p>
       </div>
 
       <div class="simulator-box" id="simulator-container">
-        <!-- Interactive Toolbar Controls -->
-        <div class="simulator-toolbar">
-          <div style="display: flex; align-items: center; gap: 0.5rem;">
-            <img src="./assets/logo.svg" width="22" height="22" alt="" />
-            <span style="font-weight: 700; font-size: 0.9rem; color: var(--text-bright);">Live Simulator</span>
+        <!-- Tactile Control Deck -->
+        <div class="simulator-deck">
+          <div class="deck-meta">
+            <div class="deck-status-dot"></div>
+            <div>
+              <div class="deck-title">Better Twitter Active</div>
+              <div class="deck-subtitle">Flip switches to test live DOM filtering:</div>
+            </div>
           </div>
 
-          <div class="simulator-controls">
-            <div class="sim-toggle active" id="toggle-ad-stripper" title="Click to toggle Promoted Ad Stripper">
-              <span class="sim-indicator"></span>
-              <span>Block Ads</span>
+          <div class="deck-switches">
+            <!-- Switch 1: Ad Stripper -->
+            <div class="switch-control active" id="sw-ad-stripper">
+              <div class="switch-track"><div class="switch-thumb"></div></div>
+              <span class="switch-label">Ad Stripper</span>
             </div>
 
-            <div class="sim-toggle active" id="toggle-following-first" title="Click to swap tabs">
-              <span class="sim-indicator"></span>
-              <span>Following First</span>
+            <!-- Switch 2: Following Tab First -->
+            <div class="switch-control active" id="sw-following-first">
+              <div class="switch-track"><div class="switch-thumb"></div></div>
+              <span class="switch-label">Following by Default</span>
             </div>
 
-            <div class="sim-toggle active" id="toggle-hide-sidebar" title="Click to hide algorithmic sidebars">
-              <span class="sim-indicator"></span>
-              <span>Hide "Who to follow"</span>
+            <!-- Switch 3: Hide Who to Follow -->
+            <div class="switch-control active" id="sw-hide-sidebar">
+              <div class="switch-track"><div class="switch-thumb"></div></div>
+              <span class="switch-label">Hide "Who to follow"</span>
             </div>
 
-            <div class="sim-toggle active" id="toggle-vanity-metrics" title="Click to strip vanity counts">
-              <span class="sim-indicator"></span>
-              <span>Clean Vanity Counts</span>
+            <!-- Switch 4: Clean Vanity Metrics -->
+            <div class="switch-control active" id="sw-clean-metrics">
+              <div class="switch-track"><div class="switch-thumb"></div></div>
+              <span class="switch-label">Hide Vanity Counts</span>
             </div>
           </div>
         </div>
 
-        <!-- Simulated Feed -->
-        <div class="mockup-feed" id="live-mockup-feed">
-          <!-- Feed Tabs -->
-          <div class="feed-tabs" id="mockup-tabs">
-            <div class="feed-tab active" id="tab-primary">Following</div>
-            <div class="feed-tab" id="tab-secondary">For You</div>
+        <!-- Authentic X Feed Mockup -->
+        <div class="x-feed-wrapper" id="x-feed-wrapper">
+          <!-- Timeline Header & Tabs -->
+          <div class="x-header">
+            <div class="x-header-title">Home</div>
+            <div class="x-tabs" id="x-tabs">
+              <div class="x-tab active" id="tab-following">
+                <span>Following</span>
+                <div class="x-tab-indicator"></div>
+              </div>
+              <div class="x-tab" id="tab-foryou">
+                <span>For you</span>
+                <div class="x-tab-indicator"></div>
+              </div>
+            </div>
           </div>
 
-          <!-- Tweet 1: Authentic Creator Post -->
-          <article class="mockup-tweet">
-            <div class="mockup-avatar" style="background-color: #7856FF;">AN</div>
-            <div class="mockup-tweet-content">
-              <div class="mockup-tweet-header">
-                <span class="mockup-name">Andro Nasef</span>
-                <span class="mockup-handle">@andronasef &bull; 2h</span>
+          <!-- Tweet 1: Authentic Engineering Post -->
+          <article class="x-tweet">
+            <div class="x-avatar" style="background: linear-gradient(135deg, #1D9BF0, #7856FF);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+
+            <div class="x-tweet-main">
+              <div class="x-meta-line">
+                <span class="x-author-name">Guillermo Rauch</span>
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="#1D9BF0"><path d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91c-1.31.67-2.2 1.91-2.2 3.34s.89 2.67 2.2 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.26 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.45 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34zm-11.71 4.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36-6.2 6.77z"/></svg>
+                <span class="x-author-handle">@rauchg &bull; 2h</span>
               </div>
-              <div class="mockup-tweet-body">
-                Twitter feels 10x better when algorithms stop dictating what you should feel outraged about. Chronological feeds + zero ads = internet peace of mind. 🌿
+
+              <div class="x-tweet-body">
+                The best web apps in 2026 aren't adding more AI fluff; they're deleting third-party tracking scripts and optimizing client-side memory. Fast beats clever every time.
               </div>
-              <div class="mockup-actions">
-                <button type="button" class="mockup-action-btn">💬 <span class="metric-count">18</span></button>
-                <button type="button" class="mockup-action-btn">🔁 <span class="metric-count">42</span></button>
-                <button type="button" class="mockup-action-btn like-btn" id="demo-like-btn">
-                  <span>❤️</span> <span class="metric-count">284</span>
-                  <!-- Floating Reaction Palette Demonstration -->
-                  <div class="reaction-palette" id="demo-reaction-palette">
-                    <span class="palette-emoji" data-emoji="👍" title="Like">👍</span>
-                    <span class="palette-emoji" data-emoji="❤️" title="Love">❤️</span>
-                    <span class="palette-emoji" data-emoji="😂" title="Haha">😂</span>
-                    <span class="palette-emoji" data-emoji="😮" title="Wow">😮</span>
-                    <span class="palette-emoji" data-emoji="😢" title="Sad">😢</span>
-                    <span class="palette-emoji" data-emoji="🔥" title="Fire">🔥</span>
+
+              <!-- Action Row with Authentic Vector SVGs -->
+              <div class="x-action-row">
+                <button type="button" class="x-action-btn" title="Reply">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-1.602.88 1.488 3.86a.75.75 0 0 1-.986.974l-4.993-2.61h-2.2c-4.421 0-8.005-3.58-8.005-8zM11.75 4c-3.314 0-6 2.686-6 6 0 2.455 1.493 4.57 3.643 5.483l.89.378.895 2.33 2.87-1.503.793-.415h1.274c3.314 0 6-2.686 6-6 0-3.314-2.686-6-6-6h-4.365z"/></svg>
+                  <span class="metric-val">34</span>
+                </button>
+
+                <button type="button" class="x-action-btn" title="Repost">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M4.5 3.88l4.432 4.14-1.364 1.46L5.5 7.55V16c0 1.1.896 2 2 2H13v2H7.5c-2.209 0-4-1.79-4-4V7.55L1.432 9.48.068 8.02 4.5 3.88zM16.5 6H11V4h5.5c2.209 0 4 1.79 4 4v8.45l2.068-1.93 1.364 1.46-4.432 4.14-4.432-4.14 1.364-1.46 2.068 1.93V8c0-1.1-.896-2-2-2z"/></svg>
+                  <span class="metric-val">128</span>
+                </button>
+
+                <!-- Like Button with Interactive Reaction Bar -->
+                <button type="button" class="x-action-btn action-like" id="like-trigger-btn" title="Like / Long-press for Reactions">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-2.415.11-4.3 2.16-4.3 4.65 0 1.63.78 3.2 2.07 4.38l6.924 6.35 6.928-6.35c1.29-1.18 2.07-2.75 2.07-4.38 0-2.49-1.884-4.54-4.299-4.65zm-4.7 14.54l-5.69-5.215C5.029 13.684 4.5 12.44 4.5 10.15c0-1.383.987-2.65 2.304-2.65 1.056 0 2.008.775 2.45 1.766l1.246 2.784 1.246-2.784c.442-.99 1.394-1.766 2.45-1.766 1.317 0 2.304 1.267 2.304 2.65 0 2.29-.529 3.534-1.807 4.675l-5.693 5.215z"/></svg>
+                  <span class="metric-val">682</span>
+
+                  <!-- Twemoji Vector Reaction Bar -->
+                  <div class="x-reaction-palette" id="x-reaction-palette">
+                    <span class="x-reaction-item" data-emoji="👍" title="Like"><img src="./assets/twemoji/1f44d.svg" alt="👍" /></span>
+                    <span class="x-reaction-item" data-emoji="❤️" title="Love"><img src="./assets/twemoji/2764.svg" alt="❤️" /></span>
+                    <span class="x-reaction-item" data-emoji="😂" title="Haha"><img src="./assets/twemoji/1f602.svg" alt="😂" /></span>
+                    <span class="x-reaction-item" data-emoji="😮" title="Wow"><img src="./assets/twemoji/1f62e.svg" alt="😮" /></span>
+                    <span class="x-reaction-item" data-emoji="😢" title="Sad"><img src="./assets/twemoji/1f622.svg" alt="😢" /></span>
+                    <span class="x-reaction-item" data-emoji="🔥" title="Fire"><img src="./assets/twemoji/1f525.svg" alt="🔥" /></span>
                   </div>
                 </button>
-                <button type="button" class="mockup-action-btn">🔖 <span class="metric-count">65</span></button>
+
+                <button type="button" class="x-action-btn" title="Bookmark">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5zM6.5 4c-.276 0-.5.22-.5.5v14.56l6-4.29 6 4.29V4.5c0-.28-.224-.5-.5-.5h-11z"/></svg>
+                  <span class="metric-val">95</span>
+                </button>
+
+                <button type="button" class="x-action-btn" title="Share">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2.59l5.7 5.7-1.41 1.42L13 6.41V16h-2V6.41L7.71 9.71 6.3 8.29 12 2.59zM21 15l-.02 3.51c0 1.38-1.12 2.49-2.5 2.49H5.5C4.11 21.01 3 19.9 3 18.51V15h2v3.5c0 .28.22.5.5.5h12.98c.28 0 .5-.22.5-.5L19 15h2z"/></svg>
+                </button>
               </div>
 
-              <!-- Interactive Reply Box Simulator -->
-              <div class="sim-composer" id="sim-composer">
-                <div style="font-size: 0.75rem; color: var(--accent-blue); font-weight: 700; margin-bottom: 0.35rem;">
-                  Prefilled Reply Composer (Ready for you to send)
-                </div>
-                <textarea id="composer-text" readonly></textarea>
-                <div style="display: flex; justify-content: flex-end; margin-top: 0.5rem;">
-                  <button type="button" class="btn btn-primary btn-sm" id="close-composer-btn">Dismiss</button>
+              <!-- Reply Prefiller Simulator -->
+              <div class="x-reply-composer" id="x-reply-composer">
+                <div class="x-reply-note">Native Reply Composer prefilled:</div>
+                <textarea class="x-reply-input" id="sim-composer-input" readonly></textarea>
+                <div style="display: flex; justify-content: flex-end; margin-top: 0.35rem;">
+                  <button type="button" class="btn btn-secondary btn-sm" id="btn-close-composer">Dismiss</button>
                 </div>
               </div>
             </div>
           </article>
 
-          <!-- Tweet 2: Promoted Ad (Controlled by Ad Stripper) -->
-          <article class="mockup-tweet" id="mockup-promoted-ad" style="display: none;">
-            <div class="mockup-avatar" style="background-color: #FFA000;">AD</div>
-            <div class="mockup-tweet-content">
-              <div class="mockup-tweet-header">
-                <span class="mockup-name">Generic AI SaaS</span>
-                <span class="mockup-handle">@trygenericsaas &bull; Promoted</span>
+          <!-- Tweet 2: Authentic Promoted Ad (Collapsed by Default) -->
+          <article class="x-tweet collapsible-item collapsed" id="mock-ad-item">
+            <div class="x-avatar" style="background: #202327;">
+              <span style="font-weight: 800; font-size: 0.75rem; color: #FFA000;">AD</span>
+            </div>
+            <div class="x-tweet-main">
+              <div class="x-meta-line">
+                <span class="x-author-name">CloudMetrics AI</span>
+                <span class="x-author-handle">@cloudmetrics &bull; Promoted</span>
               </div>
-              <div class="mockup-ad-badge">Promoted Advertisement</div>
-              <div class="mockup-tweet-body">
-                Stop doing manual work! Click here to automate your life with our totally revolutionary subscription that costs $99/mo! ⚡
+              <div class="x-promoted-tag">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19.5 3h-15C3.12 3 2 4.12 2 5.5v13C2 19.88 3.12 21 4.5 21h15c1.38 0 2.5-1.12 2.5-2.5v-13C22 4.12 20.88 3 19.5 3zm-7 14h-2v-4h2v4zm0-6h-2V7h2v4z"/></svg>
+                <span>Sponsored Ad</span>
               </div>
-              <div class="mockup-actions">
-                <span class="mockup-action-btn">💬 <span class="metric-count">1</span></span>
-                <span class="mockup-action-btn">🔁 <span class="metric-count">0</span></span>
-                <span class="mockup-action-btn">❤️ <span class="metric-count">3</span></span>
+              <div class="x-tweet-body">
+                Stop debugging distributed microservices manually. Connect our APM agent in 5 minutes with zero configuration.
+              </div>
+              <div class="x-action-row">
+                <span class="x-action-btn"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-1.602.88 1.488 3.86a.75.75 0 0 1-.986.974l-4.993-2.61h-2.2c-4.421 0-8.005-3.58-8.005-8z"/></svg><span class="metric-val">2</span></span>
+                <span class="x-action-btn"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M4.5 3.88l4.432 4.14-1.364 1.46L5.5 7.55V16c0 1.1.896 2 2 2H13v2H7.5c-2.209 0-4-1.79-4-4V7.55L1.432 9.48.068 8.02 4.5 3.88z"/></svg><span class="metric-val">0</span></span>
+                <span class="x-action-btn"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-2.415.11-4.3 2.16-4.3 4.65 0 1.63.78 3.2 2.07 4.38l6.924 6.35 6.928-6.35c1.29-1.18 2.07-2.75 2.07-4.38 0-2.49-1.884-4.54-4.299-4.65z"/></svg><span class="metric-val">5</span></span>
               </div>
             </div>
           </article>
 
-          <!-- Sidebar Simulation: Who to follow (Controlled by Sidebar toggle) -->
-          <div class="mockup-tweet" id="mockup-who-to-follow" style="display: none; background-color: rgba(244, 33, 46, 0.05); border-color: rgba(244, 33, 46, 0.2);">
-            <div style="width: 100%;">
-              <div style="font-weight: 700; font-size: 0.85rem; color: var(--accent-danger); margin-bottom: 0.4rem;">
-                Clutter Block: "Who to Follow" Algorithmic Recommendations
+          <!-- Authentic "Who to Follow" Clutter Unit (Collapsed by Default) -->
+          <div class="x-who-to-follow-box collapsible-item collapsed" id="mock-who-to-follow">
+            <div class="x-unit-heading">Who to follow</div>
+            <div class="x-profile-row">
+              <div class="x-profile-identity">
+                <div class="x-avatar" style="background-color: #000000; border: 1px solid var(--border-subtle);">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#FFFFFF"><path d="M24 22.525H0l12-21.05 12 21.05z"/></svg>
+                </div>
+                <div>
+                  <div style="font-weight: 700; color: var(--text-bright); font-size: 0.9rem;">Vercel</div>
+                  <div style="color: var(--text-muted); font-size: 0.8rem;">@vercel</div>
+                </div>
               </div>
-              <div style="font-size: 0.8rem; color: var(--text-muted);">
-                Suggested accounts injected into your feed to maximize engagement.
+              <button type="button" class="x-follow-pill">Follow</button>
+            </div>
+
+            <div class="x-profile-row">
+              <div class="x-profile-identity">
+                <div class="x-avatar" style="background-color: #24292E;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#FFFFFF"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                </div>
+                <div>
+                  <div style="font-weight: 700; color: var(--text-bright); font-size: 0.9rem;">GitHub</div>
+                  <div style="color: var(--text-muted); font-size: 0.8rem;">@github</div>
+                </div>
               </div>
+              <button type="button" class="x-follow-pill">Follow</button>
             </div>
           </div>
 
-          <!-- Tweet 3: Bookmarks Resurfaced Tweet -->
-          <article class="mockup-tweet">
-            <div class="mockup-avatar" style="background-color: var(--accent-green);">BT</div>
-            <div class="mockup-tweet-content">
-              <div style="font-size: 0.75rem; color: var(--accent-green); font-weight: 700; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.35rem;">
-                <span>📌 Resurfaced from your Bookmarks</span>
-                <span style="color: var(--text-dim);">&bull; saved 3 months ago</span>
+          <!-- Tweet 3: Resurfaced Bookmark Tweet -->
+          <article class="x-tweet">
+            <div class="x-avatar" style="background: linear-gradient(135deg, #00BA7C, #1D9BF0);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="8.5" cy="7" r="4"></circle>
+                <line x1="20" y1="8" x2="20" y2="14"></line>
+                <line x1="23" y1="11" x2="17" y2="11"></line>
+              </svg>
+            </div>
+
+            <div class="x-tweet-main">
+              <div style="font-size: 0.75rem; color: var(--accent-green); font-weight: 700; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.35rem;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5z"/></svg>
+                <span>Resurfaced from your Bookmarks &bull; Saved 3 months ago</span>
               </div>
-              <div class="mockup-tweet-header">
-                <span class="mockup-name">Frontend Architecture</span>
-                <span class="mockup-handle">@frontendlore &bull; May 12</span>
+
+              <div class="x-meta-line">
+                <span class="x-author-name">Dan Abramov</span>
+                <span class="x-author-handle">@dan_abramov &bull; May 14</span>
               </div>
-              <div class="mockup-tweet-body">
-                The single best performance optimization you can make is to never render DOM elements the user doesn't need to see. Keep virtualizers tight and state local.
+
+              <div class="x-tweet-body">
+                Whenever you find yourself writing a complex state machine just to coordinate UI transitions, stop and ask if you can derive the state from your existing data instead.
               </div>
-              <div class="mockup-actions">
-                <span class="mockup-action-btn">💬 <span class="metric-count">142</span></span>
-                <span class="mockup-action-btn">🔁 <span class="metric-count">612</span></span>
-                <span class="mockup-action-btn">❤️ <span class="metric-count">3.4K</span></span>
+
+              <div class="x-action-row">
+                <button type="button" class="x-action-btn"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-1.602.88 1.488 3.86a.75.75 0 0 1-.986.974l-4.993-2.61h-2.2c-4.421 0-8.005-3.58-8.005-8z"/></svg><span class="metric-val">82</span></button>
+                <button type="button" class="x-action-btn"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M4.5 3.88l4.432 4.14-1.364 1.46L5.5 7.55V16c0 1.1.896 2 2 2H13v2H7.5c-2.209 0-4-1.79-4-4V7.55L1.432 9.48.068 8.02 4.5 3.88z"/></svg><span class="metric-val">340</span></button>
+                <button type="button" class="x-action-btn action-like"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-2.415.11-4.3 2.16-4.3 4.65 0 1.63.78 3.2 2.07 4.38l6.924 6.35 6.928-6.35c1.29-1.18 2.07-2.75 2.07-4.38 0-2.49-1.884-4.54-4.299-4.65z"/></svg><span class="metric-val">1.9K</span></button>
+                <button type="button" class="x-action-btn"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5z"/></svg><span class="metric-val">521</span></button>
+                <button type="button" class="x-action-btn"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2.59l5.7 5.7-1.41 1.42L13 6.41V16h-2V6.41L7.71 9.71 6.3 8.29 12 2.59z"/></svg></button>
               </div>
             </div>
           </article>
@@ -313,267 +298,344 @@
       </div>
     </section>
 
-    <!-- Theme Studio Section -->
-    <section id="themes" class="site-container" style="padding: 4rem 0;">
-      <div style="text-align: center; margin-bottom: 2.5rem;">
-        <h2>Dark themes crafted for deep focus</h2>
-        <p style="margin: 0.75rem auto 0;">
-          Select any community palette below to transform the timeline colors instantly:
-        </p>
+    <!-- Features Section (Detailed, Concrete, Non-Vague) -->
+    <section id="features" class="features-container site-container">
+      <!-- Feature 1: Ad Stripper -->
+      <div class="feature-row">
+        <div class="feature-copy">
+          <span class="badge badge-blue" style="margin-bottom: 0.75rem;">Core Engine</span>
+          <h3>Zero-FOUC Promoted Ad Stripper</h3>
+          <p>
+            X serves promoted tweets dynamically within its React virtual scroller. Better Twitter listens via a centralized <code>MutationObserver</code> and removes sponsored cells before paint. Promoted accounts in search and timelines are purged with zero layout shifts.
+          </p>
+          <div class="tech-spec-box">
+            <strong>Target Selectors:</strong> <code>div[data-testid="cellInnerDiv"]</code> matching promoted badge markers and sponsored user entities. Zero network request delays.
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <h4 style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--accent-blue);">Real-world result</h4>
+            <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
+              No "Promoted" badges in search results. No sponsored crypto accounts pinned to your timeline. No full-page takeover ads when refreshing feeds.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div style="display: flex; justify-content: center; gap: 1.25rem; flex-wrap: wrap; margin-bottom: 3rem;">
-        <button type="button" class="theme-swatch active" data-theme="lightsout" style="background: #000000;" title="Lights Out (AMOLED)">
-          <span style="color: #1D9BF0;">AMO</span>
-        </button>
-        <button type="button" class="theme-swatch" data-theme="dracula" style="background: #282A36;" title="Dracula">
-          <span style="color: #BD93F9;">DRA</span>
-        </button>
-        <button type="button" class="theme-swatch" data-theme="nord" style="background: #2E3440;" title="Nord">
-          <span style="color: #88C0D0;">NOR</span>
-        </button>
-        <button type="button" class="theme-swatch" data-theme="matrix" style="background: #0D1117;" title="Matrix">
-          <span style="color: #00FF66;">MTX</span>
-        </button>
-        <button type="button" class="theme-swatch" data-theme="sunset" style="background: #1A1128;" title="Sunset">
-          <span style="color: #FF7597;">SUN</span>
-        </button>
+      <!-- Feature 2: Chronological Timeline -->
+      <div class="feature-row">
+        <div class="feature-copy">
+          <span class="badge badge-blue" style="margin-bottom: 0.75rem;">Feed Architecture</span>
+          <h3>Chronological Following by Default</h3>
+          <p>
+            X's web client defaults every session to the algorithmic "For You" feed. Better Twitter swaps tab ordering using CSS flex rules (<code>order: -1</code>) and auto-activates the Following feed on navigation without dispatching erratic synthetic click events.
+          </p>
+          <div class="tech-spec-box">
+            <strong>Implementation:</strong> CSS flex ordering on <code>div[role="tablist"]</code> + single-activation route listener with duplicate guard.
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <h4 style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--accent-green);">No feed hijacking</h4>
+            <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
+              Every time you open <code>x.com/home</code>, you land on the accounts you actually chose to follow, in reverse chronological order.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <!-- Feature Grid -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
-        <div class="card">
-          <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(29, 155, 240, 0.15); color: var(--accent-blue); display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; font-size: 1.3rem;">
-            🛡️
-          </div>
-          <h3>Zero Promoted Ads</h3>
-          <p style="margin-top: 0.5rem; font-size: 0.95rem;">
-            Continuous mutation observer purges sponsored tweets before your eyes register them. No flickering, no sponsor cards.
+      <!-- Feature 3: Themes -->
+      <div class="feature-row">
+        <div class="feature-copy">
+          <span class="badge badge-blue" style="margin-bottom: 0.75rem;">Custom CSS Engine</span>
+          <h3>Community Themes & Hex Accent Picker</h3>
+          <p>
+            Built-in support for Dracula, Nord, Hacker Matrix, and Lights Out AMOLED. Stylesheets are injected synchronously at <code>document_start</code> to eliminate flash of unthemed content. Pick custom hex colors to replace X's default blue throughout the UI.
           </p>
-        </div>
-
-        <div class="card">
-          <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(0, 186, 124, 0.15); color: var(--accent-green); display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; font-size: 1.3rem;">
-            🔖
+          <div class="theme-picker-row">
+            <button type="button" class="theme-swatch active" data-theme="lightsout" style="background: #000000;" title="Lights Out (AMOLED)">AMO</button>
+            <button type="button" class="theme-swatch" data-theme="dracula" style="background: #282A36; color: #BD93F9;" title="Dracula">DRA</button>
+            <button type="button" class="theme-swatch" data-theme="nord" style="background: #2E3440; color: #88C0D0;" title="Nord">NOR</button>
+            <button type="button" class="theme-swatch" data-theme="matrix" style="background: #0D1117; color: #00FF66;" title="Matrix">MTX</button>
           </div>
-          <h3>Bookmark Hub & Folders</h3>
-          <p style="margin-top: 0.5rem; font-size: 0.95rem;">
-            Organize bookmarks right inside x.com/bookmarks into color-coded folders. Resurface old saved treasures gently back into your feed.
-          </p>
         </div>
-
-        <div class="card">
-          <div id="reactions" style="width: 44px; height: 44px; border-radius: 12px; background: rgba(249, 24, 128, 0.15); color: var(--accent-pink); display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; font-size: 1.3rem;">
-            ⚡
+        <div>
+          <div class="card">
+            <h4 style="font-size: 1rem; margin-bottom: 0.5rem; color: #BD93F9;">Zero FOUC injection</h4>
+            <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
+              Overrides X's hardcoded CSS variables directly. Timeline, composer, modals, and navigation sidebars all match your chosen palette consistently.
+            </p>
           </div>
+        </div>
+      </div>
+
+      <!-- Feature 4: Twemoji Reactions -->
+      <div class="feature-row">
+        <div class="feature-copy">
+          <span class="badge badge-blue" style="margin-bottom: 0.75rem;">Composer Integration</span>
           <h3>Twemoji Reaction Palette</h3>
-          <p style="margin-top: 0.5rem; font-size: 0.95rem;">
-            Hover or long-press Like to pick expressive Twemoji reactions. Seamlessly prefills X's native reply box without ever posting for you.
+          <p>
+            Hover or hold the Like button to select from 6 bundled Twemoji reactions. When selected, Better Twitter opens X's native reply modal and prefills the editor with your emoji. <strong>The extension never posts or likes tweets for you</strong> — the send action always remains in your hands.
           </p>
+          <div class="tech-spec-box">
+            <strong>DraftJS Target:</strong> Synthetic <code>beforeinput</code> and caret positioning ensure emoji registers in X's internal React editor state without breaking drafts.
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <h4 style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--accent-pink);">Safe by design</h4>
+            <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
+              Zero automation risk. No shadow likes, no automatic retweets, no background API tokens. Every interaction requires your explicit confirmation.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature 5: Bookmarks Hub -->
+      <div class="feature-row">
+        <div class="feature-copy">
+          <span class="badge badge-blue" style="margin-bottom: 0.75rem;">Local Storage Hub</span>
+          <h3>Bookmark Folders & Timeline Resurfacing</h3>
+          <p>
+            File saved tweets into color-coded folders directly inside <code>x.com/bookmarks</code>. Search bookmark text or author handles instantly from local indexed storage. Optionally weave saved bookmarks back into your home feed every N tweets so good threads don't rot forgotten.
+          </p>
+          <div class="tech-spec-box">
+            <strong>Storage Budget:</strong> Structured quota manager with automatic pruning and JSON export/import backup.
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <h4 style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--accent-green);">100% Offline & Private</h4>
+            <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
+              Your bookmarks never touch an external server or telemetry pipeline. Stored entirely in your browser's private extension storage.
+            </p>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Privacy Architecture & Security Comparison -->
-    <section id="privacy" class="site-container" style="padding: 4rem 0 6rem;">
-      <div style="text-align: center; margin-bottom: 2.5rem;">
-        <h2>A privacy architecture built on pure local storage</h2>
-        <p style="margin: 0.75rem auto 0;">
-          Most social extensions secretly track your visits or scrape your cookies. Better Twitter was designed from day one to make tracking technically impossible.
+    <!-- Architecture & Comparison Section -->
+    <section id="architecture" class="site-container" style="padding-bottom: 5rem;">
+      <div style="margin-bottom: 1.5rem;">
+        <h2>Security & permission invariants</h2>
+        <p style="margin-top: 0.35rem;">
+          How Better Twitter compares to typical social media extensions:
         </p>
       </div>
 
       <table class="comparison-table">
         <thead>
           <tr>
-            <th>Security & Privacy Invariant</th>
-            <th>Standard Twitter Plugins</th>
+            <th>Security Invariant</th>
+            <th>Standard Extensions</th>
             <th>Better Twitter</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td><strong>Host Permissions</strong></td>
-            <td><code>&lt;all_urls&gt;</code> or arbitrary domains</td>
-            <td><span class="check-yes">✓ Strictly scoped to x.com</span></td>
+            <td><span class="check-fail"><code>&lt;all_urls&gt;</code> or wildcard domains</span></td>
+            <td><span class="check-pass">Strictly <code>*://x.com/*</code> and <code>*://twitter.com/*</code></span></td>
           </tr>
           <tr>
-            <td><strong>Data Storage</strong></td>
-            <td>Remote cloud databases</td>
-            <td><span class="check-yes">✓ 100% Chrome Local Storage</span></td>
+            <td><strong>Manifest Permissions</strong></td>
+            <td><span class="check-fail"><code>tabs</code>, <code>cookies</code>, <code>webRequest</code></span></td>
+            <td><span class="check-pass">Strictly <code>['storage']</code></span></td>
           </tr>
           <tr>
-            <td><strong>Telemetry & Analytics</strong></td>
-            <td>Google Analytics, Mixpanel, Amplitude</td>
-            <td><span class="check-yes">✓ Zero telemetry scripts</span></td>
+            <td><strong>Third-Party Analytics</strong></td>
+            <td><span class="check-fail">Mixpanel, Google Analytics, Sentry</span></td>
+            <td><span class="check-pass">Zero external telemetry scripts</span></td>
           </tr>
           <tr>
-            <td><strong>Remote Script Execution</strong></td>
-            <td>Remote CDNs or eval execution</td>
-            <td><span class="check-yes">✓ Zero remote code (MV3 enforced)</span></td>
+            <td><strong>Remote Code Execution</strong></td>
+            <td><span class="check-fail">External CDN scripts / dynamic eval</span></td>
+            <td><span class="check-pass">100% local bundled code (MV3 enforced)</span></td>
           </tr>
           <tr>
-            <td><strong>Automated Posting</strong></td>
-            <td>Programmatic likes & auto-replies</td>
-            <td><span class="check-yes">✓ User always retains sending control</span></td>
+            <td><strong>Automated Actions</strong></td>
+            <td><span class="check-fail">Automated bots / programmatic likes</span></td>
+            <td><span class="check-pass">Zero automated actions without user click</span></td>
           </tr>
         </tbody>
       </table>
     </section>
 
-    <!-- Install CTA Banner -->
-    <section id="install" class="site-container" style="padding-bottom: 6rem;">
-      <div style="background: linear-gradient(135deg, rgba(29, 155, 240, 0.12) 0%, rgba(120, 86, 255, 0.08) 100%); border: 1px solid rgba(29, 155, 240, 0.3); border-radius: var(--radius-xl); padding: clamp(2.5rem, 5vw, 4rem); text-align: center;">
-        <h2>Ready for a respectful Twitter experience?</h2>
-        <p style="margin: 1rem auto 2.5rem; font-size: 1.15rem;">
-          Install Better Twitter today and reclaim hours of attention every week.
+    <!-- Download / Install Section -->
+    <section class="site-container" style="padding-bottom: 6rem;">
+      <div style="background-color: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); padding: clamp(2rem, 4vw, 3.5rem); text-align: center;">
+        <h2>Install Better Twitter</h2>
+        <p style="margin: 0.75rem auto 2rem; font-size: 1.05rem;">
+          Download the latest release package directly or build from source with Bun:
         </p>
 
         <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
           <a href="https://github.com/andronasef/better-twitter-extension/releases" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">
-            <span>Download v0.1.0 Package</span>
+            <span>Download Release Zip (v0.1.0)</span>
           </a>
           <a href="https://github.com/andronasef/better-twitter-extension" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-lg">
-            <span>View Source Code</span>
+            <span>View Source on GitHub</span>
           </a>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- Footer -->
+  <!-- Site Footer -->
   <footer class="site-footer">
     <div class="site-container">
       <div class="footer-inner">
-        <div>Better Twitter &copy; 2026 &bull; Crafted by <a href="https://andronasef.com" target="_blank" rel="noopener noreferrer" style="color: var(--text-bright); text-decoration: underline;">Andro Nasef</a></div>
+        <div>Better Twitter &bull; Crafted by <a href="https://andronasef.com" target="_blank" rel="noopener noreferrer" style="color: var(--text-bright); text-decoration: underline;">Andro Nasef</a></div>
         <div class="footer-links">
           <a href="https://github.com/andronasef/better-twitter-extension" target="_blank" rel="noopener noreferrer">GitHub</a>
           <span>&bull;</span>
           <a href="https://github.com/andronasef/better-twitter-extension/blob/main/PRIVACY.md" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
           <span>&bull;</span>
-          <a href="./uninstall.html">Uninstall Feedback</a>
+          <a href="./uninstall.html">Uninstall Survey</a>
         </div>
       </div>
     </div>
   </footer>
 
-  <!-- Interactive Simulator & Theme Scripts -->
+  <!-- Simulator Scripts -->
   <script>
     (function () {
-      // Simulator Toggles
-      const toggleAd = document.getElementById('toggle-ad-stripper');
-      const toggleFollowing = document.getElementById('toggle-following-first');
-      const toggleSidebar = document.getElementById('toggle-hide-sidebar');
-      const toggleVanity = document.getElementById('toggle-vanity-metrics');
+      // Switch elements
+      const swAd = document.getElementById('sw-ad-stripper');
+      const swFollowing = document.getElementById('sw-following-first');
+      const swSidebar = document.getElementById('sw-hide-sidebar');
+      const swMetrics = document.getElementById('sw-clean-metrics');
 
-      const promotedAd = document.getElementById('mockup-promoted-ad');
-      const whoToFollow = document.getElementById('mockup-who-to-follow');
-      const tabPrimary = document.getElementById('tab-primary');
-      const tabSecondary = document.getElementById('tab-secondary');
-      const metricCounts = document.querySelectorAll('.metric-count');
+      // Target elements in mockup
+      const mockAd = document.getElementById('mock-ad-item');
+      const mockWhoToFollow = document.getElementById('mock-who-to-follow');
+      const tabFollowing = document.getElementById('tab-following');
+      const tabForYou = document.getElementById('tab-foryou');
+      const xTabs = document.getElementById('x-tabs');
+      const metricVals = document.querySelectorAll('.metric-val');
 
-      // Ad Stripper Toggle
-      toggleAd.addEventListener('click', () => {
-        const active = toggleAd.classList.toggle('active');
-        promotedAd.style.display = active ? 'none' : 'flex';
-      });
-
-      // Following First Toggle
-      toggleFollowing.addEventListener('click', () => {
-        const active = toggleFollowing.classList.toggle('active');
+      // 1. Ad Stripper Switch
+      swAd.addEventListener('click', () => {
+        const active = swAd.classList.toggle('active');
+        // When active: ads are stripped (collapsed). When inactive: ads appear!
         if (active) {
-          tabPrimary.textContent = 'Following';
-          tabSecondary.textContent = 'For You';
+          mockAd.classList.add('collapsed');
         } else {
-          tabPrimary.textContent = 'For You';
-          tabSecondary.textContent = 'Following';
+          mockAd.classList.remove('collapsed');
         }
       });
 
-      // Hide Sidebar Toggle
-      toggleSidebar.addEventListener('click', () => {
-        const active = toggleSidebar.classList.toggle('active');
-        whoToFollow.style.display = active ? 'none' : 'flex';
+      // 2. Following First Switch
+      swFollowing.addEventListener('click', () => {
+        const active = swFollowing.classList.toggle('active');
+        if (active) {
+          tabFollowing.classList.add('active');
+          tabForYou.classList.remove('active');
+          xTabs.style.flexDirection = 'row';
+        } else {
+          tabFollowing.classList.remove('active');
+          tabForYou.classList.add('active');
+          xTabs.style.flexDirection = 'row-reverse';
+        }
       });
 
-      // Clean Vanity Metrics Toggle
-      toggleVanity.addEventListener('click', () => {
-        const active = toggleVanity.classList.toggle('active');
-        metricCounts.forEach(el => {
-          el.style.display = active ? 'none' : 'inline';
+      // 3. Hide Who to Follow Switch
+      swSidebar.addEventListener('click', () => {
+        const active = swSidebar.classList.toggle('active');
+        if (active) {
+          mockWhoToFollow.classList.add('collapsed');
+        } else {
+          mockWhoToFollow.classList.remove('collapsed');
+        }
+      });
+
+      // 4. Clean Vanity Metrics Switch
+      swMetrics.addEventListener('click', () => {
+        const active = swMetrics.classList.toggle('active');
+        metricVals.forEach(val => {
+          val.style.display = active ? 'none' : 'inline';
         });
       });
 
-      // Initially apply clean vanity metric state
-      metricCounts.forEach(el => { el.style.display = 'none'; });
+      // Initially apply clean metric state
+      metricVals.forEach(val => { val.style.display = 'none'; });
+
+      // Tab click handling inside mockup
+      tabFollowing.addEventListener('click', () => {
+        tabFollowing.classList.add('active');
+        tabForYou.classList.remove('active');
+      });
+      tabForYou.addEventListener('click', () => {
+        tabForYou.classList.add('active');
+        tabFollowing.classList.remove('active');
+      });
 
       // Twemoji Reaction Palette Interaction
-      const demoLikeBtn = document.getElementById('demo-like-btn');
-      const demoPalette = document.getElementById('demo-reaction-palette');
-      const simComposer = document.getElementById('sim-composer');
-      const composerText = document.getElementById('composer-text');
-      const closeComposerBtn = document.getElementById('close-composer-btn');
+      const likeBtn = document.getElementById('like-trigger-btn');
+      const palette = document.getElementById('x-reaction-palette');
+      const replyComposer = document.getElementById('x-reply-composer');
+      const composerInput = document.getElementById('sim-composer-input');
+      const btnCloseComposer = document.getElementById('btn-close-composer');
 
-      demoLikeBtn.addEventListener('mouseenter', () => {
-        demoPalette.classList.add('visible');
+      likeBtn.addEventListener('mouseenter', () => {
+        palette.classList.add('visible');
       });
 
-      demoLikeBtn.addEventListener('mouseleave', () => {
+      likeBtn.addEventListener('mouseleave', () => {
         setTimeout(() => {
-          if (!demoPalette.matches(':hover')) {
-            demoPalette.classList.remove('visible');
+          if (!palette.matches(':hover')) {
+            palette.classList.remove('visible');
           }
-        }, 300);
+        }, 350);
       });
 
-      demoPalette.addEventListener('mouseleave', () => {
-        demoPalette.classList.remove('visible');
+      palette.addEventListener('mouseleave', () => {
+        palette.classList.remove('visible');
       });
 
-      // Emoji Selection Prefiller Demo
-      document.querySelectorAll('.palette-emoji').forEach(emojiEl => {
-        emojiEl.addEventListener('click', (e) => {
+      document.querySelectorAll('.x-reaction-item').forEach(item => {
+        item.addEventListener('click', (e) => {
           e.stopPropagation();
-          const emoji = emojiEl.getAttribute('data-emoji');
-          demoPalette.classList.remove('visible');
-          composerText.value = `${emoji} `;
-          simComposer.classList.add('active');
-          composerText.focus();
+          const emoji = item.getAttribute('data-emoji');
+          palette.classList.remove('visible');
+          composerInput.value = `${emoji} `;
+          replyComposer.classList.add('active');
+          composerInput.focus();
         });
       });
 
-      closeComposerBtn.addEventListener('click', () => {
-        simComposer.classList.remove('active');
+      btnCloseComposer.addEventListener('click', () => {
+        replyComposer.classList.remove('active');
       });
 
-      // Theme Studio Palette Swatches
+      // Theme Swatches
       const themes = {
         lightsout: { bg: '#000000', card: '#16181C', border: '#2F3336', accent: '#1D9BF0' },
         dracula: { bg: '#1E1F29', card: '#282A36', border: '#44475A', accent: '#BD93F9' },
         nord: { bg: '#242933', card: '#2E3440', border: '#4C566A', accent: '#88C0D0' },
-        matrix: { bg: '#05080A', card: '#0D1117', border: '#1B242C', accent: '#00FF66' },
-        sunset: { bg: '#120B1C', card: '#1A1128', border: '#32234D', accent: '#FF7597' }
+        matrix: { bg: '#05080A', card: '#0D1117', border: '#1B242C', accent: '#00FF66' }
       };
 
-      const mockupContainer = document.getElementById('simulator-container');
+      const simContainer = document.getElementById('simulator-container');
+      const xFeedWrapper = document.getElementById('x-feed-wrapper');
 
       document.querySelectorAll('.theme-swatch').forEach(swatch => {
         swatch.addEventListener('click', () => {
           document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('active'));
           swatch.classList.add('active');
 
-          const themeKey = swatch.getAttribute('data-theme');
-          const t = themes[themeKey];
-          if (t && mockupContainer) {
-            mockupContainer.style.backgroundColor = t.card;
-            mockupContainer.style.borderColor = t.border;
-            document.querySelectorAll('#live-mockup-feed .mockup-tweet').forEach(el => {
-              el.style.backgroundColor = t.bg;
+          const key = swatch.getAttribute('data-theme');
+          const t = themes[key];
+          if (t) {
+            simContainer.style.borderColor = t.border;
+            xFeedWrapper.style.backgroundColor = t.bg;
+            xFeedWrapper.style.borderColor = t.border;
+            document.querySelectorAll('.x-tweet, .x-who-to-follow-box, .x-header').forEach(el => {
               el.style.borderColor = t.border;
             });
-            const activeTab = document.querySelector('.feed-tab.active');
-            if (activeTab) {
-              activeTab.style.setProperty('--accent-blue', t.accent);
+            const indicator = document.querySelector('.x-tab.active .x-tab-indicator');
+            if (indicator) {
+              indicator.style.backgroundColor = t.accent;
             }
           }
         });

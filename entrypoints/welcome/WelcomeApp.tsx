@@ -1,188 +1,174 @@
 import React from 'react';
 import {
-  ShieldCheck,
   Pin,
-  Sliders,
-  Palette,
-  Smile,
+  Shield,
   Bookmark,
-  ExternalLink,
-  Lock,
-  Sparkles,
+  Palette,
+  ArrowRight,
   Heart,
+  ExternalLink,
 } from 'lucide-react';
 import {
   X_HOME_URL,
   GITHUB_REPO_URL,
   PRIVACY_POLICY_URL,
+  FEATUREBASE_URL,
+  PORTFOLIO_URL,
 } from '@/lib/lifecycle';
 
 export default function WelcomeApp() {
   return (
-    <div className="min-h-screen bg-[#000000] text-[#E7E9EA] font-sans flex flex-col items-center px-4 py-12 md:py-16">
-      <div className="w-full max-w-3xl space-y-10">
-        {/* Header */}
+    <div className="min-h-screen bg-[#000000] text-[#E7E9EA] flex flex-col items-center justify-between px-6 py-12 md:py-16 selection:bg-[#1D9BF0] selection:text-white font-sans">
+      <main className="w-full max-w-2xl space-y-12">
+        {/* Header & Status */}
         <header className="flex flex-col items-center text-center space-y-4">
-          <div className="relative">
+          <div className="p-3 bg-[#16181C] border border-[#2F3336] rounded-2xl shadow-sm">
             <img
               src="/better-twitter-logo.svg"
-              alt="Better Twitter Logo"
-              className="w-20 h-20 rounded-2xl shadow-lg border border-[#2F3336] bg-[#16181C] p-2"
+              alt="Better Twitter"
+              className="w-16 h-16 rounded-xl"
             />
-            <span className="absolute -bottom-2 -right-2 bg-[#00BA7C] text-black text-[11px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow">
-              <span className="w-1.5 h-1.5 rounded-full bg-black animate-pulse" />
-              Active
-            </span>
           </div>
 
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white mt-2">
-            Welcome to Better Twitter!
-          </h1>
-          <p className="text-[#71767B] text-base md:text-lg max-w-xl">
-            A clean, fast, and respectful Twitter experience. Take control back from algorithms and clutter.
-          </p>
+          <div className="space-y-2 max-w-lg">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
+              Your timeline is clean now.
+            </h1>
+            <p className="text-[#71767B] text-base leading-relaxed">
+              Better Twitter is installed and active. Promoted posts, trends, and algorithmic noise are removed right as you scroll.
+            </p>
+          </div>
         </header>
 
-        {/* Pin Extension Callout Banner */}
-        <div className="bg-gradient-to-r from-[#1D9BF0]/15 to-[#1D9BF0]/5 border border-[#1D9BF0]/30 rounded-2xl p-6 md:p-7 relative overflow-hidden">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 text-[#1D9BF0] font-semibold text-sm">
+        {/* Toolbar Pin Tip */}
+        <div className="bg-[#16181C] border border-[#2F3336] rounded-2xl p-6 transition-all">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+            <div className="space-y-1.5 max-w-md">
+              <div className="flex items-center gap-2 text-[#1D9BF0] font-medium text-sm">
                 <Pin className="w-4 h-4" />
-                <span>Recommended First Step</span>
+                <span>Pin the extension</span>
               </div>
-              <h2 className="text-xl font-bold text-white">Pin Better Twitter to your toolbar</h2>
-              <p className="text-[#A4A7AB] text-sm leading-relaxed max-w-lg">
-                Pinning the extension ensures you can toggle features, change themes, and access your bookmarks in one click anytime you're browsing.
+              <p className="text-sm text-[#A4A7AB] leading-relaxed">
+                Keep Better Twitter one click away to switch themes (Lights Out, Dracula, Nord), manage bookmark folders, or toggle vanity metrics.
               </p>
             </div>
 
-            <div className="bg-[#16181C] border border-[#2F3336] rounded-xl p-4 shrink-0 flex items-center gap-3 text-xs text-[#E7E9EA]">
-              <div className="flex items-center gap-1.5 bg-[#202327] px-2.5 py-1.5 rounded-lg border border-[#2F3336]">
-                <span className="text-[#71767B]">🧩 Extensions</span>
-                <span className="text-[#71767B]">→</span>
-                <span className="font-semibold text-white">Better Twitter</span>
-                <span className="text-[#71767B]">→</span>
-                <span className="text-[#1D9BF0] font-bold">📌 Pin</span>
-              </div>
+            <div className="flex items-center gap-2 bg-[#202327] border border-[#2F3336] rounded-xl px-3.5 py-2.5 text-xs text-[#71767B] shrink-0 font-medium select-none">
+              <span>Extensions</span>
+              <span>›</span>
+              <span className="text-white">Better Twitter</span>
+              <span>›</span>
+              <span className="text-[#1D9BF0]">Pin</span>
             </div>
           </div>
         </div>
 
-        {/* What's already working */}
+        {/* What to expect / Key highlights */}
         <section className="space-y-4">
-          <h3 className="text-sm font-semibold tracking-wider uppercase text-[#71767B]">
-            Features active right now
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-[#16181C] border border-[#2F3336] rounded-xl p-5 space-y-2">
-              <div className="w-9 h-9 rounded-lg bg-[#00BA7C]/15 text-[#00BA7C] flex items-center justify-center">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <h4 className="font-semibold text-white">Zero Promoted Tweets</h4>
-              <p className="text-sm text-[#71767B] leading-relaxed">
-                Ads and sponsored posts are purged from your timeline continuously before they distract you.
+          <div className="flex items-start gap-4 p-4 rounded-xl bg-[#16181C]/50 border border-[#2F3336]/60">
+            <div className="p-2 rounded-lg bg-[#202327] text-[#1D9BF0] shrink-0 mt-0.5">
+              <Shield className="w-4 h-4" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-sm font-semibold text-white">Clean feeds by default</h3>
+              <p className="text-xs text-[#71767B] leading-relaxed">
+                Ads and sponsored tweets are removed silently. You can also hide 'Who to Follow', trending sidebars, and default directly to your Following tab.
               </p>
             </div>
+          </div>
 
-            <div className="bg-[#16181C] border border-[#2F3336] rounded-xl p-5 space-y-2">
-              <div className="w-9 h-9 rounded-lg bg-[#1D9BF0]/15 text-[#1D9BF0] flex items-center justify-center">
-                <Lock className="w-5 h-5" />
-              </div>
-              <h4 className="font-semibold text-white">100% Local & Private</h4>
-              <p className="text-sm text-[#71767B] leading-relaxed">
-                Zero telemetry, zero tracking, zero accounts. Everything stays safely in your browser's local storage.
+          <div className="flex items-start gap-4 p-4 rounded-xl bg-[#16181C]/50 border border-[#2F3336]/60">
+            <div className="p-2 rounded-lg bg-[#202327] text-[#1D9BF0] shrink-0 mt-0.5">
+              <Bookmark className="w-4 h-4" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-sm font-semibold text-white">Bookmark folders & feed resurfacing</h3>
+              <p className="text-xs text-[#71767B] leading-relaxed">
+                Organize your saved tweets into folders directly on <code className="text-[#E7E9EA] bg-[#202327] px-1.5 py-0.5 rounded text-[11px]">x.com/bookmarks</code>. Great saves are also resurfaced into your timeline so you never lose them.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-4 p-4 rounded-xl bg-[#16181C]/50 border border-[#2F3336]/60">
+            <div className="p-2 rounded-lg bg-[#202327] text-[#1D9BF0] shrink-0 mt-0.5">
+              <Palette className="w-4 h-4" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-sm font-semibold text-white">Custom themes & quick emoji reactions</h3>
+              <p className="text-xs text-[#71767B] leading-relaxed">
+                Pick community themes like Dracula, Nord, or Matrix, and long-press the Like button to react with any emoji in one tap.
               </p>
             </div>
           </div>
         </section>
 
-        {/* Customization Highlights */}
-        <section className="space-y-4">
-          <h3 className="text-sm font-semibold tracking-wider uppercase text-[#71767B]">
-            Customize in your Settings Popup
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="bg-[#16181C]/60 border border-[#2F3336] rounded-xl p-4 space-y-2 hover:border-[#1D9BF0]/50 transition-colors">
-              <Sliders className="w-5 h-5 text-[#1D9BF0]" />
-              <h4 className="font-semibold text-sm text-white">Declutter Feeds</h4>
-              <p className="text-xs text-[#71767B] leading-relaxed">
-                Hide 'Who to Follow', 'What's Happening', and start on Following instead of 'For You'.
-              </p>
-            </div>
-
-            <div className="bg-[#16181C]/60 border border-[#2F3336] rounded-xl p-4 space-y-2 hover:border-[#F91880]/50 transition-colors">
-              <Palette className="w-5 h-5 text-[#F91880]" />
-              <h4 className="font-semibold text-sm text-white">Community Themes</h4>
-              <p className="text-xs text-[#71767B] leading-relaxed">
-                Choose Dracula, Nord, Matrix, or pick custom accent colors for your timeline.
-              </p>
-            </div>
-
-            <div className="bg-[#16181C]/60 border border-[#2F3336] rounded-xl p-4 space-y-2 hover:border-[#FFD400]/50 transition-colors">
-              <Smile className="w-5 h-5 text-[#FFD400]" />
-              <h4 className="font-semibold text-sm text-white">Twemoji Reactions</h4>
-              <p className="text-xs text-[#71767B] leading-relaxed">
-                Hover or hold Like to react with emojis that seamlessly prefill the native reply box.
-              </p>
-            </div>
-
-            <div className="bg-[#16181C]/60 border border-[#2F3336] rounded-xl p-4 space-y-2 hover:border-[#00BA7C]/50 transition-colors sm:col-span-2 lg:col-span-3">
-              <Bookmark className="w-5 h-5 text-[#00BA7C]" />
-              <h4 className="font-semibold text-sm text-white">Bookmark Folders & Timeline Resurfacing</h4>
-              <p className="text-xs text-[#71767B] leading-relaxed">
-                Organize your bookmarks into custom folders directly inside <code className="text-[#E7E9EA] bg-[#202327] px-1 rounded">x.com/bookmarks</code> and have your favorite tweets gently resurfaced in your timeline.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Launch Section */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 border-t border-[#2F3336]">
+        {/* Primary Action Button */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
           <a
             href={X_HOME_URL}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#1D9BF0] hover:bg-[#1A8CD8] text-white font-bold px-8 py-3.5 rounded-full shadow-md transition-colors text-base"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-white hover:bg-[#E7E9EA] text-black font-semibold px-8 py-3.5 rounded-full transition-all text-sm shadow-sm"
           >
             <span>Open X / Twitter</span>
-            <ExternalLink className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4" />
           </a>
 
           <a
             href={GITHUB_REPO_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#16181C] hover:bg-[#202327] border border-[#2F3336] text-[#E7E9EA] font-medium px-6 py-3.5 rounded-full transition-colors text-base"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#16181C] hover:bg-[#202327] border border-[#2F3336] text-[#E7E9EA] font-medium px-6 py-3.5 rounded-full transition-colors text-sm"
           >
-            <span>GitHub Repository</span>
+            <span>View on GitHub</span>
+            <ExternalLink className="w-3.5 h-3.5 text-[#71767B]" />
           </a>
         </div>
+      </main>
 
-        {/* Footer */}
-        <footer className="text-center pt-6 text-xs text-[#71767B] space-y-2">
-          <p className="flex items-center justify-center gap-1">
-            Built with <Heart className="w-3.5 h-3.5 text-[#F4212E] inline" /> for a better web.
-          </p>
-          <div className="flex items-center justify-center gap-3">
-            <a
-              href={PRIVACY_POLICY_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white underline underline-offset-2"
-            >
-              Privacy Policy
-            </a>
-            <span>•</span>
-            <a
-              href="https://bettertwitter.featurebase.app/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white underline underline-offset-2"
-            >
-              Feedback & Suggestions
-            </a>
-          </div>
-        </footer>
-      </div>
+      {/* Footer */}
+      <footer className="w-full max-w-2xl text-center pt-16 pb-4 space-y-3">
+        <p className="flex items-center justify-center gap-1.5 text-xs text-[#71767B]">
+          <span>Built with</span>
+          <Heart className="w-3.5 h-3.5 text-[#F4212E] fill-[#F4212E]" />
+          <span>for a better web. Made with love by</span>
+          <a
+            href={PORTFOLIO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#E7E9EA] hover:text-[#1D9BF0] font-medium underline underline-offset-4 decoration-[#2F3336] hover:decoration-[#1D9BF0] transition-colors"
+          >
+            Andro Nasef
+          </a>
+        </p>
+
+        <div className="flex items-center justify-center gap-4 text-xs text-[#71767B]">
+          <a
+            href={PRIVACY_POLICY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white transition-colors"
+          >
+            Privacy Policy
+          </a>
+          <span>•</span>
+          <a
+            href={FEATUREBASE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white transition-colors"
+          >
+            Feedback & Roadmap
+          </a>
+          <span>•</span>
+          <a
+            href={GITHUB_REPO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white transition-colors"
+          >
+            Source Code
+          </a>
+        </div>
+      </footer>
     </div>
   );
 }

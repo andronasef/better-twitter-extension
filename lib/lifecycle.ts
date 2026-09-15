@@ -1,4 +1,4 @@
-export const UNINSTALL_FEEDBACK_URL = 'https://andronasef.github.io/better-twitter-extension/uninstall.html';
+export const UNINSTALL_FEEDBACK_URL = 'https://bettertwitter.andronasef.com/uninstall';
 export const FEATUREBASE_URL = 'https://bettertwitter.featurebase.app/';
 export const X_HOME_URL = 'https://x.com/home';
 export const GITHUB_REPO_URL = 'https://github.com/andronasef/better-twitter-extension';

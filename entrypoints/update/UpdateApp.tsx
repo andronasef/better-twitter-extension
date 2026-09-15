@@ -12,7 +12,8 @@ import {
   X_HOME_URL,
   GITHUB_REPO_URL,
   PRIVACY_POLICY_URL,
-  UNINSTALL_FEEDBACK_URL,
+  FEATUREBASE_URL,
+  PORTFOLIO_URL,
 } from '@/lib/lifecycle';
 
 interface ReleaseNote {
@@ -175,7 +176,7 @@ export default function UpdateApp() {
           </div>
 
           <a
-            href={UNINSTALL_FEEDBACK_URL}
+            href={FEATUREBASE_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="shrink-0 inline-flex items-center gap-1.5 bg-[#202327] hover:bg-[#272C30] text-white text-xs font-semibold px-4 py-2.5 rounded-lg border border-[#2F3336] transition-colors"
@@ -206,27 +207,47 @@ export default function UpdateApp() {
         </div>
 
         {/* Footer */}
-        <footer className="text-center pt-6 text-xs text-[#71767B] space-y-2">
-          <p className="flex items-center justify-center gap-1">
-            Better Twitter is open-source and respects your privacy.
+        <footer className="w-full max-w-2xl text-center pt-16 pb-4 space-y-3">
+          <p className="flex items-center justify-center gap-1.5 text-xs text-[#71767B]">
+            <span>Built with</span>
+            <Heart className="w-3.5 h-3.5 text-[#F4212E] fill-[#F4212E]" />
+            <span>for a better web. Made with love by</span>
+            <a
+              href={PORTFOLIO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#E7E9EA] hover:text-[#1D9BF0] font-medium underline underline-offset-4 decoration-[#2F3336] hover:decoration-[#1D9BF0] transition-colors"
+            >
+              Andro Nasef
+            </a>
           </p>
-          <div className="flex items-center justify-center gap-3">
+
+          <div className="flex items-center justify-center gap-4 text-xs text-[#71767B]">
             <a
               href={PRIVACY_POLICY_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-white underline underline-offset-2"
+              className="hover:text-white transition-colors"
             >
               Privacy Policy
             </a>
             <span>•</span>
             <a
-              href={UNINSTALL_FEEDBACK_URL}
+              href={FEATUREBASE_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-white underline underline-offset-2"
+              className="hover:text-white transition-colors"
             >
-              Feedback
+              Feedback & Roadmap
+            </a>
+            <span>•</span>
+            <a
+              href={GITHUB_REPO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+            >
+              Source Code
             </a>
           </div>
         </footer>
