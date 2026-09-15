@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Clean Timeline & Themes** - Clutter toggles and the full theme engine — read-only DOM/CSS features on top of the pipeline
 - [x] **Phase 3: Bookmarks (Capture, Management & Resurfacing)** - Multi-strategy capture, local storage/quota management, folder/tag organization, in-page search, and feed resurfacing
 - [x] **Phase 4: Twemoji Reactions** - Hover/long-press palette that prefills X's native reply composer for the user to send (completed 2026-09-15)
-- [ ] **Phase 5: Chrome Web Store Packaging** - Permission audit, privacy policy, single-purpose listing, and a submittable package
+- [x] **Phase 5: Chrome Web Store Packaging** - Permission audit, privacy policy, single-purpose listing, and a submittable package (completed 2026-09-15)
 
 ## Phase Details
 
@@ -230,7 +230,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Clean Timeline & Themes | 5/5 | Completed | 2026-09-13 |
 | 3. Bookmarks (Capture, Management & Resurfacing) | 5/5 | Completed | 2026-09-14 |
 | 4. Twemoji Reactions | 5/5 | Complete    | 2026-09-15 |
-| 5. Chrome Web Store Packaging | 0/TBD | Not started | - |
+| 5. Chrome Web Store Packaging | 3/3 | Complete    | 2026-09-15 |
 
 ## Coverage
 

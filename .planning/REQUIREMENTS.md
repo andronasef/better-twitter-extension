@@ -69,11 +69,11 @@
 
 ### Store Readiness
 
-- [ ] **STORE-01**: Manifest requests only narrow host permissions (`*://x.com/*`, `*://twitter.com/*`) and the minimum API permissions, with no `<all_urls>`
-- [ ] **STORE-02**: Production build contains no remote code execution or eval-like code paths
-- [ ] **STORE-03**: A published privacy policy states that all data stays in local browser storage and nothing is transmitted
-- [ ] **STORE-04**: Store listing frames the extension around a single coherent purpose to satisfy the single-purpose policy
-- [ ] **STORE-05**: Store assets (icons, screenshots, description) are complete and the package builds and zips for submission
+- [x] **STORE-01**: Manifest requests only narrow host permissions (`*://x.com/*`, `*://twitter.com/*`) and the minimum API permissions, with no `<all_urls>`
+- [x] **STORE-02**: Production build contains no remote code execution or eval-like code paths
+- [x] **STORE-03**: A published privacy policy states that all data stays in local browser storage and nothing is transmitted
+- [x] **STORE-04**: Store listing frames the extension around a single coherent purpose to satisfy the single-purpose policy
+- [x] **STORE-05**: Store assets (icons, screenshots, description) are complete and the package builds and zips for submission
 
 ## v2 Requirements
 
@@ -154,11 +154,11 @@ Which phases cover which requirements. Populated during roadmap creation.
 | REACT-04 | Phase 4 | Complete |
 | REACT-05 | Phase 4 | Complete |
 | REACT-06 | Phase 4 | Complete |
-| STORE-01 | Phase 5 | Pending |
-| STORE-02 | Phase 5 | Pending |
-| STORE-03 | Phase 5 | Pending |
-| STORE-04 | Phase 5 | Pending |
-| STORE-05 | Phase 5 | Pending |
+| STORE-01 | Phase 5 | Complete |
+| STORE-02 | Phase 5 | Complete |
+| STORE-03 | Phase 5 | Complete |
+| STORE-04 | Phase 5 | Complete |
+| STORE-05 | Phase 5 | Complete |
 
 **Coverage:**
 

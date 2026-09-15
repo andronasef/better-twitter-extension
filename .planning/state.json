@@ -26,13 +26,13 @@
     {
       "number": "5",
       "name": "Chrome Web Store Packaging",
-      "status": "pending"
+      "status": "complete"
     }
   ],
   "next": {
-    "command": "/gsd-progress --next",
-    "label": "Advance to the next step",
-    "reason": "Phase 5 of 5 · 20% · executing"
+    "command": "/gsd-progress",
+    "label": "Show progress",
+    "reason": "Unsure of state — showing progress"
   },
-  "updated_at": "2026-09-15T08:39:16.271Z"
+  "updated_at": "2026-09-15T09:01:10.651Z"
 }
