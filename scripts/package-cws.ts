@@ -140,10 +140,17 @@ async function main() {
     process.exit(1);
   }
 
-  // Assert storage-only permission
+  // Assert permissions stay within the reviewed allow-list
+  const ALLOWED_PERMISSIONS = ['storage', 'alarms'];
   const permissions = manifest.permissions || [];
-  if (permissions.length !== 1 || permissions[0] !== 'storage') {
-    console.error(red(`✖ Permissions must be strictly ['storage'], got: ${JSON.stringify(permissions)}`));
+  const unexpectedPerms = permissions.filter((p: string) => !ALLOWED_PERMISSIONS.includes(p));
+  if (unexpectedPerms.length > 0) {
+    console.error(red(`✖ Unreviewed permission(s): ${JSON.stringify(unexpectedPerms)}; allowed: ${JSON.stringify(ALLOWED_PERMISSIONS)}`));
+    process.exit(1);
+  }
+  const dupePerms = permissions.filter((p: string, i: number) => permissions.indexOf(p) !== i);
+  if (dupePerms.length > 0) {
+    console.error(red(`✖ Duplicate permission(s): ${JSON.stringify(dupePerms)}`));
     process.exit(1);
   }
 

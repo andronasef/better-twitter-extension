@@ -35,6 +35,15 @@ export interface BookmarkSyncState {
   lastPrunedAt?: number;
 }
 
+export interface BookmarkAutoSyncState {
+  /** Whether the user wants bookmarks re-synced periodically. */
+  enabled: boolean;
+  /** When the last automatic sync actually started. */
+  lastAutoSyncAt: number | null;
+  /** When a sync first became due, or null when nothing is pending. */
+  dueSince: number | null;
+}
+
 export interface BookmarksSettings {
   resurfacingEnabled: boolean;
   resurfacingInterval: number;

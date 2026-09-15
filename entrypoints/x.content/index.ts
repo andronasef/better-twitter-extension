@@ -18,6 +18,7 @@ import { resolve } from '@/lib/selectors';
 import { startThemeProbe } from './theme-probe';
 import { initActionBarIntegration, teardownActionBarIntegration } from '@/features/bookmarks/action-bar';
 import { captureEngine } from '@/features/bookmarks/capture-engine';
+import { runOpportunisticAutoSync } from '@/features/bookmarks/auto-sync';
 import { mountBookmarksHub, unmountBookmarksHub } from '@/features/bookmarks/in-page-ui';
 import { isBookmarksRoute } from '@/features/bookmarks/routes';
 import { initResurfacing, teardownResurfacing } from '@/features/bookmarks/resurfacing';
@@ -144,6 +145,10 @@ export default defineContentScript({
               captureEngine.syncBookmarksBackground();
             }
           });
+          runOpportunisticAutoSync({
+            pathname: path,
+            trigger: () => captureEngine.syncBookmarksBackground(),
+          }).catch(() => {});
         } else {
           unmountBookmarksHub();
           captureEngine.stopAutoScrollSync();

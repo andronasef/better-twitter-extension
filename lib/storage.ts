@@ -3,6 +3,7 @@ import type {
   BookmarkItem,
   BookmarkFolder,
   BookmarkSyncState,
+  BookmarkAutoSyncState,
   BookmarksSettings,
 } from '@/features/bookmarks/types';
 import type {
@@ -125,6 +126,15 @@ export const bookmarkSyncItem = storage.defineItem<BookmarkSyncState>('local:boo
     lastSyncTime: null,
     lastCheckpointTime: null,
     errorReason: null,
+  },
+  version: 1,
+});
+
+export const bookmarkAutoSyncItem = storage.defineItem<BookmarkAutoSyncState>('local:bookmarkAutoSync', {
+  fallback: {
+    enabled: true,
+    lastAutoSyncAt: null,
+    dueSince: null,
   },
   version: 1,
 });

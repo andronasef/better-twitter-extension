@@ -4,7 +4,7 @@
  * Standing Build Gate: Package & Permission Audit
  *
  * Enforces five security and platform invariants over the built production bundle:
- * 1. Minimal permissions: exactly ['storage'], zero host_permissions.
+ * 1. Minimal permissions: within the ['storage', 'alarms'] allow-list, zero host_permissions.
  * 2. Scoped web-accessible resources: strictly x.com / twitter.com, zero wildcard origins.
  * 3. Exactly one content script (dev probes mechanically excluded).
  * 4. Zero CSP overrides.
@@ -50,10 +50,16 @@ try {
 
 let errors = []
 
-// Assertion 1: Permissions exactly ['storage'] and no host_permissions
+// Assertion 1: Permissions within the reviewed allow-list, and no host_permissions
+const ALLOWED_PERMISSIONS = ['storage', 'alarms']
 const permissions = manifest.permissions || []
-if (permissions.length !== 1 || permissions[0] !== 'storage') {
-  errors.push(`Assertion 1 failed: permissions must be exactly ['storage'], got ${JSON.stringify(permissions)}`)
+const unexpected = permissions.filter((p) => !ALLOWED_PERMISSIONS.includes(p))
+if (unexpected.length > 0) {
+  errors.push(`Assertion 1 failed: unreviewed permission(s) ${JSON.stringify(unexpected)}; allowed: ${JSON.stringify(ALLOWED_PERMISSIONS)}`)
+}
+const duplicates = permissions.filter((p, i) => permissions.indexOf(p) !== i)
+if (duplicates.length > 0) {
+  errors.push(`Assertion 1 failed: duplicate permission(s) ${JSON.stringify(duplicates)}`)
 }
 if ('host_permissions' in manifest && manifest.host_permissions !== undefined) {
   errors.push(`Assertion 1 failed: host_permissions must not exist, got ${JSON.stringify(manifest.host_permissions)}`)

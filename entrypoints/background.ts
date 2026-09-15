@@ -1,6 +1,10 @@
 import { diagnosticsItem, engagementItem } from '@/lib/storage';
 import { BOOKMARKS_URL } from '@/features/bookmarks/routes';
 import {
+  ensureAutoSyncAlarm,
+  handleAutoSyncAlarm,
+} from '@/features/bookmarks/auto-sync';
+import {
   configureUninstallUrl,
   openWelcomePage,
   openUpdatePage,
@@ -27,6 +31,8 @@ export default defineBackground(() => {
 
   // Listen for extension install or update lifecycle events
   browser.runtime.onInstalled.addListener((details) => {
+    ensureAutoSyncAlarm().catch(() => {});
+
     if (details.reason === 'install') {
       engagementItem.setValue({
         installedAt: Date.now(),
@@ -45,6 +51,17 @@ export default defineBackground(() => {
       }
     }
   });
+  // Re-establish the periodic bookmark auto-sync alarm after a browser restart.
+  browser.runtime.onStartup.addListener(() => {
+    ensureAutoSyncAlarm().catch(() => {});
+  });
+
+  // Registered at top level: MV3 drops events whose listener is not attached
+  // synchronously on service-worker wake.
+  browser.alarms.onAlarm.addListener((alarm) => {
+    handleAutoSyncAlarm(alarm).catch(() => {});
+  });
+
   const syncBadge = async () => {
     try {
       const diag = await diagnosticsItem.getValue();

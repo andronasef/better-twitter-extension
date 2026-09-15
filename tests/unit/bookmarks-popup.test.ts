@@ -6,6 +6,7 @@ import {
   foldersItem,
   bookmarksSettingsItem,
   bookmarkSyncItem,
+  bookmarkAutoSyncItem,
 } from '@/lib/storage';
 import { BookmarksPanel } from '@/entrypoints/popup/BookmarksPanel';
 import type { BookmarkFolder, BookmarkItem } from '@/features/bookmarks/types';
@@ -76,6 +77,11 @@ describe('Popup BookmarksPanel (BOOK-08, BOOK-10, D-08, D-12, D-13, D-16, D-17)'
       lastCheckpointTime: null,
       cursor: null,
       errorReason: null,
+    });
+    await bookmarkAutoSyncItem.setValue({
+      enabled: true,
+      lastAutoSyncAt: null,
+      dueSince: null,
     });
   });
 
@@ -287,6 +293,69 @@ describe('Popup BookmarksPanel (BOOK-08, BOOK-10, D-08, D-12, D-13, D-16, D-17)'
     const bookmarks = await bookmarksItem.getValue();
     expect(bookmarks['t99']).not.toBeUndefined();
     expect(bookmarks['t99']?.text).toBe('Imported tweet content');
+
+    root.unmount();
+  });
+
+  it('renders the auto-sync toggle', async () => {
+    const root = createRoot(container);
+    await act(async () => {
+      root.render(React.createElement(BookmarksPanel));
+    });
+
+    expect(container.textContent).toContain('Auto-sync every 7 days');
+
+    root.unmount();
+  });
+
+  it('shows the overdue hint only when a sync is due', async () => {
+    let root = createRoot(container);
+    await act(async () => {
+      root.render(React.createElement(BookmarksPanel));
+    });
+    expect(container.textContent).not.toContain('Sync is overdue');
+    root.unmount();
+
+    await bookmarkAutoSyncItem.setValue({
+      enabled: true,
+      lastAutoSyncAt: null,
+      dueSince: Date.now(),
+    });
+
+    root = createRoot(container);
+    await act(async () => {
+      root.render(React.createElement(BookmarksPanel));
+    });
+    expect(container.textContent).toContain('Sync is overdue');
+
+    root.unmount();
+  });
+
+  it('persists the auto-sync toggle without clearing timestamps', async () => {
+    await bookmarkAutoSyncItem.setValue({
+      enabled: true,
+      lastAutoSyncAt: 1234,
+      dueSince: 5678,
+    });
+
+    const root = createRoot(container);
+    await act(async () => {
+      root.render(React.createElement(BookmarksPanel));
+    });
+
+    const btn = container.querySelector<HTMLButtonElement>(
+      'button[role="switch"]#toggle-auto-sync'
+    );
+    expect(btn).not.toBeNull();
+
+    await act(async () => {
+      btn!.click();
+    });
+
+    const record = await bookmarkAutoSyncItem.getValue();
+    expect(record.enabled).toBe(false);
+    expect(record.lastAutoSyncAt).toBe(1234);
+    expect(record.dueSince).toBe(5678);
 
     root.unmount();
   });

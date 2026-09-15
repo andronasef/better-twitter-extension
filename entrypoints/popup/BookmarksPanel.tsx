@@ -16,6 +16,7 @@ import {
   foldersItem,
   bookmarksSettingsItem,
   bookmarkSyncItem,
+  bookmarkAutoSyncItem,
 } from '@/lib/storage';
 import {
   getStorageUsage,
@@ -26,10 +27,12 @@ import {
   syncBookmarksBackground,
   resumeSync,
 } from '@/features/bookmarks/capture-engine';
+import { markAutoSyncSatisfied } from '@/features/bookmarks/auto-sync';
 import type {
   BookmarkFolder,
   BookmarkItem,
   BookmarkSyncState,
+  BookmarkAutoSyncState,
   BookmarksSettings,
 } from '@/features/bookmarks/types';
 import { isBookmarksRoute, BOOKMARKS_URL } from '@/features/bookmarks/routes';
@@ -53,6 +56,11 @@ export function BookmarksPanel() {
     resurfacingEnabled: true,
     resurfacingInterval: 20,
     askFolderOnSave: true,
+  });
+  const [autoSync, setAutoSync] = useState<BookmarkAutoSyncState>({
+    enabled: true,
+    lastAutoSyncAt: null,
+    dueSince: null,
   });
   const [syncState, setSyncState] = useState<BookmarkSyncState>({
     status: 'idle',
@@ -78,12 +86,13 @@ export function BookmarksPanel() {
     let mounted = true;
 
     const loadAll = async () => {
-      const [loadedBookmarks, loadedFolders, loadedSettings, loadedSync, usage] =
+      const [loadedBookmarks, loadedFolders, loadedSettings, loadedSync, loadedAutoSync, usage] =
         await Promise.all([
           bookmarksItem.getValue(),
           foldersItem.getValue(),
           bookmarksSettingsItem.getValue(),
           bookmarkSyncItem.getValue(),
+          bookmarkAutoSyncItem.getValue(),
           getStorageUsage(),
         ]);
 
@@ -103,6 +112,11 @@ export function BookmarksPanel() {
         cursor: null,
         errorReason: null,
       });
+      setAutoSync(loadedAutoSync || {
+        enabled: true,
+        lastAutoSyncAt: null,
+        dueSince: null,
+      });
       setStorageUsage(usage);
     };
 
@@ -115,6 +129,7 @@ export function BookmarksPanel() {
     const unwatchFolders = foldersItem.watch((val) => setFolders(val || []));
     const unwatchSettings = bookmarksSettingsItem.watch((val) => setSettings(val));
     const unwatchSync = bookmarkSyncItem.watch((val) => setSyncState(val));
+    const unwatchAutoSync = bookmarkAutoSyncItem.watch((val) => setAutoSync(val));
 
     return () => {
       mounted = false;
@@ -122,6 +137,7 @@ export function BookmarksPanel() {
       unwatchFolders();
       unwatchSettings();
       unwatchSync();
+      unwatchAutoSync();
     };
   }, []);
 
@@ -159,6 +175,15 @@ export function BookmarksPanel() {
     };
     setSettings(updated);
     await bookmarksSettingsItem.setValue(updated);
+  };
+
+  const handleToggleAutoSync = async (checked: boolean) => {
+    const updated: BookmarkAutoSyncState = {
+      ...autoSync,
+      enabled: checked,
+    };
+    setAutoSync(updated);
+    await bookmarkAutoSyncItem.setValue(updated);
   };
 
   // Folder eligibility toggle
@@ -227,6 +252,7 @@ export function BookmarksPanel() {
       status: 'syncing',
       errorReason: null,
     });
+    await markAutoSyncSatisfied();
 
     try {
       const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
@@ -373,6 +399,12 @@ export function BookmarksPanel() {
             <span>Sync Bookmarks Now</span>
           )}
         </button>
+
+        {autoSync.dueSince !== null && !isSyncing && (
+          <p className="text-[12px] text-[var(--bt-fg-muted,#71767b)] text-center">
+            Sync is overdue — it will run next time you open Bookmarks on X.
+          </p>
+        )}
 
         {/* Paused / Error Banner */}
         {isErrorOrPaused && (
@@ -675,20 +707,38 @@ export function BookmarksPanel() {
           Settings
         </h3>
 
-        <div className="p-3.5 rounded-xl bg-[var(--bt-surface,#16181c)] border border-[var(--bt-border,#2f3336)] flex items-center justify-between">
-          <div>
-            <label htmlFor="toggle-ask-folder" className="text-[14px] font-medium text-[var(--bt-fg,#e7e9ea)] block">
-              Ask for folder when bookmarking
-            </label>
-            <span className="text-[12px] text-[var(--bt-fg-muted,#71767b)]">
-              Display folder selection popover on save
-            </span>
+        <div className="p-3.5 rounded-xl bg-[var(--bt-surface,#16181c)] border border-[var(--bt-border,#2f3336)] space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <label htmlFor="toggle-ask-folder" className="text-[14px] font-medium text-[var(--bt-fg,#e7e9ea)] block">
+                Ask for folder when bookmarking
+              </label>
+              <span className="text-[12px] text-[var(--bt-fg-muted,#71767b)]">
+                Display folder selection popover on save
+              </span>
+            </div>
+            <Switch
+              id="toggle-ask-folder"
+              checked={settings.askFolderOnSave}
+              onCheckedChange={handleToggleAskFolder}
+            />
           </div>
-          <Switch
-            id="toggle-ask-folder"
-            checked={settings.askFolderOnSave}
-            onCheckedChange={handleToggleAskFolder}
-          />
+
+          <div className="pt-2 border-t border-[var(--bt-border,#2f3336)] flex items-center justify-between">
+            <div>
+              <label htmlFor="toggle-auto-sync" className="text-[14px] font-medium text-[var(--bt-fg,#e7e9ea)] block">
+                Auto-sync every 7 days
+              </label>
+              <span className="text-[12px] text-[var(--bt-fg-muted,#71767b)]">
+                Runs next time you open Bookmarks on X
+              </span>
+            </div>
+            <Switch
+              id="toggle-auto-sync"
+              checked={autoSync.enabled}
+              onCheckedChange={handleToggleAutoSync}
+            />
+          </div>
         </div>
       </div>
 

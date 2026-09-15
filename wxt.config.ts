@@ -10,7 +10,7 @@ export default defineConfig({
   manifest: {
     name: 'Better Twitter!',
     description: 'A clean, fast, and respectful Twitter experience',
-    permissions: ['storage'],
+    permissions: ['storage', 'alarms'],
     action: {
       default_popup: 'popup.html',
       default_title: 'Better Twitter',
