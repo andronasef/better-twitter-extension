@@ -103,9 +103,10 @@ export async function handleBookmarksPayload(detail: {
   await bookmarksItem.setValue(nextBookmarks);
 
   // 5. Update sync checkpoint (BOOK-02)
+  // A page with a NEW cursor but no extractable tweets is not the end of the
+  // timeline — only a missing or repeated bottom cursor is.
   const isComplete =
     extraction.bottomCursor === null ||
-    extraction.items.length === 0 ||
     extraction.bottomCursor === syncState.cursor;
 
   const nextStatus = isComplete

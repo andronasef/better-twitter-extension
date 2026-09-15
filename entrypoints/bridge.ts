@@ -35,6 +35,15 @@ export default defineUnlistedScript(() => {
   }
   let lastBookmarksTemplate: BookmarksTemplate | null = null;
 
+  // The page-request listeners below are deliberately redundant (postMessage +
+  // script element + document), so one logical request arrives up to 3x. These
+  // guards collapse that burst into a single outbound fetch — without them the
+  // duplicate responses race in handleBookmarksPayload and end sync early.
+  const FRESH_START_WINDOW_MS = 1500;
+  let bookmarksFetchInFlight = false;
+  let lastRequestedCursor: string | null = null;
+  let lastRequestedAt = 0;
+
   const extractShape = (
     method: string,
     url: string,
@@ -261,6 +270,30 @@ export default defineUnlistedScript(() => {
       return;
     }
 
+    // Guards are read and written synchronously before the first await so that
+    // same-tick duplicates from the other channels observe them.
+    const wanted = (cursor || '').trim();
+    const requestedAt = Date.now();
+
+    if (bookmarksFetchInFlight) return;
+
+    if (wanted) {
+      // A repeated non-empty cursor is never a new page — the capture engine
+      // already treats a repeated cursor as the end of the timeline.
+      if (wanted === lastRequestedCursor) return;
+    } else if (
+      lastRequestedCursor === '' &&
+      requestedAt - lastRequestedAt < FRESH_START_WINDOW_MS
+    ) {
+      return;
+    }
+
+    // Recording the empty cursor here is the reset: a fresh sync overwrites the
+    // memory, so it can re-walk cursors an earlier sync already fetched.
+    bookmarksFetchInFlight = true;
+    lastRequestedCursor = wanted;
+    lastRequestedAt = requestedAt;
+
     try {
       const vars: any = {
         ...(lastBookmarksTemplate.variables || {}),
@@ -335,6 +368,8 @@ export default defineUnlistedScript(() => {
         reason: 'fetch_failed',
         error: String(err?.message || err),
       });
+    } finally {
+      bookmarksFetchInFlight = false;
     }
   };
 
