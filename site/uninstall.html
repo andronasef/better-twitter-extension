@@ -6,6 +6,15 @@
   <title>Uninstall Feedback — Better Twitter</title>
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icon-32.png" />
   <link rel="stylesheet" href="./styles.css" />
+  <script>
+    window.__turnstileReady = false;
+    window.onloadTurnstileCallback = function () {
+      window.__turnstileReady = true;
+      if (typeof window.initTurnstile === 'function') {
+        window.initTurnstile();
+      }
+    };
+  </script>
   <!-- Cloudflare Turnstile API -->
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback&render=explicit" async defer></script>
 </head>
@@ -324,13 +333,13 @@
       }
 
       // Explicit onload callback for Turnstile
-      window.onloadTurnstileCallback = function () {
+      window.initTurnstile = function () {
         renderTurnstileWidget(PROD_SITE_KEY);
       };
 
-      // Safety check: if script loaded before callback registered
-      if (window.turnstile && turnstileWidgetId === null) {
-        renderTurnstileWidget(PROD_SITE_KEY);
+      // If Turnstile script loaded before or after this script
+      if (window.__turnstileReady || (window.turnstile && turnstileWidgetId === null)) {
+        window.initTurnstile();
       }
 
       // Fallback if Turnstile script is completely blocked by client adblocker
