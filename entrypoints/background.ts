@@ -1,7 +1,27 @@
 import { diagnosticsItem } from '@/lib/storage';
 import { BOOKMARKS_URL } from '@/features/bookmarks/routes';
+import {
+  configureUninstallUrl,
+  openWelcomePage,
+  openUpdatePage,
+  isMajorOrMinorUpdate,
+} from '@/lib/lifecycle';
 
 export default defineBackground(() => {
+  // Configure offboarding / uninstall feedback URL
+  configureUninstallUrl();
+
+  // Listen for extension install or update lifecycle events
+  browser.runtime.onInstalled.addListener((details) => {
+    if (details.reason === 'install') {
+      openWelcomePage();
+    } else if (details.reason === 'update') {
+      const currentVersion = browser.runtime.getManifest?.()?.version;
+      if (isMajorOrMinorUpdate(details.previousVersion, currentVersion)) {
+        openUpdatePage();
+      }
+    }
+  });
   const syncBadge = async () => {
     try {
       const diag = await diagnosticsItem.getValue();

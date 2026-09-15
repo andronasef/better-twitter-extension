@@ -14,6 +14,7 @@ import { BookmarksPanel } from './BookmarksPanel';
 import { ReactionsPanel } from './ReactionsPanel';
 import { BetterTwitterLogo } from '@/components/BetterTwitterLogo';
 import { GithubIcon } from '@/components/GithubIcon';
+import { openWelcomePage, openUpdatePage } from '@/lib/lifecycle';
 
 const lightVars: Record<string, string> = {
   '--bt-accent': '#1D9BF0',
@@ -248,8 +249,22 @@ export default function App({
         {/* Footer - 40px fixed */}
         <footer className="h-[40px] min-h-[40px] px-4 flex items-center justify-between border-t border-[var(--bt-border)] text-[12px] text-[var(--bt-fg-muted)]">
           <div className="flex items-center gap-2">
-            <span>{manifestVersion ? `v${manifestVersion}` : ''}</span>
-            {manifestVersion && <span className="text-[var(--bt-border)] select-none">&bull;</span>}
+            <button
+              onClick={() => openUpdatePage()}
+              title="View Release Notes"
+              className="hover:text-[var(--bt-fg)] hover:underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bt-accent)] rounded cursor-pointer"
+            >
+              {manifestVersion ? `v${manifestVersion}` : 'Updates'}
+            </button>
+            <span className="text-[var(--bt-border)] select-none">&bull;</span>
+            <button
+              onClick={() => openWelcomePage()}
+              title="Open Welcome Guide"
+              className="text-[11px] hover:text-[var(--bt-fg)] hover:underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bt-accent)] rounded cursor-pointer"
+            >
+              Guide
+            </button>
+            <span className="text-[var(--bt-border)] select-none">&bull;</span>
             <a
               href="https://github.com/andronasef/better-twitter-extension/blob/main/PRIVACY.md"
               target="_blank"
