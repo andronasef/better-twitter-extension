@@ -14,20 +14,19 @@ Every annoyance the author has with X is fixed by a toggle in one popup — and 
 
 ### Validated
 
-(None yet — ship to validate)
+- ✓ Ads and promoted tweets are continuously stripped from the timeline — Phase 1
+- ✓ Settings popup: icon-grid layout with footer, Radix/shadcn components, syncs to X's active theme — Phase 1
+- ✓ Clutter toggles: hide "What's Happening", "Who to Follow", and the "For You" tab — Phase 2
+- ✓ Theme engine: Dracula, Nord, Hacker/Matrix, plus a custom accent color picker — Phase 2
+- ✓ Minimal theme (hides vanity metrics, centers timeline) and Old Twitter layout — Phase 2
+- ✓ Bookmark capture into chrome.storage.local via layered strategies with fallback — Phase 3
+- ✓ Local bookmark folders/tags and search, injected onto x.com/bookmarks — Phase 3
+- ✓ Timeline resurfacing: re-inject a saved bookmark every N tweets with a "📌 Resurfaced from your Bookmarks" header — Phase 3
+- ✓ Twemoji reaction menu on hover/long-press of Like or Reply — Phase 4
+- ✓ Picking a reaction prefills the native reply composer with that emoji; the user sends it — Phase 4
 
 ### Active
 
-- [ ] Ads and promoted tweets are continuously stripped from the timeline
-- [ ] Clutter toggles: hide "What's Happening", "Who to Follow", and the "For You" tab
-- [ ] Theme engine: Dracula, Nord, Hacker/Matrix, plus a custom accent color picker
-- [ ] Minimal theme (hides vanity metrics, centers timeline) and Old Twitter layout
-- [ ] Twemoji reaction menu on hover/long-press of Like or Reply
-- [ ] Picking a reaction prefills the native reply composer with that emoji; the user sends it
-- [ ] Bookmark capture into chrome.storage.local via layered strategies with fallback
-- [ ] Local bookmark folders/tags and search, injected onto x.com/bookmarks
-- [ ] Timeline resurfacing: re-inject a saved bookmark every N tweets with a "📌 Resurfaced from your Bookmarks" header
-- [ ] Settings popup: icon-grid layout with footer, Radix/shadcn components, syncs to X's active theme (Light/Dim/Lights Out)
 - [ ] Chrome Web Store–compliant manifest, permissions, icons, and listing assets
 
 ### Out of Scope
@@ -60,13 +59,13 @@ Every annoyance the author has with X is fixed by a toggle in one popup — and 
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Reactions prefill the reply composer instead of posting | CWS policy requires user confirmation of sent content; X treats scripted posting as suspension-risk; also far more durable than driving X's posting internals | — Pending |
-| Bookmark capture uses multiple strategies with fallback | X breaks scrapers regularly; a single method is a guaranteed future outage | — Pending |
-| All remaining feature areas ship in one release | Fun project with no deadline; the value is the complete control panel, not an MVP | — Pending |
-| Media downloader cut from scope | Direct precedent: a near-identical X downloader was removed from the Chrome Web Store | — Pending |
-| Settings popup uses an icon-grid + footer layout | Matches the author's reference design and scales to many feature categories | — Pending |
-| Chrome Web Store as distribution target | Wants it installable by others, accepts the review constraints on permissions | — Pending |
-| Local-only storage, no backend | Nothing to host, nothing to breach, no privacy policy complexity | — Pending |
+| Reactions prefill the reply composer instead of posting | CWS policy requires user confirmation of sent content; X treats scripted posting as suspension-risk; also far more durable than driving X's posting internals | Validated (Phase 4) |
+| Bookmark capture uses multiple strategies with fallback | X breaks scrapers regularly; a single method is a guaranteed future outage | Validated (Phase 3) |
+| All remaining feature areas ship in one release | Fun project with no deadline; the value is the complete control panel, not an MVP | In Progress |
+| Media downloader cut from scope | Direct precedent: a near-identical X downloader was removed from the Chrome Web Store | Out of Scope |
+| Settings popup uses an icon-grid + footer layout | Matches the author's reference design and scales to many feature categories | Validated (Phase 1) |
+| Chrome Web Store as distribution target | Wants it installable by others, accepts the review constraints on permissions | Phase 5 Focus |
+| Local-only storage, no backend | Nothing to host, nothing to breach, no privacy policy complexity | Validated (Phases 1-4) |
 
 ## Evolution
 
@@ -86,4 +85,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-09-13 after initialization and research-driven scope revision*
+*Last updated: 2026-09-15 after Phase 04 completion*
