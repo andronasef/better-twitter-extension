@@ -13,6 +13,7 @@ export interface ReactionsSettings {
   enabled: boolean;
   style: ReactionStyle;
   slots: ReactionSlot[];
+  autoComment?: boolean;
 }
 
 export interface CustomEmojiCacheEntry {

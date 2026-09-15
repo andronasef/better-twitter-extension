@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import type { ReactionSlot, ReactionStyle, CustomEmojiCache } from './types';
 import { getTwemojiAssetUrl, getNotoAssetUrl } from './constants';
@@ -27,6 +27,14 @@ export function ReactionPalette({
   isClosing = false,
 }: ReactionPaletteProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => {
+      setMounted(true);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   // Viewport-aware positioning
   const paletteWidth = 300;
@@ -84,10 +92,15 @@ export function ReactionPalette({
         border: '1px solid var(--bt-border)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.28), 0 2px 8px rgba(0, 0, 0, 0.16)',
-        transform: isClosing ? 'scale(0.85) translateY(6px)' : 'scale(1) translateY(0)',
-        opacity: isClosing ? 0 : 1,
-        transition: 'transform 150ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 100ms ease-out',
+        transform: isClosing
+          ? 'scale(0.85) translateY(6px)'
+          : mounted
+          ? 'scale(1) translateY(0)'
+          : 'scale(0.82) translateY(8px)',
+        opacity: isClosing ? 0 : mounted ? 1 : 0,
+        transition: isClosing
+          ? 'transform 150ms ease-out, opacity 140ms ease-out'
+          : 'transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 180ms ease-out',
       }}
     >
       {slots.map((slot, index) => {

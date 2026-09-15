@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Search, X, AlertCircle } from 'lucide-react';
 import type { CatalogEmoji } from './types';
 import { fetchEmojiCatalog, searchEmojiCatalog } from './catalog';
@@ -21,6 +21,42 @@ export interface EmojiCatalogModalProps {
   onSelectEmoji: (emoji: CatalogEmoji) => void;
   targetSlotIndex: number;
   currentEmoji: string;
+}
+
+function CatalogEmojiItem({
+  emoji,
+  onSelect,
+}: {
+  emoji: CatalogEmoji;
+  onSelect: () => void;
+}) {
+  const [imgError, setImgError] = useState(false);
+  const imgUrl = `https://fonts.gstatic.com/s/e/notoemoji/latest/${emoji.codepoint}/512.webp`;
+
+  return (
+    <button
+      type="button"
+      role="button"
+      aria-label={`Select ${emoji.name} emoji`}
+      onClick={onSelect}
+      className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-[var(--bt-surface-hover)] active:scale-95 transition-all text-[22px] select-none cursor-pointer overflow-hidden p-1"
+      title={emoji.name}
+    >
+      {!imgError ? (
+        <img
+          src={imgUrl}
+          alt={emoji.emoji}
+          loading="lazy"
+          className="w-7 h-7 object-contain pointer-events-none"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <span style={{ fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif' }}>
+          {emoji.emoji}
+        </span>
+      )}
+    </button>
+  );
 }
 
 export function EmojiCatalogModal({
@@ -185,19 +221,14 @@ export function EmojiCatalogModal({
           ) : (
             <div className="grid grid-cols-6 gap-1.5 justify-items-center py-1">
               {filteredEmojis.map((emoji) => (
-                <button
+                <CatalogEmojiItem
                   key={emoji.codepoint}
-                  type="button"
-                  role="button"
-                  aria-label={`Select ${emoji.name} emoji`}
-                  onClick={() => {
+                  emoji={emoji}
+                  onSelect={() => {
                     onSelectEmoji(emoji);
                     onClose();
                   }}
-                  className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-[var(--bt-surface-hover)] active:scale-95 transition-all text-[22px] select-none cursor-pointer"
-                >
-                  {emoji.emoji}
-                </button>
+                />
               ))}
             </div>
           )}

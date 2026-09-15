@@ -29,18 +29,77 @@ export async function copyToClipboard(text: string): Promise<boolean> {
 }
 
 /**
+ * Helper to ensure we have the actual editable DOM node (e.g. contenteditable or role="textbox")
+ * even if the selector returned an outer wrapper container div.
+ */
+export function getEditableElement(el: HTMLElement | null): HTMLElement | null {
+  if (!el) return null;
+  if (el.getAttribute('contenteditable') === 'true' || el.getAttribute('role') === 'textbox') {
+    return el;
+  }
+  const child = el.querySelector<HTMLElement>(
+    '[contenteditable="true"], [role="textbox"][contenteditable="true"]'
+  );
+  if (child) return child;
+  return el;
+}
+
+/**
  * Asynchronously polls for the active reply composer element up to timeoutMs.
+ * Scoped strictly to modal dialogs, layers, and inline reply areas, avoiding the top timeline composer.
  */
 export async function waitForComposer(
   timeoutMs: number = COMPOSER_WAIT_TIMEOUT_MS
 ): Promise<HTMLElement | null> {
-  const existing = resolve('replyComposer') as HTMLElement | null;
+  const findReplyComposer = (): HTMLElement | null => {
+    // 1. Check if the currently focused element is in a modal / layer
+    const active = document.activeElement as HTMLElement | null;
+    if (
+      active &&
+      (active.getAttribute('contenteditable') === 'true' || active.getAttribute('role') === 'textbox') &&
+      active.closest('#layers, [role="dialog"], [aria-modal="true"], [data-testid="sheetDialog"], [data-testid="inline_reply"]')
+    ) {
+      return getEditableElement(active);
+    }
+
+    // 2. Check modal / layer containers (#layers, [role="dialog"], [aria-modal="true"], [data-testid="sheetDialog"])
+    const modalContainers = document.querySelectorAll<HTMLElement>(
+      '#layers [role="dialog"], #layers [aria-modal="true"], [role="dialog"], [aria-modal="true"], [data-testid="sheetDialog"], #layers'
+    );
+    for (const container of Array.from(modalContainers)) {
+      const candidate = container.querySelector<HTMLElement>(
+        '[data-testid="tweetTextarea_0"] [contenteditable="true"], [data-testid="tweetTextarea_0"][contenteditable="true"], [data-testid="tweetTextarea_0"], [data-testid^="tweetTextarea"], [role="textbox"][contenteditable="true"], [contenteditable="true"]'
+      );
+      if (candidate) {
+        return getEditableElement(candidate);
+      }
+    }
+
+    // 3. Check inline reply area on tweet permalinks
+    const inline = document.querySelector<HTMLElement>('[data-testid="inline_reply"]');
+    if (inline) {
+      const candidate = inline.querySelector<HTMLElement>(
+        '[data-testid="tweetTextarea_0"] [contenteditable="true"], [data-testid="tweetTextarea_0"][contenteditable="true"], [data-testid="tweetTextarea_0"], [role="textbox"][contenteditable="true"], [contenteditable="true"]'
+      );
+      if (candidate) {
+        return getEditableElement(candidate);
+      }
+    }
+
+    // 4. Fall back to resolve('replyComposer')
+    const resolved = resolve('replyComposer') as HTMLElement | null;
+    if (resolved) return getEditableElement(resolved);
+
+    return null;
+  };
+
+  const existing = findReplyComposer();
   if (existing) return existing;
 
   const startTime = Date.now();
   while (Date.now() - startTime < timeoutMs) {
-    await new Promise((resolveTimeout) => setTimeout(resolveTimeout, 20));
-    const candidate = resolve('replyComposer') as HTMLElement | null;
+    await new Promise((resolveTimeout) => setTimeout(resolveTimeout, 25));
+    const candidate = findReplyComposer();
     if (candidate) return candidate;
   }
 
@@ -53,12 +112,14 @@ export async function waitForComposer(
  * @param anchorElement - DOM element inside the tweet (e.g. the Like button)
  * @param emoji - The emoji string to prefill
  * @param onFallback - Optional callback invoked when replies are unavailable or composer fails
+ * @param autoComment - If true, automatically clicks the reply submit button once enabled
  * @returns boolean indicating whether composer prefill succeeded
  */
 export async function prefillReplyComposer(
   anchorElement: HTMLElement,
   emoji: string,
-  onFallback?: (emoji: string) => void
+  onFallback?: (emoji: string) => void,
+  autoComment = true
 ): Promise<boolean> {
   // Step 1: Target detection (D-05)
   if (!anchorElement) {
@@ -91,15 +152,19 @@ export async function prefillReplyComposer(
   replyButton.click();
 
   // Step 2: Asynchronously detect composer mount
-  const composer = await waitForComposer(COMPOSER_WAIT_TIMEOUT_MS);
-  if (!composer) {
+  const rawComposer = await waitForComposer(COMPOSER_WAIT_TIMEOUT_MS);
+  if (!rawComposer) {
     await copyToClipboard(emoji);
     onFallback?.(emoji);
     return false;
   }
 
-  // Step 3: Focus composer & collapse caret to end of existing text (D-07)
+  const composer = getEditableElement(rawComposer) || rawComposer;
+
+  // Step 3: Focus composer & allow micro-delay for DraftJS state synchronization (D-07)
   composer.focus();
+  await new Promise((r) => setTimeout(r, 60));
+
   try {
     const selection = window.getSelection();
     if (selection) {
@@ -141,13 +206,44 @@ export async function prefillReplyComposer(
       });
       composer.dispatchEvent(beforeInputFallback);
     }
+
+    if (!composer.textContent?.includes(emoji)) {
+      const textNode = document.createTextNode(textToInsert);
+      composer.appendChild(textNode);
+    }
+
     composer.dispatchEvent(new Event('input', { bubbles: true }));
+    composer.dispatchEvent(new Event('change', { bubbles: true }));
   }
 
-  // ANTI-ABUSE INVARIANT (REACT-04):
-  // The extension NEVER clicks, touches, or dispatches events to '[data-testid="tweetButton"]',
-  // '[data-testid="tweetButtonInline"]', or any network posting endpoint.
-  // 100% of sending control is left to the human user.
+  // Step 6: Auto-comment submission if enabled
+  if (autoComment) {
+    const modal =
+      composer.closest('#layers') ||
+      composer.closest('[role="dialog"]') ||
+      composer.closest('[aria-modal="true"]') ||
+      composer.closest('[data-testid="sheetDialog"]') ||
+      document.querySelector('#layers') ||
+      document.querySelector('[role="dialog"]') ||
+      composer.closest('[data-testid="inline_reply"]') ||
+      composer.closest('form') ||
+      composer.closest('article');
+
+    const startTime = Date.now();
+    while (Date.now() - startTime < 3000) {
+      const submitBtn = (
+        modal?.querySelector('[data-testid="tweetButton"], [data-testid="tweetButtonInline"]') ||
+        document.querySelector('#layers [data-testid="tweetButton"]') ||
+        document.querySelector('[role="dialog"] [data-testid="tweetButton"]')
+      ) as HTMLButtonElement | null;
+
+      if (submitBtn && submitBtn.getAttribute('aria-disabled') !== 'true' && !submitBtn.disabled) {
+        submitBtn.click();
+        break;
+      }
+      await new Promise((r) => setTimeout(r, 40));
+    }
+  }
 
   return true;
 }

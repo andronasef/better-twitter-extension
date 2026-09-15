@@ -5,7 +5,8 @@ export const HOVER_TRIGGER_DELAY_MS = 350;
 export const EXIT_GRACE_BUFFER_MS = 300;
 export const HOLD_TRIGGER_THRESHOLD_MS = 500;
 export const TOAST_AUTO_DISMISS_MS = 3000;
-export const COMPOSER_WAIT_TIMEOUT_MS = 1000;
+export const COMPOSER_WAIT_TIMEOUT_MS = 3500;
+export const DEFAULT_AUTO_COMMENT = true;
 
 export const DEFAULT_REACTION_SLOTS: ReactionSlot[] = [
   { id: 'like', emoji: '👍', label: 'Like', twemojiCodepoint: '1f44d', notoCodepoint: '1f44d' },

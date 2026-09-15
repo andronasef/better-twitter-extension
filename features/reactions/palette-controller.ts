@@ -166,13 +166,20 @@ export class PaletteController {
   }
 
   private findLikeButton(target: EventTarget | null): HTMLElement | null {
-    if (!target || !(target instanceof HTMLElement)) return null;
+    if (!target || !(target instanceof Element)) return null;
     return target.closest<HTMLElement>('[data-testid="like"], [data-testid="unlike"]');
   }
 
   private onPointerOver(e: PointerEvent): void {
     const likeBtn = this.findLikeButton(e.target);
     if (likeBtn) {
+      const related = e.relatedTarget as Node | null;
+      if (related && likeBtn.contains(related)) {
+        // Pointer moved from one child of this like button to another (e.g. SVG to count text)
+        // Maintain any active hoverTimer or open state without resetting!
+        return;
+      }
+
       if (this.activeLikeButton !== likeBtn) {
         this.clearHoverTimer();
         this.clearExitGraceTimer();
@@ -199,6 +206,13 @@ export class PaletteController {
   private onPointerOut(e: PointerEvent): void {
     const likeBtn = this.findLikeButton(e.target);
     if (likeBtn) {
+      const related = e.relatedTarget as Node | null;
+      if (related && likeBtn.contains(related)) {
+        // Pointer moved to another child within the same button (e.g. heart SVG to text count)
+        // Do NOT cancel the hover timer or start exit grace!
+        return;
+      }
+
       this.clearHoverTimer();
       if (this.isPaletteOpen && this.activeLikeButton === likeBtn) {
         this.startExitGraceTimer();
@@ -288,7 +302,7 @@ export class PaletteController {
       this.activeLikeButton = null;
       this.activeAnchorTweet = null;
       this.render();
-    }, 100);
+    }, 150);
   }
 
   private startVirtualizerCheck(): void {
@@ -309,9 +323,14 @@ export class PaletteController {
     this.closePalette(true);
 
     if (targetAnchor) {
-      void prefillReplyComposer(targetAnchor, slot.emoji, () => {
-        this.showToast();
-      });
+      void prefillReplyComposer(
+        targetAnchor,
+        slot.emoji,
+        () => {
+          this.showToast();
+        },
+        this.settings.autoComment ?? true
+      );
     }
   }
 

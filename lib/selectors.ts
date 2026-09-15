@@ -59,10 +59,19 @@ export const SELECTORS = {
 
   // Native reply composer textarea / contenteditable editor (REACT-03, D-06)
   replyComposer: [
+    '#layers [data-testid="tweetTextarea_0"]',
+    '#layers [role="textbox"][contenteditable="true"]',
+    '#layers [contenteditable="true"]',
     '[role="dialog"] [data-testid="tweetTextarea_0"]',
     '[role="dialog"] [role="textbox"][contenteditable="true"]',
-    '[data-testid="tweetTextarea_0"]',
-    '[role="textbox"][contenteditable="true"]',
+    '[role="dialog"] [contenteditable="true"]',
+    '[aria-modal="true"] [data-testid="tweetTextarea_0"]',
+    '[aria-modal="true"] [role="textbox"][contenteditable="true"]',
+    '[aria-modal="true"] [contenteditable="true"]',
+    '[data-testid="sheetDialog"] [data-testid="tweetTextarea_0"]',
+    '[data-testid="sheetDialog"] [contenteditable="true"]',
+    '[data-testid="inline_reply"] [data-testid="tweetTextarea_0"]',
+    '[data-testid="inline_reply"] [role="textbox"][contenteditable="true"]',
   ],
 
   // Tweet article element enclosing tweet content and action bar

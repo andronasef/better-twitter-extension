@@ -20,10 +20,11 @@ describe('Reactions Storage, Constants & Selectors (REACT-06, D-09, D-11, D-13, 
   });
 
   describe('Storage fallback values and mutations (D-09, D-11)', () => {
-    it('initializes reactionsSettingsItem with enabled: true, style: twemoji, and 6 default slots', async () => {
+    it('initializes reactionsSettingsItem with enabled: true, autoComment: true, style: twemoji, and 6 default slots', async () => {
       const settings = await reactionsSettingsItem.getValue();
       expect(settings).toBeDefined();
       expect(settings.enabled).toBe(true);
+      expect(settings.autoComment).toBe(true);
       expect(settings.style).toBe('twemoji');
       expect(settings.slots).toHaveLength(6);
       expect(settings.slots.map((s) => s.emoji)).toEqual(['👍', '❤️', '😂', '😮', '😢', '🔥']);
@@ -111,7 +112,7 @@ describe('Reactions Storage, Constants & Selectors (REACT-06, D-09, D-11, D-13, 
       expect(EXIT_GRACE_BUFFER_MS).toBe(300);
       expect(HOLD_TRIGGER_THRESHOLD_MS).toBe(500);
       expect(TOAST_AUTO_DISMISS_MS).toBe(3000);
-      expect(COMPOSER_WAIT_TIMEOUT_MS).toBe(1000);
+      expect(COMPOSER_WAIT_TIMEOUT_MS).toBe(3500);
     });
   });
 
@@ -198,7 +199,9 @@ describe('Reactions Storage, Constants & Selectors (REACT-06, D-09, D-11, D-13, 
 
       it('resolves inline composer on status permalink', () => {
         document.body.innerHTML = `
-          <div data-testid="tweetTextarea_0" id="inline-textarea" contenteditable="true"></div>
+          <div data-testid="inline_reply">
+            <div data-testid="tweetTextarea_0" id="inline-textarea" contenteditable="true"></div>
+          </div>
         `;
         const match = resolve('replyComposer');
         expect(match?.id).toBe('inline-textarea');
@@ -206,7 +209,9 @@ describe('Reactions Storage, Constants & Selectors (REACT-06, D-09, D-11, D-13, 
 
       it('resolves inline contenteditable textbox fallback', () => {
         document.body.innerHTML = `
-          <div role="textbox" contenteditable="true" id="inline-textbox"></div>
+          <div data-testid="inline_reply">
+            <div role="textbox" contenteditable="true" id="inline-textbox"></div>
+          </div>
         `;
         const match = resolve('replyComposer');
         expect(match?.id).toBe('inline-textbox');

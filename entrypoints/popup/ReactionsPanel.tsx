@@ -1,5 +1,6 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Check, AlertTriangle } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 import { reactionsSettingsItem, customEmojiCacheItem } from '@/lib/storage';
 import {
   DEFAULT_REACTION_SLOTS,
@@ -50,6 +51,12 @@ export function ReactionsPanel() {
 
   const handleStyleChange = async (style: ReactionStyle) => {
     const next: ReactionsSettings = { ...settings, style };
+    setSettings(next);
+    await reactionsSettingsItem.setValue(next);
+  };
+
+  const handleAutoCommentChange = async (checked: boolean) => {
+    const next: ReactionsSettings = { ...settings, autoComment: checked };
     setSettings(next);
     await reactionsSettingsItem.setValue(next);
   };
@@ -246,7 +253,29 @@ export function ReactionsPanel() {
         </div>
       </section>
 
-      {/* SECTION 2: PALETTE SLOTS (6) */}
+      {/* SECTION 2: BEHAVIOR */}
+      <section className="flex flex-col gap-2">
+        <h2 className="text-[11px] font-semibold uppercase tracking-wider text-[var(--bt-fg-muted)]">
+          BEHAVIOR
+        </h2>
+        <div className="rounded-xl border border-[var(--bt-border)] bg-[var(--bt-surface)] p-3 flex items-center justify-between">
+          <div className="flex flex-col pr-2">
+            <span className="text-[13px] font-medium text-[var(--bt-fg)] leading-tight">
+              Auto-send reply
+            </span>
+            <span className="text-[11px] text-[var(--bt-fg-muted)] mt-0.5 leading-normal">
+              Automatically post reply when a reaction is clicked
+            </span>
+          </div>
+          <Switch
+            id="reactions-auto-comment"
+            checked={settings.autoComment ?? true}
+            onCheckedChange={handleAutoCommentChange}
+          />
+        </div>
+      </section>
+
+      {/* SECTION 3: PALETTE SLOTS (6) */}
       <section className="flex flex-col gap-2">
         <h2 className="text-[11px] font-semibold uppercase tracking-wider text-[var(--bt-fg-muted)]">
           PALETTE SLOTS (6)

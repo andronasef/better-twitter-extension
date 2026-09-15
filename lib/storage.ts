@@ -143,6 +143,7 @@ export const reactionsSettingsItem = storage.defineItem<ReactionsSettings>('loca
     enabled: true,
     style: 'twemoji',
     slots: DEFAULT_REACTION_SLOTS,
+    autoComment: true,
   },
   version: 1,
 });

@@ -223,7 +223,30 @@
     };
 
     // Reply & Like interaction handlers
+    window.__replySubmitted = false;
+    document.addEventListener('input', function(e) {
+      var editor = e.target.closest('#mock-reply-modal [data-testid="tweetTextarea_0"]');
+      if (editor) {
+        var submitBtn = document.querySelector('#mock-reply-modal [data-testid="tweetButton"]');
+        if (submitBtn) {
+          if ((editor.innerText || editor.textContent || '').trim().length > 0) {
+            submitBtn.removeAttribute('aria-disabled');
+          } else {
+            submitBtn.setAttribute('aria-disabled', 'true');
+          }
+        }
+      }
+    });
+
     document.addEventListener('click', function(e) {
+      var replySubmitBtn = e.target.closest('#mock-reply-modal [data-testid="tweetButton"]');
+      if (replySubmitBtn && replySubmitBtn.getAttribute('aria-disabled') !== 'true') {
+        window.__replySubmitted = true;
+        var modal = document.getElementById('mock-reply-modal');
+        if (modal) modal.style.display = 'none';
+        return;
+      }
+
       var replyBtn = e.target.closest('[data-testid="reply"]');
       if (replyBtn) {
         var modal = document.getElementById('mock-reply-modal');

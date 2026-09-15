@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { PaletteController } from '@/features/reactions/palette-controller';
 import {
@@ -68,6 +68,26 @@ describe('Reactions Trigger & Interaction Engine (REACT-01, REACT-02, D-01, D-02
 
       expect(controller.isPaletteOpen).toBe(false);
     });
+
+    it('maintains hover timer when pointer transitions between child elements within like button', () => {
+      likeButton.innerHTML = '<svg id="heart-icon"><path d="M..." /></svg><span id="like-count">228</span>';
+      const heartIcon = likeButton.querySelector('#heart-icon') as HTMLElement;
+      const likeCount = likeButton.querySelector('#like-count') as HTMLElement;
+
+      // Pointer over heart icon
+      heartIcon.dispatchEvent(createPointerEvent('pointerover', { relatedTarget: null }));
+      vi.advanceTimersByTime(200);
+
+      // Move from heart icon to like count text (both inside likeButton)
+      heartIcon.dispatchEvent(createPointerEvent('pointerout', { relatedTarget: likeCount }));
+      likeCount.dispatchEvent(createPointerEvent('pointerover', { relatedTarget: heartIcon }));
+
+      // Complete the remaining 150ms of hover delay
+      vi.advanceTimersByTime(150);
+
+      expect(controller.isPaletteOpen).toBe(true);
+      expect(controller.activeLikeButton).toBe(likeButton);
+    });
   });
 
   describe('300ms Exit Grace Buffer (D-01)', () => {
@@ -94,7 +114,7 @@ describe('Reactions Trigger & Interaction Engine (REACT-01, REACT-02, D-01, D-02
       vi.advanceTimersByTime(EXIT_GRACE_BUFFER_MS);
 
       // Advance closing animation
-      vi.advanceTimersByTime(100);
+      vi.advanceTimersByTime(150);
       expect(controller.isPaletteOpen).toBe(false);
     });
 

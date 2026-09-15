@@ -151,7 +151,7 @@ describe('Composer Prefiller & Fallback Mechanism (REACT-03, REACT-04, D-05, D-0
     expect(capturedInput).toBe(true);
   });
 
-  it('5. Anti-abuse safety boundary: NEVER clicks or triggers tweetButton or tweetButtonInline (REACT-04)', async () => {
+  it('5. Auto-comment disabled: NEVER clicks or triggers tweetButton or tweetButtonInline when autoComment is false', async () => {
     container.innerHTML = `
       <article data-testid="tweet">
         <button data-testid="like">Like</button>
@@ -175,10 +175,36 @@ describe('Composer Prefiller & Fallback Mechanism (REACT-03, REACT-04, D-05, D-0
 
     vi.spyOn(document, 'execCommand').mockReturnValue(true);
 
-    await prefillReplyComposer(likeBtn, '😂');
+    await prefillReplyComposer(likeBtn, '😂', undefined, false);
 
     expect(postSpy).not.toHaveBeenCalled();
     expect(inlineSpy).not.toHaveBeenCalled();
+  });
+
+  it('5b. Auto-comment enabled: clicks enabled reply submit button in dialog (default autoComment = true)', async () => {
+    container.innerHTML = `
+      <article data-testid="tweet">
+        <button data-testid="like">Like</button>
+        <button data-testid="reply">Reply</button>
+      </article>
+      <div role="dialog">
+        <div data-testid="tweetTextarea_0" contenteditable="true"></div>
+        <button data-testid="tweetButton">Reply</button>
+      </div>
+    `;
+
+    const likeBtn = container.querySelector('[data-testid="like"]') as HTMLElement;
+    const tweetButton = container.querySelector('[data-testid="tweetButton"]') as HTMLButtonElement;
+
+    const postSpy = vi.fn();
+    tweetButton.addEventListener('click', postSpy);
+
+    vi.spyOn(document, 'execCommand').mockReturnValue(true);
+
+    const success = await prefillReplyComposer(likeBtn, '😂');
+
+    expect(success).toBe(true);
+    expect(postSpy).toHaveBeenCalledTimes(1);
   });
 
   it('6. Fallback clipboard copy and toast callback when composer resolution fails (D-08)', async () => {

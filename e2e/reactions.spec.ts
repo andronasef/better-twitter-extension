@@ -1,4 +1,4 @@
-﻿import { test, expect, chromium } from '@playwright/test';
+import { test, expect, chromium } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 
@@ -152,7 +152,7 @@ test.describe('Twemoji Reactions: palette, triggers, prefill, and customization 
     await page.close();
   });
 
-  test('Test 4: Emoji selection and composer prefill (REACT-03, REACT-04, D-05, D-06, D-07)', async () => {
+  test('Test 4: Emoji selection, composer prefill, and auto-comment submission (REACT-03, REACT-04, D-05, D-06, D-07)', async () => {
     const page = await context.newPage();
     await page.goto('https://x.com/home');
 
@@ -174,17 +174,10 @@ test.describe('Twemoji Reactions: palette, triggers, prefill, and customization 
     // Palette immediately closes
     await expect(toolbar).not.toBeVisible();
 
-    // DraftJS reply modal opened
-    const composer = page.locator('[data-testid="tweetTextarea_0"]');
-    await expect(composer).toBeVisible({ timeout: 3000 });
-
-    // Textarea contains emoji with trailing space
-    const content = await composer.innerText();
-    expect(content).toContain('👍');
-
-    // Anti-abuse: ensure tweetButton was NOT programmatically clicked (modal remains open)
-    const modal = page.locator('#mock-reply-modal');
-    await expect(modal).toBeVisible();
+    // DraftJS reply modal opened and auto-comment submitted (D-05, D-06, default autoComment = true)
+    await expect.poll(async () => {
+      return await page.evaluate(() => (window as any).__replySubmitted === true);
+    }, { timeout: 4000 }).toBe(true);
 
     await page.close();
   });
@@ -214,7 +207,7 @@ test.describe('Twemoji Reactions: palette, triggers, prefill, and customization 
     await page.close();
   });
 
-  test('Test 6: Popup settings and visual style switching (REACT-05, REACT-06, D-10, D-11, D-12)', async () => {
+  test('Test 6: Popup settings, auto-comment toggle, and visual style switching (REACT-05, REACT-06, D-10, D-11, D-12)', async () => {
     const popupPage = await context.newPage();
     await popupPage.goto(`chrome-extension://${extensionId}/popup.html`);
 
@@ -225,7 +218,15 @@ test.describe('Twemoji Reactions: palette, triggers, prefill, and customization 
 
     // Verify Reactions panel rendered
     await expect(popupPage.locator('text=EMOJI VISUAL STYLE')).toBeVisible();
+    await expect(popupPage.locator('text=BEHAVIOR')).toBeVisible();
     await expect(popupPage.locator('text=PALETTE SLOTS (6)')).toBeVisible();
+
+    // Verify auto-comment switch is on by default and toggle it off
+    const autoCommentSwitch = popupPage.locator('#reactions-auto-comment');
+    await expect(autoCommentSwitch).toBeVisible();
+    await expect(autoCommentSwitch).toHaveAttribute('data-state', 'checked');
+    await autoCommentSwitch.click();
+    await expect(autoCommentSwitch).toHaveAttribute('data-state', 'unchecked');
 
     // Click "Normal" visual style card
     const normalCard = popupPage.locator('button', { hasText: 'Normal' });
@@ -234,7 +235,9 @@ test.describe('Twemoji Reactions: palette, triggers, prefill, and customization 
 
     await popupPage.close();
 
-    // Go back to timeline and test that Normal style is active (renders Unicode text span instead of img)
+    // Go back to timeline and test that:
+    // 1. Normal style is active (renders Unicode text span instead of img)
+    // 2. With autoComment=false, clicking emoji prefills composer but DOES NOT auto-submit
     const xPage = await context.newPage();
     await xPage.goto('https://x.com/home');
 
@@ -251,6 +254,19 @@ test.describe('Twemoji Reactions: palette, triggers, prefill, and customization 
     const firstSlotSpan = toolbar.locator('button[role="button"]').first().locator('span');
     await expect(firstSlotSpan).toBeVisible();
     await expect(firstSlotSpan).toHaveText('👍');
+
+    // Click slot and verify composer prefills without auto-submitting
+    await toolbar.locator('button[role="button"]').first().click();
+
+    const composer = xPage.locator('[data-testid="tweetTextarea_0"]');
+    await expect(composer).toBeVisible({ timeout: 3000 });
+    await expect.poll(async () => composer.innerText(), { timeout: 3000 }).toContain('👍');
+
+    // Modal remains open because autoComment is disabled
+    const modal = xPage.locator('#mock-reply-modal');
+    await expect(modal).toBeVisible();
+    const wasSubmitted = await xPage.evaluate(() => (window as any).__replySubmitted === true);
+    expect(wasSubmitted).toBe(false);
 
     await xPage.close();
   });
