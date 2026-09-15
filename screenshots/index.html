@@ -1,0 +1,1263 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Better Twitter — CWS Screenshot Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-body: #07090e;
+        --bg-panel: #0e121a;
+        --bg-card: #151a24;
+        --bg-input: #0a0d14;
+        --border-subtle: #222938;
+        --border-focus: #1d9bf0;
+        --accent: #1d9bf0;
+        --accent-glow: rgba(29, 155, 240, 0.35);
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --text-muted: #64748b;
+        --font:
+          "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: var(--font);
+        background: var(--bg-body);
+        color: var(--text-primary);
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 440px;
+        min-width: 440px;
+        background: var(--bg-panel);
+        border-right: 1px solid var(--border-subtle);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        z-index: 10;
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+      }
+
+      .sidebar-header {
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--border-subtle);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: linear-gradient(
+          180deg,
+          rgba(29, 155, 240, 0.08) 0%,
+          transparent 100%
+        );
+      }
+
+      .logo-icon {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #1d9bf0 0%, #0c7abf 100%);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 14px var(--accent-glow);
+        font-weight: 800;
+        font-size: 16px;
+        color: #ffffff;
+      }
+
+      .sidebar-header-text h1 {
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: -0.3px;
+      }
+
+      .sidebar-header-text p {
+        font-size: 12px;
+        color: var(--text-secondary);
+      }
+
+      .controls-scroll {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+      }
+
+      .controls-scroll::-webkit-scrollbar {
+        width: 6px;
+      }
+      .controls-scroll::-webkit-scrollbar-thumb {
+        background: var(--border-subtle);
+        border-radius: 3px;
+      }
+
+      .section-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+
+      /* Screenshot Selector Grid */
+      .screenshot-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .screenshot-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: 10px;
+        padding: 10px;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        text-align: left;
+      }
+
+      .screenshot-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+
+      .screenshot-card.active {
+        background: rgba(29, 155, 240, 0.12);
+        border-color: var(--accent);
+        box-shadow:
+          0 0 0 1px var(--accent),
+          0 4px 12px var(--accent-glow);
+      }
+
+      .screenshot-card-thumb {
+        width: 100%;
+        height: 60px;
+        border-radius: 6px;
+        background: #000000;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .screenshot-card-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top;
+      }
+
+      .screenshot-card-name {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .screenshot-card-desc {
+        font-size: 10px;
+        color: var(--text-muted);
+      }
+
+      /* Dimension Presets */
+      .preset-buttons {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+
+      .preset-btn {
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-secondary);
+        padding: 10px 8px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+      }
+
+      .preset-btn:hover {
+        border-color: var(--accent);
+        color: var(--text-primary);
+      }
+
+      .preset-btn.active {
+        background: rgba(29, 155, 240, 0.15);
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .preset-btn span.dim {
+        font-size: 10px;
+        color: var(--text-muted);
+        font-weight: 400;
+      }
+
+      /* Inputs */
+      input[type="text"],
+      textarea,
+      select {
+        width: 100%;
+        background: var(--bg-input);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-primary);
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-family: inherit;
+        outline: none;
+        transition:
+          border-color 0.15s ease,
+          box-shadow 0.15s ease;
+      }
+
+      input[type="text"]:focus,
+      textarea:focus,
+      select:focus {
+        border-color: var(--border-focus);
+        box-shadow: 0 0 0 2px var(--accent-glow);
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 60px;
+        line-height: 1.4;
+      }
+
+      .control-row {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      /* Sliders */
+      .slider-item {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin-bottom: 10px;
+      }
+
+      .slider-header {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+
+      .slider-header span.val {
+        color: var(--accent);
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+      }
+
+      input[type="range"] {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 6px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-subtle);
+        border-radius: 3px;
+        outline: none;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--accent);
+        cursor: pointer;
+        box-shadow: 0 2px 8px var(--accent-glow);
+        transition: transform 0.1s ease;
+      }
+
+      input[type="range"]::-webkit-slider-thumb:hover {
+        transform: scale(1.15);
+      }
+
+      /* Checkbox & Switch */
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 0;
+      }
+
+      .toggle-row label {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        cursor: pointer;
+      }
+
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 22px;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .switch-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--bg-input);
+        border: 1px solid var(--border-subtle);
+        transition: 0.2s;
+        border-radius: 22px;
+      }
+
+      .switch-slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 2px;
+        bottom: 2px;
+        background-color: var(--text-muted);
+        transition: 0.2s;
+        border-radius: 50%;
+      }
+
+      .switch input:checked + .switch-slider {
+        background-color: rgba(29, 155, 240, 0.25);
+        border-color: var(--accent);
+      }
+
+      .switch input:checked + .switch-slider:before {
+        transform: translateX(18px);
+        background-color: var(--accent);
+      }
+
+      /* Sidebar Footer Actions */
+      .sidebar-footer {
+        padding: 16px 20px;
+        border-top: 1px solid var(--border-subtle);
+        background: var(--bg-panel);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #1d9bf0 0%, #1583cd 100%);
+        color: #ffffff;
+        border: none;
+        padding: 13px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 4px 16px var(--accent-glow);
+      }
+
+      .btn-primary:hover {
+        opacity: 0.92;
+        transform: translateY(-1px);
+      }
+
+      .btn-secondary {
+        background: var(--bg-card);
+        color: var(--text-primary);
+        border: 1px solid var(--border-subtle);
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+
+      .btn-secondary:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      /* Main Stage / Canvas Viewport */
+      .stage {
+        flex: 1;
+        background: radial-gradient(circle at center, #10141e 0%, #05070a 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .canvas-viewport-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        max-width: 100%;
+        max-height: 85vh;
+        box-shadow:
+          0 25px 70px rgba(0, 0, 0, 0.9),
+          0 0 0 1px rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      canvas {
+        display: block;
+        max-width: 100%;
+        max-height: 85vh;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+      }
+
+      .meta-bar {
+        position: absolute;
+        bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(14, 18, 26, 0.85);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--border-subtle);
+        padding: 6px 16px;
+        border-radius: 30px;
+        font-size: 12px;
+        color: var(--text-secondary);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      }
+
+      .status-pill {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #10b981;
+        box-shadow: 0 0 8px #10b981;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Left Panel -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">BT</div>
+        <div class="sidebar-header-text">
+          <h1>CWS Screenshot Studio</h1>
+          <p>Direct Asset Studio for Better Twitter</p>
+        </div>
+      </div>
+
+      <div class="controls-scroll">
+        <!-- Direct Screenshots Selection -->
+        <div>
+          <div class="section-label">1. Select Feature Screenshot</div>
+          <div class="screenshot-grid" id="screenshot-grid">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Canvas Preset Selection -->
+        <div>
+          <div class="section-label">2. Canvas Dimension Preset</div>
+          <div class="preset-buttons">
+            <button class="preset-btn active" data-w="1280" data-h="800">
+              1280 × 800
+              <span class="dim">Store 16:10</span>
+            </button>
+            <button class="preset-btn" data-w="440" data-h="280">
+              440 × 280
+              <span class="dim">Small Tile</span>
+            </button>
+            <button class="preset-btn" data-w="1400" data-h="560">
+              1400 × 560
+              <span class="dim">Marquee Tile</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Copy & Typography -->
+        <div>
+          <div class="section-label">3. Text Content & Header</div>
+          <div class="control-row" style="margin-bottom: 10px">
+            <label style="font-size: 11px; color: var(--text-secondary)"
+              >Category Badge</label
+            >
+            <input type="text" id="badge-input" value="✦ DISTRACTION FREE" />
+          </div>
+          <div class="control-row" style="margin-bottom: 10px">
+            <label style="font-size: 11px; color: var(--text-secondary)"
+              >Headline</label
+            >
+            <input
+              type="text"
+              id="headline-input"
+              value="Focus on What Matters"
+            />
+          </div>
+          <div class="control-row">
+            <label style="font-size: 11px; color: var(--text-secondary)"
+              >Subtext</label
+            >
+            <textarea id="subtext-input">
+Hide ads, trends, and vanity numbers to enjoy a peaceful, quiet feed.</textarea>
+          </div>
+        </div>
+
+        <!-- Background Aesthetics -->
+        <div>
+          <div class="section-label">4. Background Atmosphere</div>
+          <div class="control-row" style="margin-bottom: 10px">
+            <select id="theme-select">
+              <option value="x-dark">
+                X Lights Out (Electric Blue & Midnight)
+              </option>
+              <option value="dracula">
+                Dracula Night (Purple Aurora & Slate)
+              </option>
+              <option value="nord">Nord Polar (Arctic Cyan & Charcoal)</option>
+              <option value="matrix">
+                Hacker Matrix (Cyber Emerald & OLED Black)
+              </option>
+              <option value="sunset">
+                Sunset Glow (Amber Flame & Deep Bronze)
+              </option>
+            </select>
+          </div>
+
+          <div class="toggle-row">
+            <label for="decor-toggle">Ambient Light Glow & Dots</label>
+            <label class="switch">
+              <input type="checkbox" id="decor-toggle" checked />
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Mockup Window Options -->
+        <div>
+          <div class="section-label">5. Mockup Frame & Positioning</div>
+
+          <div class="toggle-row">
+            <label for="window-chrome-toggle">macOS Window Title Bar</label>
+            <label class="switch">
+              <input type="checkbox" id="window-chrome-toggle" checked />
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+
+          <div class="slider-item" style="margin-top: 10px">
+            <div class="slider-header">
+              <span>Image Scale</span>
+              <span class="val" id="scale-val">84%</span>
+            </div>
+            <input
+              type="range"
+              id="scale-slider"
+              min="40"
+              max="130"
+              value="84"
+            />
+          </div>
+
+          <div class="slider-item">
+            <div class="slider-header">
+              <span>Vertical Position (Y)</span>
+              <span class="val" id="offsetY-val">35px</span>
+            </div>
+            <input
+              type="range"
+              id="offsetY-slider"
+              min="-100"
+              max="150"
+              value="35"
+            />
+          </div>
+
+          <div class="slider-item">
+            <div class="slider-header">
+              <span>Corner Radius</span>
+              <span class="val" id="radius-val">16px</span>
+            </div>
+            <input
+              type="range"
+              id="radius-slider"
+              min="4"
+              max="32"
+              value="16"
+            />
+          </div>
+
+          <div class="slider-item">
+            <div class="slider-header">
+              <span>Shadow Depth</span>
+              <span class="val" id="shadow-val">50px</span>
+            </div>
+            <input
+              type="range"
+              id="shadow-slider"
+              min="10"
+              max="90"
+              value="50"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="sidebar-footer">
+        <button class="btn-primary" id="export-single-btn">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Export Current PNG
+        </button>
+        <button class="btn-secondary" id="export-batch-btn">
+          ⚡ Batch Export All 4 Screenshots (1280×800)
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Viewport -->
+    <main class="stage">
+      <div class="canvas-viewport-wrapper">
+        <canvas id="studio-canvas" width="1280" height="800"></canvas>
+      </div>
+      <div class="meta-bar">
+        <span class="status-pill"></span>
+        <span id="canvas-dim-indicator">1280 × 800 (16:10)</span>
+        <span>•</span>
+        <span id="active-feature-indicator">Clean Timeline</span>
+      </div>
+    </main>
+
+    <script>
+      // The 4 real extension screenshots available directly in this folder
+      const SCREENSHOTS = [
+        {
+          id: "clean",
+          name: "Clean Timeline",
+          badge: "✦ DISTRACTION FREE",
+          headline: "Focus on What Matters",
+          subtext:
+            "Hide ads, trends, and vanity numbers to enjoy a peaceful, quiet feed.",
+          src: "./clean look.jpg",
+          theme: "x-dark",
+          scale: 84,
+          offsetY: 45,
+        },
+        {
+          id: "bookmarks-manager",
+          name: "Bookmark Hub",
+          badge: "✦ BOOKMARKS ORGANIZER",
+          headline: "Find Any Saved Tweet Fast",
+          subtext:
+            "Organize your bookmarks into custom folders and search them instantly.",
+          src: "./bookmark-manager.jpg",
+          theme: "x-dark",
+          scale: 84,
+          offsetY: 45,
+        },
+        {
+          id: "bookmarks-timeline",
+          name: "Feed Resurfacing",
+          badge: "✦ TIMELINE RESURFACING",
+          headline: "Never Forget What You Save",
+          subtext:
+            "Brings your favorite saved tweets back into your feed so you actually read them.",
+          src: "./bookmarks-timeline.jpg",
+          theme: "x-dark",
+          scale: 84,
+          offsetY: 45,
+        },
+        {
+          id: "reactions",
+          name: "Emoji Reactions",
+          badge: "✦ EMOJI REACTIONS",
+          headline: "React With Any Emoji",
+          subtext:
+            "Long-press the Like button to reply with your favorite emoji in one click.",
+          src: "./reactions.jpg",
+          theme: "x-dark",
+          scale: 84,
+          offsetY: 45,
+        },
+      ];
+
+      // Theme definitions
+      const THEMES = {
+        "x-dark": {
+          bgTop: "#070b10",
+          bgBottom: "#04070a",
+          glowColor: "rgba(29, 155, 240, 0.22)",
+          accent: "#1d9bf0",
+          accentBorder: "rgba(29, 155, 240, 0.4)",
+          badgeBg: "rgba(29, 155, 240, 0.12)",
+        },
+        dracula: {
+          bgTop: "#171822",
+          bgBottom: "#0d0e14",
+          glowColor: "rgba(189, 147, 249, 0.22)",
+          accent: "#bd93f9",
+          accentBorder: "rgba(189, 147, 249, 0.4)",
+          badgeBg: "rgba(189, 147, 249, 0.12)",
+        },
+        nord: {
+          bgTop: "#1d232e",
+          bgBottom: "#0f131a",
+          glowColor: "rgba(136, 192, 208, 0.20)",
+          accent: "#88c0d0",
+          accentBorder: "rgba(136, 192, 208, 0.4)",
+          badgeBg: "rgba(136, 192, 208, 0.12)",
+        },
+        matrix: {
+          bgTop: "#040e06",
+          bgBottom: "#000000",
+          glowColor: "rgba(0, 255, 102, 0.18)",
+          accent: "#00ff66",
+          accentBorder: "rgba(0, 255, 102, 0.4)",
+          badgeBg: "rgba(0, 255, 102, 0.12)",
+        },
+        sunset: {
+          bgTop: "#160e0a",
+          bgBottom: "#0a0604",
+          glowColor: "rgba(245, 158, 11, 0.20)",
+          accent: "#f59e0b",
+          accentBorder: "rgba(245, 158, 11, 0.4)",
+          badgeBg: "rgba(245, 158, 11, 0.12)",
+        },
+      };
+
+      const canvas = document.getElementById("studio-canvas");
+      const ctx = canvas.getContext("2d");
+
+      // State
+      let activeIndex = 0;
+      let canvasW = 1280;
+      let canvasH = 800;
+      let loadedImages = {};
+
+      let badge = SCREENSHOTS[0].badge;
+      let headline = SCREENSHOTS[0].headline;
+      let subtext = SCREENSHOTS[0].subtext;
+      let currentTheme = SCREENSHOTS[0].theme;
+      let scale = SCREENSHOTS[0].scale;
+      let offsetY = SCREENSHOTS[0].offsetY;
+      let cornerRadius = 16;
+      let shadowDepth = 50;
+      let showChrome = true;
+      let showDecor = true;
+
+      // Preload all 4 screenshots
+      function preloadScreenshots() {
+        SCREENSHOTS.forEach((item, index) => {
+          const img = new Image();
+          img.src = item.src;
+          img.onload = () => {
+            loadedImages[item.id] = img;
+            if (index === activeIndex) {
+              render();
+            }
+          };
+          img.onerror = () => {
+            console.warn(
+              `Could not load ${item.src} directly. Falling back to canvas preview.`,
+            );
+          };
+        });
+      }
+
+      // Populate Sidebar Thumbnail Grid
+      function buildThumbnailGrid() {
+        const grid = document.getElementById("screenshot-grid");
+        grid.innerHTML = "";
+        SCREENSHOTS.forEach((item, index) => {
+          const card = document.createElement("div");
+          card.className = `screenshot-card ${index === activeIndex ? "active" : ""}`;
+          card.innerHTML = `
+            <div class="screenshot-card-thumb">
+              <img src="${item.src}" alt="${item.name}" onerror="this.style.display='none'">
+            </div>
+            <div class="screenshot-card-name">${item.name}</div>
+            <div class="screenshot-card-desc">${item.src.replace("./", "")}</div>
+          `;
+          card.onclick = () => selectScreenshot(index);
+          grid.appendChild(card);
+        });
+      }
+
+      function selectScreenshot(index) {
+        activeIndex = index;
+        const item = SCREENSHOTS[index];
+
+        badge = item.badge;
+        headline = item.headline;
+        subtext = item.subtext;
+        currentTheme = item.theme;
+        scale = item.scale;
+        offsetY = item.offsetY;
+
+        // Update inputs
+        document.getElementById("badge-input").value = badge;
+        document.getElementById("headline-input").value = headline;
+        document.getElementById("subtext-input").value = subtext;
+        document.getElementById("theme-select").value = currentTheme;
+        document.getElementById("scale-slider").value = scale;
+        document.getElementById("scale-val").textContent = `${scale}%`;
+        document.getElementById("offsetY-slider").value = offsetY;
+        document.getElementById("offsetY-val").textContent = `${offsetY}px`;
+        document.getElementById("active-feature-indicator").textContent =
+          item.name;
+
+        // Update active class on cards
+        document.querySelectorAll(".screenshot-card").forEach((card, i) => {
+          card.classList.toggle("active", i === index);
+        });
+
+        render();
+      }
+
+      function roundRect(ctx, x, y, width, height, radius) {
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + width - radius, y);
+        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+        ctx.lineTo(x + width, y + height - radius);
+        ctx.quadraticCurveTo(
+          x + width,
+          y + height,
+          x + width - radius,
+          y + height,
+        );
+        ctx.lineTo(x + radius, y + height);
+        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+      }
+
+      function render() {
+        canvas.width = canvasW;
+        canvas.height = canvasH;
+
+        const theme = THEMES[currentTheme] || THEMES["x-dark"];
+
+        // 1. Background Gradient
+        const bgGrad = ctx.createLinearGradient(0, 0, 0, canvasH);
+        bgGrad.addColorStop(0, theme.bgTop);
+        bgGrad.addColorStop(1, theme.bgBottom);
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, canvasW, canvasH);
+
+        // 2. Ambient Atmosphere Glow & Texture
+        if (showDecor) {
+          const glow = ctx.createRadialGradient(
+            canvasW / 2,
+            canvasH * 0.7,
+            50,
+            canvasW / 2,
+            canvasH * 0.7,
+            canvasW * 0.65,
+          );
+          glow.addColorStop(0, theme.glowColor);
+          glow.addColorStop(1, "transparent");
+          ctx.fillStyle = glow;
+          ctx.fillRect(0, 0, canvasW, canvasH);
+
+          // Subtle dot grid matrix
+          ctx.fillStyle = "rgba(255, 255, 255, 0.02)";
+          const dotSpacing = Math.round(canvasW / 45);
+          for (let x = 0; x < canvasW; x += dotSpacing) {
+            for (let y = 0; y < canvasH; y += dotSpacing) {
+              ctx.beginPath();
+              ctx.arc(x, y, 1, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+        }
+
+        // 3. Text Header Layout (Spacious, non-overlapping hierarchy)
+        ctx.textAlign = "center";
+        let isSmall = canvasH <= 300;
+        let isMarquee = canvasW >= 1350 && canvasH <= 650;
+
+        let badgeFontSize = isSmall ? 10 : 12;
+        let headlineFontSize = isSmall ? 20 : isMarquee ? 44 : 44;
+        let subtextFontSize = isSmall ? 11 : isMarquee ? 18 : 18;
+
+        let currentY = isSmall ? 16 : isMarquee ? 32 : 46;
+
+        // Badge Pill
+        if (badge) {
+          ctx.font = `700 ${badgeFontSize}px "Plus Jakarta Sans", sans-serif`;
+          const badgeWidth = ctx.measureText(badge).width + (isSmall ? 18 : 28);
+          const badgeHeight = Math.round(badgeFontSize * 2.2);
+          const badgeX = (canvasW - badgeWidth) / 2;
+          const badgeY = currentY;
+
+          // Badge Background
+          roundRect(
+            ctx,
+            badgeX,
+            badgeY,
+            badgeWidth,
+            badgeHeight,
+            badgeHeight / 2,
+          );
+          ctx.fillStyle = theme.badgeBg;
+          ctx.fill();
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = theme.accentBorder;
+          ctx.stroke();
+
+          // Badge Text (vertically centered in pill)
+          ctx.fillStyle = theme.accent;
+          ctx.textBaseline = "middle";
+          ctx.fillText(badge, canvasW / 2, badgeY + badgeHeight / 2 + 0.5);
+          ctx.textBaseline = "alphabetic";
+
+          currentY = badgeY + badgeHeight + (isSmall ? 10 : 20);
+        }
+
+        // Headline
+        ctx.font = `800 ${headlineFontSize}px "Plus Jakarta Sans", sans-serif`;
+        ctx.fillStyle = "#ffffff";
+        ctx.shadowColor = "rgba(0, 0, 0, 0.6)";
+        ctx.shadowBlur = 12;
+        ctx.shadowOffsetY = 4;
+        const headlineY = currentY + headlineFontSize * 0.85;
+        ctx.fillText(headline, canvasW / 2, headlineY);
+
+        // Subtext
+        currentY = headlineY + (isSmall ? 8 : 14);
+        ctx.font = `500 ${subtextFontSize}px "Plus Jakarta Sans", sans-serif`;
+        ctx.fillStyle = "#94a3b8";
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
+        const subtextY = currentY + subtextFontSize * 0.85;
+        ctx.fillText(subtext, canvasW / 2, subtextY);
+
+        // 4. Device Mockup Frame
+        const activeImg = loadedImages[SCREENSHOTS[activeIndex].id];
+        if (activeImg) {
+          const imgRatio = activeImg.width / activeImg.height;
+          const availableHeight = canvasH * (scale / 100);
+          let targetW = availableHeight * imgRatio;
+          let targetH = availableHeight;
+
+          // Max constraints
+          const maxAllowedW = canvasW * 0.92;
+          if (targetW > maxAllowedW) {
+            targetW = maxAllowedW;
+            targetH = targetW / imgRatio;
+          }
+
+          const chromeHeight = showChrome ? (isSmall ? 18 : 28) : 0;
+          const totalMockupH = targetH + chromeHeight;
+          const posX = (canvasW - targetW) / 2;
+          const posY = canvasH - totalMockupH + offsetY * (canvasH / 800);
+
+          const r = cornerRadius * (canvasH / 800);
+
+          ctx.save();
+
+          // Layer 1: Ambient Backdrop Glow
+          ctx.shadowColor = theme.glowColor;
+          ctx.shadowBlur = shadowDepth * 1.5;
+          ctx.shadowOffsetY = shadowDepth * 0.4;
+          roundRect(ctx, posX, posY, targetW, totalMockupH, r);
+          ctx.fillStyle = "rgba(0,0,0,0.5)";
+          ctx.fill();
+
+          // Layer 2: Deep Drop Shadow
+          ctx.shadowColor = "rgba(0, 0, 0, 0.85)";
+          ctx.shadowBlur = shadowDepth;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = shadowDepth * 0.35;
+          roundRect(ctx, posX, posY, targetW, totalMockupH, r);
+          ctx.fillStyle = "#0c1017";
+          ctx.fill();
+
+          // Clip for content
+          ctx.save();
+          roundRect(ctx, posX, posY, targetW, totalMockupH, r);
+          ctx.clip();
+
+          // Draw macOS Chrome Bar
+          if (showChrome) {
+            ctx.fillStyle = "#161b22";
+            ctx.fillRect(posX, posY, targetW, chromeHeight);
+
+            // Traffic light dots
+            const dotY = posY + chromeHeight / 2;
+            const dotRadius = isSmall ? 3 : 5;
+            const startDotX = posX + (isSmall ? 12 : 20);
+            const dotSpacing = isSmall ? 8 : 14;
+
+            // Red
+            ctx.beginPath();
+            ctx.arc(startDotX, dotY, dotRadius, 0, Math.PI * 2);
+            ctx.fillStyle = "#ff5f56";
+            ctx.fill();
+
+            // Yellow
+            ctx.beginPath();
+            ctx.arc(startDotX + dotSpacing, dotY, dotRadius, 0, Math.PI * 2);
+            ctx.fillStyle = "#ffbd2e";
+            ctx.fill();
+
+            // Green
+            ctx.beginPath();
+            ctx.arc(
+              startDotX + dotSpacing * 2,
+              dotY,
+              dotRadius,
+              0,
+              Math.PI * 2,
+            );
+            ctx.fillStyle = "#27c93f";
+            ctx.fill();
+
+            // Fake URL Pill
+            const pillW = Math.min(300, targetW * 0.4);
+            const pillH = chromeHeight - (isSmall ? 6 : 10);
+            const pillX = posX + (targetW - pillW) / 2;
+            const pillY = posY + (chromeHeight - pillH) / 2;
+            roundRect(ctx, pillX, pillY, pillW, pillH, pillH / 2);
+            ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+            ctx.fill();
+
+            ctx.font = `600 ${isSmall ? 8 : 10}px "Plus Jakarta Sans", sans-serif`;
+            ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+            ctx.textAlign = "center";
+            ctx.fillText("x.com", pillX + pillW / 2, pillY + pillH * 0.7);
+          }
+
+          // Draw Screenshot Image
+          ctx.drawImage(activeImg, posX, posY + chromeHeight, targetW, targetH);
+          ctx.restore();
+
+          // Bezel Inner Border Highlight
+          ctx.lineWidth = 1.5;
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+          roundRect(ctx, posX, posY, targetW, totalMockupH, r);
+          ctx.stroke();
+
+          ctx.restore();
+        }
+
+        document.getElementById("canvas-dim-indicator").textContent =
+          `${canvasW} × ${canvasH} (${(canvasW / canvasH).toFixed(2)}:1)`;
+      }
+
+      // Export helper
+      function exportCanvasAsPNG(filename) {
+        return new Promise((resolve) => {
+          canvas.toBlob((blob) => {
+            if (!blob) return resolve();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => {
+              URL.revokeObjectURL(url);
+              resolve();
+            }, 100);
+          }, "image/png");
+        });
+      }
+
+      // Event Listeners
+      document.getElementById("badge-input").addEventListener("input", (e) => {
+        badge = e.target.value;
+        render();
+      });
+
+      document
+        .getElementById("headline-input")
+        .addEventListener("input", (e) => {
+          headline = e.target.value;
+          render();
+        });
+
+      document
+        .getElementById("subtext-input")
+        .addEventListener("input", (e) => {
+          subtext = e.target.value;
+          render();
+        });
+
+      document
+        .getElementById("theme-select")
+        .addEventListener("change", (e) => {
+          currentTheme = e.target.value;
+          render();
+        });
+
+      document
+        .getElementById("decor-toggle")
+        .addEventListener("change", (e) => {
+          showDecor = e.target.checked;
+          render();
+        });
+
+      document
+        .getElementById("window-chrome-toggle")
+        .addEventListener("change", (e) => {
+          showChrome = e.target.checked;
+          render();
+        });
+
+      document.getElementById("scale-slider").addEventListener("input", (e) => {
+        scale = parseInt(e.target.value, 10);
+        document.getElementById("scale-val").textContent = `${scale}%`;
+        render();
+      });
+
+      document
+        .getElementById("offsetY-slider")
+        .addEventListener("input", (e) => {
+          offsetY = parseInt(e.target.value, 10);
+          document.getElementById("offsetY-val").textContent = `${offsetY}px`;
+          render();
+        });
+
+      document
+        .getElementById("radius-slider")
+        .addEventListener("input", (e) => {
+          cornerRadius = parseInt(e.target.value, 10);
+          document.getElementById("radius-val").textContent =
+            `${cornerRadius}px`;
+          render();
+        });
+
+      document
+        .getElementById("shadow-slider")
+        .addEventListener("input", (e) => {
+          shadowDepth = parseInt(e.target.value, 10);
+          document.getElementById("shadow-val").textContent =
+            `${shadowDepth}px`;
+          render();
+        });
+
+      // Preset buttons
+      document.querySelectorAll(".preset-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll(".preset-btn")
+            .forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          canvasW = parseInt(btn.dataset.w, 10);
+          canvasH = parseInt(btn.dataset.h, 10);
+          render();
+        });
+      });
+
+      // Single Export Button
+      document
+        .getElementById("export-single-btn")
+        .addEventListener("click", async () => {
+          const item = SCREENSHOTS[activeIndex];
+          const filename = `better-twitter-${canvasW}x${canvasH}-${item.id}.png`;
+          await exportCanvasAsPNG(filename);
+        });
+
+      // Batch Export All 4
+      document
+        .getElementById("export-batch-btn")
+        .addEventListener("click", async () => {
+          const origW = canvasW;
+          const origH = canvasH;
+          const origIndex = activeIndex;
+
+          // Force 1280x800 for CWS batch
+          canvasW = 1280;
+          canvasH = 800;
+
+          for (let i = 0; i < SCREENSHOTS.length; i++) {
+            selectScreenshot(i);
+            render();
+            await new Promise((r) => setTimeout(r, 250));
+            const filename = `better-twitter-1280x800-${i + 1}-${SCREENSHOTS[i].id}.png`;
+            await exportCanvasAsPNG(filename);
+          }
+
+          // Restore
+          canvasW = origW;
+          canvasH = origH;
+          selectScreenshot(origIndex);
+          render();
+        });
+
+      // Initialize
+      buildThumbnailGrid();
+      preloadScreenshots();
+      selectScreenshot(0);
+    </script>
+  </body>
+</html>
