@@ -12,6 +12,7 @@ import { CategoryPanel } from './CategoryPanel';
 import { ThemesPanel } from './ThemesPanel';
 import { BookmarksPanel } from './BookmarksPanel';
 import { ReactionsPanel } from './ReactionsPanel';
+import { DevToolsPanel } from './DevToolsPanel';
 import { BetterTwitterLogo } from '@/components/BetterTwitterLogo';
 import { GithubIcon } from '@/components/GithubIcon';
 import { openWelcomePage, openUpdatePage } from '@/lib/lifecycle';
@@ -229,6 +230,8 @@ export default function App({
             <BookmarksPanel />
           ) : activeCategoryId === 'reactions' ? (
             <ReactionsPanel />
+          ) : activeCategoryId === 'devtools' ? (
+            <DevToolsPanel />
           ) : activeCategory ? (
             <CategoryPanel
               category={activeCategory}
@@ -256,6 +259,16 @@ export default function App({
             >
               {manifestVersion ? `v${manifestVersion}` : 'Updates'}
             </button>
+            {import.meta.env.DEV && (
+              <button
+                type="button"
+                onClick={() => handleSelectCategory('devtools')}
+                title="Open Developer Tools"
+                className="text-[10px] font-bold px-1.5 py-0.5 bg-amber-500/20 text-amber-500 hover:bg-amber-500/30 rounded cursor-pointer transition-colors"
+              >
+                DEV
+              </button>
+            )}
             <span className="text-[var(--bt-border)] select-none">&bull;</span>
             <button
               onClick={() => openWelcomePage()}

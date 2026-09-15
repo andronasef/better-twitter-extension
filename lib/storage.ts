@@ -152,3 +152,24 @@ export const customEmojiCacheItem = storage.defineItem<CustomEmojiCache>('local:
   fallback: {},
   version: 1,
 });
+
+export interface EngagementState {
+  installedAt: number;
+  lastShownAt: number | null;
+  actionTaken: 'rated' | 'shared' | 'dismissed' | null;
+  dismissCount: number;
+  snoozedUntil: number | null;
+  devForceTrigger?: number;
+}
+
+export const engagementItem = storage.defineItem<EngagementState>('local:engagement', {
+  fallback: {
+    installedAt: 0,
+    lastShownAt: null,
+    actionTaken: null,
+    dismissCount: 0,
+    snoozedUntil: null,
+    devForceTrigger: 0,
+  },
+  version: 1,
+});

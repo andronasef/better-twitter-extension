@@ -1,4 +1,4 @@
-import { diagnosticsItem } from '@/lib/storage';
+import { diagnosticsItem, engagementItem } from '@/lib/storage';
 import { BOOKMARKS_URL } from '@/features/bookmarks/routes';
 import {
   configureUninstallUrl,
@@ -11,11 +11,34 @@ export default defineBackground(() => {
   // Configure offboarding / uninstall feedback URL
   configureUninstallUrl();
 
+  // Initialize engagement install timestamp if not yet recorded
+  engagementItem.getValue().then((eng) => {
+    if (!eng || !eng.installedAt) {
+      engagementItem.setValue({
+        installedAt: Date.now(),
+        lastShownAt: null,
+        actionTaken: null,
+        dismissCount: 0,
+        snoozedUntil: null,
+        devForceTrigger: 0,
+      }).catch(() => {});
+    }
+  }).catch(() => {});
+
   // Listen for extension install or update lifecycle events
   browser.runtime.onInstalled.addListener((details) => {
     if (details.reason === 'install') {
+      engagementItem.setValue({
+        installedAt: Date.now(),
+        lastShownAt: null,
+        actionTaken: null,
+        dismissCount: 0,
+        snoozedUntil: null,
+        devForceTrigger: 0,
+      }).catch(() => {});
       openWelcomePage();
     } else if (details.reason === 'update') {
+
       const currentVersion = browser.runtime.getManifest?.()?.version;
       if (isMajorOrMinorUpdate(details.previousVersion, currentVersion)) {
         openUpdatePage();

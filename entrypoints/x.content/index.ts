@@ -22,6 +22,8 @@ import { mountBookmarksHub, unmountBookmarksHub } from '@/features/bookmarks/in-
 import { isBookmarksRoute } from '@/features/bookmarks/routes';
 import { initResurfacing, teardownResurfacing } from '@/features/bookmarks/resurfacing';
 import { initReactions, teardownReactions } from '@/features/reactions';
+import { initEngagementPrompt, teardownEngagementPrompt } from '@/features/engagement';
+
 
 export default defineContentScript({
   matches: ['*://x.com/*', '*://twitter.com/*'],
@@ -53,6 +55,7 @@ export default defineContentScript({
       unmountBookmarksHub();
       teardownResurfacing();
       teardownReactions();
+      teardownEngagementPrompt();
     });
 
     // Dev-only instrumentation for Spikes S1 and S2
@@ -197,6 +200,9 @@ export default defineContentScript({
 
       // 6. Initial page setup
       setupPage();
+
+      // 6b. Initialize rate & share engagement prompt
+      initEngagementPrompt();
 
       // 7. Watch for settings updates
       settingsItem.watch((newSettings) => {

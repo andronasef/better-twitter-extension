@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Columns3, Palette, Bookmark, Smile } from 'lucide-react';
+import { Columns3, Palette, Bookmark, Smile, Wrench } from 'lucide-react';
 
 export interface FeatureEntry {
   id: string;
@@ -23,7 +23,14 @@ export interface CategoryEntry {
   dedicatedPanel?: boolean;
 }
 
-export const categories: CategoryEntry[] = [
+export const devCategory: CategoryEntry = {
+  id: 'devtools',
+  caption: 'Dev Tools',
+  icon: Wrench,
+  dedicatedPanel: true,
+};
+
+const baseCategories: CategoryEntry[] = [
   {
     id: 'timeline',
     caption: 'Timeline',
@@ -48,6 +55,11 @@ export const categories: CategoryEntry[] = [
     dedicatedPanel: true,
   },
 ];
+
+export const categories: CategoryEntry[] = import.meta.env.DEV
+  ? [...baseCategories, devCategory]
+  : baseCategories;
+
 
 export const features: FeatureEntry[] = [
   {
