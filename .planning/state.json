@@ -21,7 +21,7 @@
     {
       "number": "4",
       "name": "Twemoji Reactions",
-      "status": "pending"
+      "status": "complete"
     },
     {
       "number": "5",
@@ -31,8 +31,8 @@
   ],
   "next": {
     "command": "/gsd-progress --next",
-    "label": "Advance to the next step",
-    "reason": "Phase 03 of 5 · 0% · executing"
+    "label": "Advance to the next step (plan phase 5)",
+    "reason": "Phase 5 of 5 — needs a plan"
   },
-  "updated_at": "2026-09-14T15:40:06.238Z"
+  "updated_at": "2026-09-15T07:34:42.242Z"
 }
