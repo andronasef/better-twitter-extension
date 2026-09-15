@@ -23,6 +23,7 @@
     "@wxt-dev/module-react": "1.2.2",
     "class-variance-authority": "0.7.1",
     "cn": "0.3.0",
+    "emoji-picker-react": "^4.22.2",
     "lucide-react": "1.45.0",
     "radix-ui": "1.6.7",
     "react": "19.3.0",

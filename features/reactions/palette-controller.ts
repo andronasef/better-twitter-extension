@@ -3,6 +3,7 @@ import { createRoot, type Root } from 'react-dom/client';
 import { browser } from 'wxt/browser';
 import { injectShadowStyles, ShadowRootProvider } from '@/components/shadow-portal';
 import { reactionsSettingsItem, customEmojiCacheItem } from '@/lib/storage';
+import EmojiPicker, { Theme, EmojiStyle, type EmojiClickData } from 'emoji-picker-react';
 import {
   DEFAULT_REACTION_SLOTS,
   HOVER_TRIGGER_DELAY_MS,
@@ -37,6 +38,15 @@ export function ensureReactionContainer(): { host: HTMLDivElement; shadow: Shado
   return { host: reactionsHost, shadow: reactionsShadowRoot!, root: reactionsRoot! };
 }
 
+function isDarkTheme(): boolean {
+  if (typeof document === 'undefined') return true;
+  if (document.documentElement.classList.contains('dark')) return true;
+  const bodyBg = window.getComputedStyle(document.body).backgroundColor;
+  if (bodyBg === 'rgb(0, 0, 0)' || bodyBg === 'rgb(21, 32, 43)') return true;
+  if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) return true;
+  return false;
+}
+
 export class PaletteController {
   public activeAnchorTweet: HTMLElement | null = null;
   public activeLikeButton: HTMLElement | null = null;
@@ -49,6 +59,7 @@ export class PaletteController {
   public holdTriggered = false;
   public isPaletteOpen = false;
   public isToastOpen = false;
+  public isPickerOpen = false;
 
   public settings: ReactionsSettings = {
     enabled: true,
@@ -159,6 +170,7 @@ export class PaletteController {
   }
 
   public startExitGraceTimer(): void {
+    if (this.isPickerOpen) return;
     this.clearExitGraceTimer();
     this.exitGraceTimer = setTimeout(() => {
       this.closePalette();
@@ -195,6 +207,7 @@ export class PaletteController {
       const isInsideOverlay = path.some(
         (el) =>
           (el as HTMLElement)?.getAttribute?.('role') === 'toolbar' ||
+          (el as HTMLElement)?.getAttribute?.('role') === 'dialog' ||
           (el as HTMLElement)?.id === 'bt-reactions-root'
       );
       if (isInsideOverlay) {
@@ -215,7 +228,9 @@ export class PaletteController {
 
       this.clearHoverTimer();
       if (this.isPaletteOpen && this.activeLikeButton === likeBtn) {
-        this.startExitGraceTimer();
+        if (!this.isPickerOpen) {
+          this.startExitGraceTimer();
+        }
       }
     }
   }
@@ -234,7 +249,7 @@ export class PaletteController {
       const isInsideOverlay = path.some(
         (el) => (el as HTMLElement)?.id === 'bt-reactions-root'
       );
-      if (this.isPaletteOpen && !isInsideOverlay) {
+      if ((this.isPaletteOpen || this.isPickerOpen) && !isInsideOverlay) {
         this.closePalette(true);
       }
     }
@@ -287,6 +302,7 @@ export class PaletteController {
 
   public closePalette(immediate = false): void {
     this.clearTimers();
+    this.isPickerOpen = false;
     if (immediate) {
       this.isPaletteOpen = false;
       this.activeLikeButton = null;
@@ -316,6 +332,31 @@ export class PaletteController {
       this.unmountCheckRaf = requestAnimationFrame(check);
     };
     this.unmountCheckRaf = requestAnimationFrame(check);
+  }
+
+  public togglePicker(): void {
+    this.isPickerOpen = !this.isPickerOpen;
+    if (this.isPickerOpen) {
+      this.clearExitGraceTimer();
+      this.clearHoverTimer();
+    }
+    this.render();
+  }
+
+  public handleSelectPickerEmoji(emojiData: EmojiClickData): void {
+    const targetAnchor = this.activeAnchorTweet || this.activeLikeButton;
+    this.closePalette(true);
+
+    if (targetAnchor) {
+      void prefillReplyComposer(
+        targetAnchor,
+        emojiData.emoji,
+        () => {
+          this.showToast();
+        },
+        this.settings.autoComment ?? true
+      );
+    }
   }
 
   public handleSelectEmoji(slot: ReactionSlot): void {
@@ -383,12 +424,67 @@ export class PaletteController {
           style: this.settings.style,
           customCache: this.customCache,
           isClosing,
+          isPickerOpen: this.isPickerOpen,
           onSelectEmoji: (slot: ReactionSlot) => this.handleSelectEmoji(slot),
+          onOpenPicker: () => this.togglePicker(),
           onOpenSettings: () => this.handleOpenSettings(),
           onMouseEnter: () => this.clearExitGraceTimer(),
           onMouseLeave: () => this.startExitGraceTimer(),
         })
       );
+
+      if (this.isPickerOpen) {
+        const pickerWidth = 340;
+        const pickerHeight = 400;
+        const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1000;
+        const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
+
+        const rawLeft = anchorRect.left + anchorRect.width / 2 - pickerWidth / 2;
+        const pickerLeft = Math.max(8, Math.min(rawLeft, viewportWidth - pickerWidth - 8));
+
+        let pickerTop = anchorRect.top - pickerHeight - 60;
+        if (pickerTop < 10) {
+          pickerTop = anchorRect.bottom + 56;
+          if (pickerTop + pickerHeight > viewportHeight - 10) {
+            pickerTop = Math.max(10, viewportHeight - pickerHeight - 10);
+          }
+        }
+
+        const isDark = isDarkTheme();
+
+        children.push(
+          React.createElement(
+            'div',
+            {
+              key: 'emoji-picker-popover',
+              role: 'dialog',
+              'aria-label': 'Emoji picker',
+              className: 'fixed z-50 pointer-events-auto rounded-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-150',
+              style: {
+                left: `${pickerLeft}px`,
+                top: `${pickerTop}px`,
+                width: `${pickerWidth}px`,
+                height: `${pickerHeight}px`,
+                backgroundColor: 'var(--bt-surface)',
+                border: '1px solid var(--bt-border)',
+                backdropFilter: 'blur(16px)',
+              },
+              onMouseEnter: () => this.clearExitGraceTimer(),
+            },
+            React.createElement(EmojiPicker, {
+              theme: isDark ? Theme.DARK : Theme.LIGHT,
+              emojiStyle: EmojiStyle.NATIVE,
+              width: pickerWidth,
+              height: pickerHeight,
+              lazyLoadEmojis: true,
+              searchPlaceHolder: 'Search emojis to react...',
+              searchPlaceholder: 'Search emojis to react...',
+              previewConfig: { showPreview: false },
+              onEmojiClick: (emojiData: EmojiClickData) => this.handleSelectPickerEmoji(emojiData),
+            })
+          )
+        );
+      }
     }
     if (this.isToastOpen) {
       children.push(

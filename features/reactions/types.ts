@@ -1,4 +1,10 @@
-export type ReactionStyle = 'normal' | 'twemoji' | 'noto-animated';
+export type ReactionStyle =
+  | 'normal'
+  | 'twemoji'
+  | 'noto-animated'
+  | 'apple'
+  | 'google'
+  | 'facebook';
 
 export interface ReactionSlot {
   id: string;

@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Check, AlertTriangle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Check, AlertTriangle, X } from 'lucide-react';
+import EmojiPicker, { Theme, type EmojiClickData } from 'emoji-picker-react';
 import { Switch } from '@/components/ui/switch';
 import { reactionsSettingsItem, customEmojiCacheItem } from '@/lib/storage';
 import {
   DEFAULT_REACTION_SLOTS,
   getTwemojiAssetUrl,
   getNotoAssetUrl,
+  getReactionEmojiSource,
+  toEmojiPickerStyle,
 } from '@/features/reactions/constants';
-import { cacheCustomEmoji } from '@/features/reactions/catalog';
-import { EmojiCatalogModal } from '@/features/reactions/EmojiCatalogModal';
 import type {
   ReactionsSettings,
   ReactionStyle,
   ReactionSlot,
   CustomEmojiCache,
-  CatalogEmoji,
 } from '@/features/reactions/types';
 
 export function ReactionsPanel() {
@@ -26,6 +26,8 @@ export function ReactionsPanel() {
   const [customCache, setCustomCache] = useState<CustomEmojiCache>({});
   const [modalOpen, setModalOpen] = useState(false);
   const [targetSlotIndex, setTargetSlotIndex] = useState(0);
+  const [pickerPreviewStyle, setPickerPreviewStyle] = useState<ReactionStyle>('twemoji');
+  const [styleDropdownOpen, setStyleDropdownOpen] = useState(false);
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
 
   useEffect(() => {
@@ -76,26 +78,29 @@ export function ReactionsPanel() {
 
   const handleOpenModal = (index: number) => {
     setTargetSlotIndex(index);
+    setPickerPreviewStyle(settings.style);
+    setStyleDropdownOpen(false);
     setModalOpen(true);
   };
 
-  const handleSelectEmoji = async (emoji: CatalogEmoji) => {
+  const handleSelectPickerEmoji = async (emojiData: EmojiClickData) => {
     const nextSlots = [...settings.slots];
-    const existing = nextSlots[targetSlotIndex];
+    const rawName = emojiData.names?.[0] || 'Emoji';
+    const cleanName = rawName.charAt(0).toUpperCase() + rawName.slice(1).replace(/_/g, ' ');
+
     nextSlots[targetSlotIndex] = {
-      id: emoji.codepoint,
-      emoji: emoji.emoji,
-      label: emoji.name.split(' ')[0] || existing?.label || 'Emoji',
-      twemojiCodepoint: emoji.codepoint,
-      notoCodepoint: emoji.codepoint,
+      id: emojiData.unified,
+      emoji: emojiData.emoji,
+      label: cleanName,
+      twemojiCodepoint: emojiData.unified,
+      notoCodepoint: emojiData.unified,
       isCustom: true,
     };
 
     const next: ReactionsSettings = { ...settings, slots: nextSlots };
     setSettings(next);
     await reactionsSettingsItem.setValue(next);
-
-    void cacheCustomEmoji(emoji.codepoint);
+    setModalOpen(false);
   };
 
   const handleConfirmReset = async () => {
@@ -115,24 +120,10 @@ export function ReactionsPanel() {
   const isQuotaExceeded = cacheBytes > 4 * 1024 * 1024; // 4MB warning
 
   const renderSlotEmoji = (slot: ReactionSlot) => {
-    if (settings.style === 'normal') {
+    const src = getReactionEmojiSource(slot, settings.style, customCache);
+    if (!src) {
       return <span className="text-[20px] select-none leading-none">{slot.emoji}</span>;
     }
-
-    if (settings.style === 'twemoji') {
-      const cached = customCache[slot.twemojiCodepoint]?.twemojiSvg;
-      const src = cached || getTwemojiAssetUrl(slot.twemojiCodepoint);
-      return (
-        <img
-          src={src}
-          alt={slot.emoji}
-          className="w-6 h-6 object-contain select-none pointer-events-none"
-        />
-      );
-    }
-
-    const cachedWebp = customCache[slot.notoCodepoint]?.notoWebp;
-    const src = cachedWebp || getNotoAssetUrl(slot.notoCodepoint);
     return (
       <img
         src={src}
@@ -151,53 +142,90 @@ export function ReactionsPanel() {
         </h2>
 
         <div className="grid grid-cols-3 gap-2">
-          {/* Normal Style */}
+          {/* Native */}
           <button
             type="button"
             onClick={() => handleStyleChange('normal')}
-            className={`h-[80px] rounded-xl p-2.5 flex flex-col justify-between text-left transition-all relative border cursor-pointer ${
+            className={`h-[78px] rounded-xl p-2 flex flex-col justify-between text-left transition-all relative border cursor-pointer ${
               settings.style === 'normal'
                 ? 'border-[2px] border-[var(--bt-accent)] bg-[var(--bt-surface)]'
                 : 'border-[var(--bt-border)] hover:bg-[var(--bt-surface-hover)] bg-[var(--bt-surface)]'
             }`}
           >
             <div className="flex items-center justify-between w-full">
-              <span className="text-[12px] font-bold text-[var(--bt-fg)] leading-tight">
+              <span className="text-[11px] font-bold text-[var(--bt-fg)] leading-tight">
                 Normal
               </span>
               {settings.style === 'normal' && (
-                <span className="h-4 w-4 rounded-full bg-[var(--bt-accent)] flex items-center justify-center text-white">
-                  <Check className="w-2.5 h-2.5" />
+                <span className="h-3.5 w-3.5 rounded-full bg-[var(--bt-accent)] flex items-center justify-center text-white">
+                  <Check className="w-2 h-2" />
                 </span>
               )}
             </div>
-            <span className="text-[16px] leading-none">👍 ❤️</span>
+            <span className="text-[15px] leading-none">👍 ❤️</span>
             <span className="text-[9px] text-[var(--bt-fg-muted)] line-clamp-1 leading-none">
               Native OS
             </span>
           </button>
 
-          {/* Twemoji Style */}
+          {/* Apple */}
+          <button
+            type="button"
+            onClick={() => handleStyleChange('apple')}
+            className={`h-[78px] rounded-xl p-2 flex flex-col justify-between text-left transition-all relative border cursor-pointer ${
+              settings.style === 'apple'
+                ? 'border-[2px] border-[var(--bt-accent)] bg-[var(--bt-surface)]'
+                : 'border-[var(--bt-border)] hover:bg-[var(--bt-surface-hover)] bg-[var(--bt-surface)]'
+            }`}
+          >
+            <div className="flex items-center justify-between w-full">
+              <span className="text-[11px] font-bold text-[var(--bt-fg)] leading-tight">
+                Apple
+              </span>
+              {settings.style === 'apple' && (
+                <span className="h-3.5 w-3.5 rounded-full bg-[var(--bt-accent)] flex items-center justify-center text-white">
+                  <Check className="w-2 h-2" />
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-1">
+              <img
+                src="https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f44d.png"
+                alt="👍"
+                className="w-4 h-4 object-contain"
+              />
+              <img
+                src="https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/2764-fe0f.png"
+                alt="❤️"
+                className="w-4 h-4 object-contain"
+              />
+            </div>
+            <span className="text-[9px] text-[var(--bt-fg-muted)] line-clamp-1 leading-none">
+              Apple style
+            </span>
+          </button>
+
+          {/* Twitter */}
           <button
             type="button"
             onClick={() => handleStyleChange('twemoji')}
-            className={`h-[80px] rounded-xl p-2.5 flex flex-col justify-between text-left transition-all relative border cursor-pointer ${
+            className={`h-[78px] rounded-xl p-2 flex flex-col justify-between text-left transition-all relative border cursor-pointer ${
               settings.style === 'twemoji'
                 ? 'border-[2px] border-[var(--bt-accent)] bg-[var(--bt-surface)]'
                 : 'border-[var(--bt-border)] hover:bg-[var(--bt-surface-hover)] bg-[var(--bt-surface)]'
             }`}
           >
             <div className="flex items-center justify-between w-full">
-              <span className="text-[12px] font-bold text-[var(--bt-fg)] leading-tight">
-                Twemoji
+              <span className="text-[11px] font-bold text-[var(--bt-fg)] leading-tight">
+                Twitter
               </span>
               {settings.style === 'twemoji' && (
-                <span className="h-4 w-4 rounded-full bg-[var(--bt-accent)] flex items-center justify-center text-white">
-                  <Check className="w-2.5 h-2.5" />
+                <span className="h-3.5 w-3.5 rounded-full bg-[var(--bt-accent)] flex items-center justify-center text-white">
+                  <Check className="w-2 h-2" />
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1">
               <img
                 src={getTwemojiAssetUrl('1f44d')}
                 alt="👍"
@@ -210,31 +238,105 @@ export function ReactionsPanel() {
               />
             </div>
             <span className="text-[9px] text-[var(--bt-fg-muted)] line-clamp-1 leading-none">
-              Classic SVGs
+              Twemoji SVGs
             </span>
           </button>
 
-          {/* Animated Noto Style */}
+          {/* Google */}
+          <button
+            type="button"
+            onClick={() => handleStyleChange('google')}
+            className={`h-[78px] rounded-xl p-2 flex flex-col justify-between text-left transition-all relative border cursor-pointer ${
+              settings.style === 'google'
+                ? 'border-[2px] border-[var(--bt-accent)] bg-[var(--bt-surface)]'
+                : 'border-[var(--bt-border)] hover:bg-[var(--bt-surface-hover)] bg-[var(--bt-surface)]'
+            }`}
+          >
+            <div className="flex items-center justify-between w-full">
+              <span className="text-[11px] font-bold text-[var(--bt-fg)] leading-tight">
+                Google
+              </span>
+              {settings.style === 'google' && (
+                <span className="h-3.5 w-3.5 rounded-full bg-[var(--bt-accent)] flex items-center justify-center text-white">
+                  <Check className="w-2 h-2" />
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-1">
+              <img
+                src="https://cdn.jsdelivr.net/npm/emoji-datasource-google/img/google/64/1f44d.png"
+                alt="👍"
+                className="w-4 h-4 object-contain"
+              />
+              <img
+                src="https://cdn.jsdelivr.net/npm/emoji-datasource-google/img/google/64/2764-fe0f.png"
+                alt="❤️"
+                className="w-4 h-4 object-contain"
+              />
+            </div>
+            <span className="text-[9px] text-[var(--bt-fg-muted)] line-clamp-1 leading-none">
+              Noto static
+            </span>
+          </button>
+
+          {/* Facebook */}
+          <button
+            type="button"
+            onClick={() => handleStyleChange('facebook')}
+            className={`h-[78px] rounded-xl p-2 flex flex-col justify-between text-left transition-all relative border cursor-pointer ${
+              settings.style === 'facebook'
+                ? 'border-[2px] border-[var(--bt-accent)] bg-[var(--bt-surface)]'
+                : 'border-[var(--bt-border)] hover:bg-[var(--bt-surface-hover)] bg-[var(--bt-surface)]'
+            }`}
+          >
+            <div className="flex items-center justify-between w-full">
+              <span className="text-[11px] font-bold text-[var(--bt-fg)] leading-tight">
+                Facebook
+              </span>
+              {settings.style === 'facebook' && (
+                <span className="h-3.5 w-3.5 rounded-full bg-[var(--bt-accent)] flex items-center justify-center text-white">
+                  <Check className="w-2 h-2" />
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-1">
+              <img
+                src="https://cdn.jsdelivr.net/npm/emoji-datasource-facebook/img/facebook/64/1f44d.png"
+                alt="👍"
+                className="w-4 h-4 object-contain"
+              />
+              <img
+                src="https://cdn.jsdelivr.net/npm/emoji-datasource-facebook/img/facebook/64/2764-fe0f.png"
+                alt="❤️"
+                className="w-4 h-4 object-contain"
+              />
+            </div>
+            <span className="text-[9px] text-[var(--bt-fg-muted)] line-clamp-1 leading-none">
+              Facebook style
+            </span>
+          </button>
+
+          {/* Animated Noto */}
           <button
             type="button"
             onClick={() => handleStyleChange('noto-animated')}
-            className={`h-[80px] rounded-xl p-2.5 flex flex-col justify-between text-left transition-all relative border cursor-pointer ${
+            className={`h-[78px] rounded-xl p-2 flex flex-col justify-between text-left transition-all relative border cursor-pointer ${
               settings.style === 'noto-animated'
                 ? 'border-[2px] border-[var(--bt-accent)] bg-[var(--bt-surface)]'
                 : 'border-[var(--bt-border)] hover:bg-[var(--bt-surface-hover)] bg-[var(--bt-surface)]'
             }`}
           >
             <div className="flex items-center justify-between w-full">
-              <span className="text-[12px] font-bold text-[var(--bt-fg)] leading-tight">
-                Animated Noto
+              <span className="text-[11px] font-bold text-[var(--bt-fg)] leading-tight">
+                Animated
               </span>
               {settings.style === 'noto-animated' && (
-                <span className="h-4 w-4 rounded-full bg-[var(--bt-accent)] flex items-center justify-center text-white">
-                  <Check className="w-2.5 h-2.5" />
+                <span className="h-3.5 w-3.5 rounded-full bg-[var(--bt-accent)] flex items-center justify-center text-white">
+                  <Check className="w-2 h-2" />
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1">
               <img
                 src={getNotoAssetUrl('1f44d')}
                 alt="👍"
@@ -247,7 +349,7 @@ export function ReactionsPanel() {
               />
             </div>
             <span className="text-[9px] text-[var(--bt-fg-muted)] line-clamp-1 leading-none">
-              Google WebP
+              Noto WebP
             </span>
           </button>
         </div>
@@ -363,14 +465,110 @@ export function ReactionsPanel() {
         </div>
       )}
 
-      {/* MODAL: EMOJI CATALOG BROWSER */}
-      <EmojiCatalogModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSelectEmoji={handleSelectEmoji}
-        targetSlotIndex={targetSlotIndex}
-        currentEmoji={settings.slots[targetSlotIndex]?.emoji || '👍'}
-      />
+      {/* MODAL: EMOJI PICKER WITH STYLE DROPDOWN */}
+      {modalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Choose Reaction Emoji"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3"
+        >
+          <div className="w-full max-w-[360px] rounded-2xl bg-[var(--bt-surface)] border border-[var(--bt-border)] shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-3.5 py-2 border-b border-[var(--bt-border)] bg-[var(--bt-surface)]">
+              <span className="text-[13px] font-bold text-[var(--bt-fg)]">
+                Slot #{targetSlotIndex + 1} Emoji
+              </span>
+
+              <div className="flex items-center gap-2">
+                {/* Style Dropdown Selector matching user's reference */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setStyleDropdownOpen(!styleDropdownOpen)}
+                    aria-label="Select emoji picker style"
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-[var(--bt-bg)] border border-[var(--bt-border)] text-[var(--bt-fg)] hover:border-[var(--bt-accent)] cursor-pointer"
+                  >
+                    <span>
+                      {pickerPreviewStyle === 'normal'
+                        ? 'Native'
+                        : pickerPreviewStyle === 'apple'
+                        ? 'Apple'
+                        : pickerPreviewStyle === 'twemoji'
+                        ? 'Twitter'
+                        : pickerPreviewStyle === 'google'
+                        ? 'Google'
+                        : pickerPreviewStyle === 'facebook'
+                        ? 'Facebook'
+                        : 'Animated'}
+                    </span>
+                    <span className="text-[8px] text-[var(--bt-fg-muted)]">▼</span>
+                  </button>
+
+                  {styleDropdownOpen && (
+                    <div
+                      className="absolute right-0 top-full mt-1 z-50 w-32 rounded-lg bg-[var(--bt-surface)] border border-[var(--bt-border)] shadow-xl py-1 flex flex-col"
+                      onClick={() => setStyleDropdownOpen(false)}
+                    >
+                      {[
+                        { id: 'normal', label: 'Native' },
+                        { id: 'apple', label: 'Apple' },
+                        { id: 'twemoji', label: 'Twitter' },
+                        { id: 'google', label: 'Google' },
+                        { id: 'facebook', label: 'Facebook' },
+                        { id: 'noto-animated', label: 'Animated' },
+                      ].map((item) => (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => {
+                            setPickerPreviewStyle(item.id as ReactionStyle);
+                            void handleStyleChange(item.id as ReactionStyle);
+                          }}
+                          className={`px-3 py-1.5 text-left text-[11px] font-medium cursor-pointer transition-colors ${
+                            pickerPreviewStyle === item.id
+                              ? 'bg-[var(--bt-surface-hover)] text-[var(--bt-accent)] font-bold'
+                              : 'text-[var(--bt-fg)] hover:bg-[var(--bt-surface-hover)]'
+                          }`}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setModalOpen(false);
+                    setStyleDropdownOpen(false);
+                  }}
+                  aria-label="Close emoji picker"
+                  className="h-6 w-6 flex items-center justify-center rounded-md text-[var(--bt-fg-muted)] hover:text-[var(--bt-fg)] hover:bg-[var(--bt-surface-hover)] cursor-pointer transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* EmojiPicker Component */}
+            <div className="w-full flex-1 overflow-hidden">
+              <EmojiPicker
+                theme={Theme.AUTO}
+                emojiStyle={toEmojiPickerStyle(pickerPreviewStyle)}
+                width="100%"
+                height={380}
+                lazyLoadEmojis={true}
+                searchPlaceHolder="Search emoji..."
+                searchPlaceholder="Search emoji..."
+                previewConfig={{ showPreview: false }}
+                onEmojiClick={(emojiData: EmojiClickData) => handleSelectPickerEmoji(emojiData)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* MODAL: DESTRUCTIVE CONFIRMATION DIALOG */}
       {resetConfirmOpen && (

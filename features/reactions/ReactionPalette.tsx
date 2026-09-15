@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import type { ReactionSlot, ReactionStyle, CustomEmojiCache } from './types';
-import { getTwemojiAssetUrl, getNotoAssetUrl } from './constants';
+import { getReactionEmojiSource } from './constants';
 
 export interface ReactionPaletteProps {
   anchorRect: DOMRect;
@@ -9,6 +9,8 @@ export interface ReactionPaletteProps {
   style: ReactionStyle;
   customCache: CustomEmojiCache;
   onSelectEmoji: (slot: ReactionSlot) => void;
+  onOpenPicker?: () => void;
+  isPickerOpen?: boolean;
   onOpenSettings?: () => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
@@ -21,6 +23,8 @@ export function ReactionPalette({
   style,
   customCache,
   onSelectEmoji,
+  onOpenPicker,
+  isPickerOpen = false,
   onOpenSettings,
   onMouseEnter,
   onMouseLeave,
@@ -44,35 +48,19 @@ export function ReactionPalette({
   const top = anchorRect.top < 64 ? anchorRect.bottom + 8 : anchorRect.top - 56;
 
   const renderEmojiGlyph = (slot: ReactionSlot) => {
-    if (style === 'normal') {
+    const src = getReactionEmojiSource(slot, style, customCache);
+    if (!src) {
       return (
         <span className="text-[24px] select-none leading-none">
           {slot.emoji}
         </span>
       );
     }
-
-    if (style === 'twemoji') {
-      const src =
-        customCache[slot.twemojiCodepoint]?.twemojiSvg ||
-        getTwemojiAssetUrl(slot.twemojiCodepoint);
-      return (
-        <img
-          src={src}
-          alt={slot.emoji}
-          className="w-7 h-7 select-none pointer-events-none"
-        />
-      );
-    }
-
-    const src =
-      customCache[slot.notoCodepoint]?.notoWebp ||
-      getNotoAssetUrl(slot.notoCodepoint);
     return (
       <img
         src={src}
         alt={slot.emoji}
-        className="w-7 h-7 select-none pointer-events-none"
+        className="w-7 h-7 select-none pointer-events-none object-contain"
       />
     );
   };
@@ -143,13 +131,18 @@ export function ReactionPalette({
         );
       })}
 
-      {/* Quick Customize (+) Button */}
-      {onOpenSettings && (
+      {/* Plus (+) React with Any Emoji Button */}
+      {(onOpenPicker || onOpenSettings) && (
         <button
           type="button"
-          onClick={onOpenSettings}
-          aria-label="Customize reaction palette"
-          className="w-7 h-7 ml-0.5 flex items-center justify-center rounded-full text-[var(--bt-fg-muted)] hover:text-[var(--bt-accent)] hover:bg-[var(--bt-surface)] transition-colors cursor-pointer shrink-0"
+          onClick={onOpenPicker || onOpenSettings}
+          aria-label="React with more emojis"
+          aria-expanded={isPickerOpen}
+          className={`w-7 h-7 ml-0.5 flex items-center justify-center rounded-full transition-colors cursor-pointer shrink-0 ${
+            isPickerOpen
+              ? 'text-[var(--bt-accent)] bg-[var(--bt-surface)] ring-1 ring-[var(--bt-accent)]'
+              : 'text-[var(--bt-fg-muted)] hover:text-[var(--bt-accent)] hover:bg-[var(--bt-surface)]'
+          }`}
         >
           <Plus className="w-4 h-4" />
         </button>

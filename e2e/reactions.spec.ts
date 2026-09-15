@@ -270,4 +270,44 @@ test.describe('Twemoji Reactions: palette, triggers, prefill, and customization 
 
     await xPage.close();
   });
+
+  test('Test 7: Plus (+) button opens full emoji picker and reacts with chosen emoji', async () => {
+    const page = await context.newPage();
+    await page.goto('https://x.com/home');
+
+    const likeBtn = page.locator('[data-testid="like"]').first();
+    await expect(likeBtn).toBeVisible({ timeout: 5000 });
+
+    // Hover Like button to reveal palette
+    await likeBtn.hover();
+    await page.waitForTimeout(450);
+
+    const overlay = page.locator('#bt-reactions-root');
+    const toolbar = overlay.locator('div[role="toolbar"]');
+    await expect(toolbar).toBeVisible();
+
+    // Locate and click the Plus (+) button
+    const plusBtn = toolbar.locator('button[aria-label="React with more emojis"]');
+    await expect(plusBtn).toBeVisible();
+    await plusBtn.click();
+
+    // Verify EmojiPicker popover opened
+    const popover = overlay.locator('div[aria-label="Emoji picker"]');
+    await expect(popover).toBeVisible({ timeout: 3000 });
+
+    // Click an emoji inside the picker (e.g. first emoji button in grid)
+    const pickerEmoji = popover.locator('button.epr-emoji').first();
+    await expect(pickerEmoji).toBeVisible({ timeout: 3000 });
+    await pickerEmoji.click();
+
+    // Popover and toolbar close
+    await expect(toolbar).not.toBeVisible();
+    await expect(popover).not.toBeVisible();
+
+    // Composer opens and contains an emoji
+    const composer = page.locator('[data-testid="tweetTextarea_0"]');
+    await expect(composer).toBeVisible({ timeout: 3000 });
+
+    await page.close();
+  });
 });
