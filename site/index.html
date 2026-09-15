@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Better Twitter — A Clean, Fast, and Respectful Twitter Experience</title>
+  <meta name="description" content="Open-source Chrome extension that purges promoted tweets, brings back chronological feeds, custom themes, twemoji reactions, and local bookmark folders." />
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/icon-32.png" />
+  <link rel="stylesheet" href="./styles.css" />
+  <style>
+    /* Theme Studio Dynamic Presets */
+    .theme-swatch {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2px solid var(--border-subtle);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition-smooth);
+      position: relative;
+    }
+    .theme-swatch.active {
+      border-color: #FFFFFF;
+      transform: scale(1.12);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.25);
+    }
+    .theme-swatch span {
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    /* Comparison Table */
+    .comparison-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 1.5rem;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background-color: var(--bg-card);
+    }
+    .comparison-table th, .comparison-table td {
+      padding: 1rem 1.25rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .comparison-table th {
+      background-color: var(--bg-surface);
+      color: var(--text-bright);
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+    .check-yes {
+      color: var(--accent-green);
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .check-no {
+      color: var(--accent-danger);
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    /* Composer Preview */
+    .sim-composer {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-focus);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin-top: 1rem;
+      display: none;
+      animation: fadeIn 0.25s ease-out forwards;
+    }
+    .sim-composer.active {
+      display: block;
+    }
+    .sim-composer textarea {
+      width: 100%;
+      background: none;
+      border: none;
+      color: var(--text-bright);
+      font-size: 0.95rem;
+      font-family: inherit;
+      resize: none;
+      height: 50px;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Navigation -->
+  <header class="site-nav">
+    <div class="site-container">
+      <div class="nav-inner">
+        <a href="./index.html" class="brand-link">
+          <img src="./assets/logo.svg" alt="Better Twitter" class="brand-logo" />
+          <span>Better Twitter</span>
+        </a>
+        <div class="nav-links">
+          <a href="#simulator" class="nav-link">Interactive Demo</a>
+          <a href="#themes" class="nav-link">Themes</a>
+          <a href="#reactions" class="nav-link">Reactions</a>
+          <a href="#privacy" class="nav-link">Privacy</a>
+          <a href="https://github.com/andronasef/better-twitter-extension" target="_blank" rel="noopener noreferrer" class="nav-link">GitHub</a>
+          <a href="#install" class="btn btn-primary btn-sm">Add to Chrome</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero site-container">
+      <div class="badge badge-green" style="margin-bottom: 1.25rem;">
+        <span style="width: 6px; height: 6px; border-radius: 50%; background-color: var(--accent-green); display: inline-block;"></span>
+        Open Source &bull; Manifest V3 Certified
+      </div>
+
+      <h1>The Twitter experience you deserve.<br />Clean, fast, and completely private.</h1>
+
+      <p>
+        Better Twitter is a client-side browser extension that strips sponsored posts, hides algorithmic noise, unlocks community themes, and organizes your bookmarks — without collecting a single byte of your data.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#install" class="btn btn-primary btn-lg">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="12" cy="12" r="4"/>
+          </svg>
+          <span>Add to Chrome — Free</span>
+        </a>
+
+        <a href="https://github.com/andronasef/better-twitter-extension" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-lg">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          <span>Star on GitHub</span>
+        </a>
+      </div>
+
+      <div class="trust-row">
+        <div class="trust-item">
+          <span>✓</span> 100% Client-Side Local Storage
+        </div>
+        <div class="trust-item">
+          <span>✓</span> Zero External Trackers
+        </div>
+        <div class="trust-item">
+          <span>✓</span> No Background API Telemetry
+        </div>
+        <div class="trust-item">
+          <span>✓</span> Lightweight &lt; 3MB Package
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Live Simulator -->
+    <section id="simulator" class="simulator-section site-container">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <h2>Experience the difference right here</h2>
+        <p style="margin: 0.75rem auto 0;">
+          Toggle Better Twitter features below to see how our DOM engine restores sanity to your timeline in real time.
+        </p>
+      </div>
+
+      <div class="simulator-box" id="simulator-container">
+        <!-- Interactive Toolbar Controls -->
+        <div class="simulator-toolbar">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <img src="./assets/logo.svg" width="22" height="22" alt="" />
+            <span style="font-weight: 700; font-size: 0.9rem; color: var(--text-bright);">Live Simulator</span>
+          </div>
+
+          <div class="simulator-controls">
+            <div class="sim-toggle active" id="toggle-ad-stripper" title="Click to toggle Promoted Ad Stripper">
+              <span class="sim-indicator"></span>
+              <span>Block Ads</span>
+            </div>
+
+            <div class="sim-toggle active" id="toggle-following-first" title="Click to swap tabs">
+              <span class="sim-indicator"></span>
+              <span>Following First</span>
+            </div>
+
+            <div class="sim-toggle active" id="toggle-hide-sidebar" title="Click to hide algorithmic sidebars">
+              <span class="sim-indicator"></span>
+              <span>Hide "Who to follow"</span>
+            </div>
+
+            <div class="sim-toggle active" id="toggle-vanity-metrics" title="Click to strip vanity counts">
+              <span class="sim-indicator"></span>
+              <span>Clean Vanity Counts</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simulated Feed -->
+        <div class="mockup-feed" id="live-mockup-feed">
+          <!-- Feed Tabs -->
+          <div class="feed-tabs" id="mockup-tabs">
+            <div class="feed-tab active" id="tab-primary">Following</div>
+            <div class="feed-tab" id="tab-secondary">For You</div>
+          </div>
+
+          <!-- Tweet 1: Authentic Creator Post -->
+          <article class="mockup-tweet">
+            <div class="mockup-avatar" style="background-color: #7856FF;">AN</div>
+            <div class="mockup-tweet-content">
+              <div class="mockup-tweet-header">
+                <span class="mockup-name">Andro Nasef</span>
+                <span class="mockup-handle">@andronasef &bull; 2h</span>
+              </div>
+              <div class="mockup-tweet-body">
+                Twitter feels 10x better when algorithms stop dictating what you should feel outraged about. Chronological feeds + zero ads = internet peace of mind. 🌿
+              </div>
+              <div class="mockup-actions">
+                <button type="button" class="mockup-action-btn">💬 <span class="metric-count">18</span></button>
+                <button type="button" class="mockup-action-btn">🔁 <span class="metric-count">42</span></button>
+                <button type="button" class="mockup-action-btn like-btn" id="demo-like-btn">
+                  <span>❤️</span> <span class="metric-count">284</span>
+                  <!-- Floating Reaction Palette Demonstration -->
+                  <div class="reaction-palette" id="demo-reaction-palette">
+                    <span class="palette-emoji" data-emoji="👍" title="Like">👍</span>
+                    <span class="palette-emoji" data-emoji="❤️" title="Love">❤️</span>
+                    <span class="palette-emoji" data-emoji="😂" title="Haha">😂</span>
+                    <span class="palette-emoji" data-emoji="😮" title="Wow">😮</span>
+                    <span class="palette-emoji" data-emoji="😢" title="Sad">😢</span>
+                    <span class="palette-emoji" data-emoji="🔥" title="Fire">🔥</span>
+                  </div>
+                </button>
+                <button type="button" class="mockup-action-btn">🔖 <span class="metric-count">65</span></button>
+              </div>
+
+              <!-- Interactive Reply Box Simulator -->
+              <div class="sim-composer" id="sim-composer">
+                <div style="font-size: 0.75rem; color: var(--accent-blue); font-weight: 700; margin-bottom: 0.35rem;">
+                  Prefilled Reply Composer (Ready for you to send)
+                </div>
+                <textarea id="composer-text" readonly></textarea>
+                <div style="display: flex; justify-content: flex-end; margin-top: 0.5rem;">
+                  <button type="button" class="btn btn-primary btn-sm" id="close-composer-btn">Dismiss</button>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Tweet 2: Promoted Ad (Controlled by Ad Stripper) -->
+          <article class="mockup-tweet" id="mockup-promoted-ad" style="display: none;">
+            <div class="mockup-avatar" style="background-color: #FFA000;">AD</div>
+            <div class="mockup-tweet-content">
+              <div class="mockup-tweet-header">
+                <span class="mockup-name">Generic AI SaaS</span>
+                <span class="mockup-handle">@trygenericsaas &bull; Promoted</span>
+              </div>
+              <div class="mockup-ad-badge">Promoted Advertisement</div>
+              <div class="mockup-tweet-body">
+                Stop doing manual work! Click here to automate your life with our totally revolutionary subscription that costs $99/mo! ⚡
+              </div>
+              <div class="mockup-actions">
+                <span class="mockup-action-btn">💬 <span class="metric-count">1</span></span>
+                <span class="mockup-action-btn">🔁 <span class="metric-count">0</span></span>
+                <span class="mockup-action-btn">❤️ <span class="metric-count">3</span></span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Sidebar Simulation: Who to follow (Controlled by Sidebar toggle) -->
+          <div class="mockup-tweet" id="mockup-who-to-follow" style="display: none; background-color: rgba(244, 33, 46, 0.05); border-color: rgba(244, 33, 46, 0.2);">
+            <div style="width: 100%;">
+              <div style="font-weight: 700; font-size: 0.85rem; color: var(--accent-danger); margin-bottom: 0.4rem;">
+                Clutter Block: "Who to Follow" Algorithmic Recommendations
+              </div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">
+                Suggested accounts injected into your feed to maximize engagement.
+              </div>
+            </div>
+          </div>
+
+          <!-- Tweet 3: Bookmarks Resurfaced Tweet -->
+          <article class="mockup-tweet">
+            <div class="mockup-avatar" style="background-color: var(--accent-green);">BT</div>
+            <div class="mockup-tweet-content">
+              <div style="font-size: 0.75rem; color: var(--accent-green); font-weight: 700; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.35rem;">
+                <span>📌 Resurfaced from your Bookmarks</span>
+                <span style="color: var(--text-dim);">&bull; saved 3 months ago</span>
+              </div>
+              <div class="mockup-tweet-header">
+                <span class="mockup-name">Frontend Architecture</span>
+                <span class="mockup-handle">@frontendlore &bull; May 12</span>
+              </div>
+              <div class="mockup-tweet-body">
+                The single best performance optimization you can make is to never render DOM elements the user doesn't need to see. Keep virtualizers tight and state local.
+              </div>
+              <div class="mockup-actions">
+                <span class="mockup-action-btn">💬 <span class="metric-count">142</span></span>
+                <span class="mockup-action-btn">🔁 <span class="metric-count">612</span></span>
+                <span class="mockup-action-btn">❤️ <span class="metric-count">3.4K</span></span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Theme Studio Section -->
+    <section id="themes" class="site-container" style="padding: 4rem 0;">
+      <div style="text-align: center; margin-bottom: 2.5rem;">
+        <h2>Dark themes crafted for deep focus</h2>
+        <p style="margin: 0.75rem auto 0;">
+          Select any community palette below to transform the timeline colors instantly:
+        </p>
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 1.25rem; flex-wrap: wrap; margin-bottom: 3rem;">
+        <button type="button" class="theme-swatch active" data-theme="lightsout" style="background: #000000;" title="Lights Out (AMOLED)">
+          <span style="color: #1D9BF0;">AMO</span>
+        </button>
+        <button type="button" class="theme-swatch" data-theme="dracula" style="background: #282A36;" title="Dracula">
+          <span style="color: #BD93F9;">DRA</span>
+        </button>
+        <button type="button" class="theme-swatch" data-theme="nord" style="background: #2E3440;" title="Nord">
+          <span style="color: #88C0D0;">NOR</span>
+        </button>
+        <button type="button" class="theme-swatch" data-theme="matrix" style="background: #0D1117;" title="Matrix">
+          <span style="color: #00FF66;">MTX</span>
+        </button>
+        <button type="button" class="theme-swatch" data-theme="sunset" style="background: #1A1128;" title="Sunset">
+          <span style="color: #FF7597;">SUN</span>
+        </button>
+      </div>
+
+      <!-- Feature Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+        <div class="card">
+          <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(29, 155, 240, 0.15); color: var(--accent-blue); display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; font-size: 1.3rem;">
+            🛡️
+          </div>
+          <h3>Zero Promoted Ads</h3>
+          <p style="margin-top: 0.5rem; font-size: 0.95rem;">
+            Continuous mutation observer purges sponsored tweets before your eyes register them. No flickering, no sponsor cards.
+          </p>
+        </div>
+
+        <div class="card">
+          <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(0, 186, 124, 0.15); color: var(--accent-green); display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; font-size: 1.3rem;">
+            🔖
+          </div>
+          <h3>Bookmark Hub & Folders</h3>
+          <p style="margin-top: 0.5rem; font-size: 0.95rem;">
+            Organize bookmarks right inside x.com/bookmarks into color-coded folders. Resurface old saved treasures gently back into your feed.
+          </p>
+        </div>
+
+        <div class="card">
+          <div id="reactions" style="width: 44px; height: 44px; border-radius: 12px; background: rgba(249, 24, 128, 0.15); color: var(--accent-pink); display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; font-size: 1.3rem;">
+            ⚡
+          </div>
+          <h3>Twemoji Reaction Palette</h3>
+          <p style="margin-top: 0.5rem; font-size: 0.95rem;">
+            Hover or long-press Like to pick expressive Twemoji reactions. Seamlessly prefills X's native reply box without ever posting for you.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Privacy Architecture & Security Comparison -->
+    <section id="privacy" class="site-container" style="padding: 4rem 0 6rem;">
+      <div style="text-align: center; margin-bottom: 2.5rem;">
+        <h2>A privacy architecture built on pure local storage</h2>
+        <p style="margin: 0.75rem auto 0;">
+          Most social extensions secretly track your visits or scrape your cookies. Better Twitter was designed from day one to make tracking technically impossible.
+        </p>
+      </div>
+
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Security & Privacy Invariant</th>
+            <th>Standard Twitter Plugins</th>
+            <th>Better Twitter</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Host Permissions</strong></td>
+            <td><code>&lt;all_urls&gt;</code> or arbitrary domains</td>
+            <td><span class="check-yes">✓ Strictly scoped to x.com</span></td>
+          </tr>
+          <tr>
+            <td><strong>Data Storage</strong></td>
+            <td>Remote cloud databases</td>
+            <td><span class="check-yes">✓ 100% Chrome Local Storage</span></td>
+          </tr>
+          <tr>
+            <td><strong>Telemetry & Analytics</strong></td>
+            <td>Google Analytics, Mixpanel, Amplitude</td>
+            <td><span class="check-yes">✓ Zero telemetry scripts</span></td>
+          </tr>
+          <tr>
+            <td><strong>Remote Script Execution</strong></td>
+            <td>Remote CDNs or eval execution</td>
+            <td><span class="check-yes">✓ Zero remote code (MV3 enforced)</span></td>
+          </tr>
+          <tr>
+            <td><strong>Automated Posting</strong></td>
+            <td>Programmatic likes & auto-replies</td>
+            <td><span class="check-yes">✓ User always retains sending control</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Install CTA Banner -->
+    <section id="install" class="site-container" style="padding-bottom: 6rem;">
+      <div style="background: linear-gradient(135deg, rgba(29, 155, 240, 0.12) 0%, rgba(120, 86, 255, 0.08) 100%); border: 1px solid rgba(29, 155, 240, 0.3); border-radius: var(--radius-xl); padding: clamp(2.5rem, 5vw, 4rem); text-align: center;">
+        <h2>Ready for a respectful Twitter experience?</h2>
+        <p style="margin: 1rem auto 2.5rem; font-size: 1.15rem;">
+          Install Better Twitter today and reclaim hours of attention every week.
+        </p>
+
+        <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+          <a href="https://github.com/andronasef/better-twitter-extension/releases" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">
+            <span>Download v0.1.0 Package</span>
+          </a>
+          <a href="https://github.com/andronasef/better-twitter-extension" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-lg">
+            <span>View Source Code</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="site-container">
+      <div class="footer-inner">
+        <div>Better Twitter &copy; 2026 &bull; Crafted by <a href="https://andronasef.com" target="_blank" rel="noopener noreferrer" style="color: var(--text-bright); text-decoration: underline;">Andro Nasef</a></div>
+        <div class="footer-links">
+          <a href="https://github.com/andronasef/better-twitter-extension" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <span>&bull;</span>
+          <a href="https://github.com/andronasef/better-twitter-extension/blob/main/PRIVACY.md" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+          <span>&bull;</span>
+          <a href="./uninstall.html">Uninstall Feedback</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Interactive Simulator & Theme Scripts -->
+  <script>
+    (function () {
+      // Simulator Toggles
+      const toggleAd = document.getElementById('toggle-ad-stripper');
+      const toggleFollowing = document.getElementById('toggle-following-first');
+      const toggleSidebar = document.getElementById('toggle-hide-sidebar');
+      const toggleVanity = document.getElementById('toggle-vanity-metrics');
+
+      const promotedAd = document.getElementById('mockup-promoted-ad');
+      const whoToFollow = document.getElementById('mockup-who-to-follow');
+      const tabPrimary = document.getElementById('tab-primary');
+      const tabSecondary = document.getElementById('tab-secondary');
+      const metricCounts = document.querySelectorAll('.metric-count');
+
+      // Ad Stripper Toggle
+      toggleAd.addEventListener('click', () => {
+        const active = toggleAd.classList.toggle('active');
+        promotedAd.style.display = active ? 'none' : 'flex';
+      });
+
+      // Following First Toggle
+      toggleFollowing.addEventListener('click', () => {
+        const active = toggleFollowing.classList.toggle('active');
+        if (active) {
+          tabPrimary.textContent = 'Following';
+          tabSecondary.textContent = 'For You';
+        } else {
+          tabPrimary.textContent = 'For You';
+          tabSecondary.textContent = 'Following';
+        }
+      });
+
+      // Hide Sidebar Toggle
+      toggleSidebar.addEventListener('click', () => {
+        const active = toggleSidebar.classList.toggle('active');
+        whoToFollow.style.display = active ? 'none' : 'flex';
+      });
+
+      // Clean Vanity Metrics Toggle
+      toggleVanity.addEventListener('click', () => {
+        const active = toggleVanity.classList.toggle('active');
+        metricCounts.forEach(el => {
+          el.style.display = active ? 'none' : 'inline';
+        });
+      });
+
+      // Initially apply clean vanity metric state
+      metricCounts.forEach(el => { el.style.display = 'none'; });
+
+      // Twemoji Reaction Palette Interaction
+      const demoLikeBtn = document.getElementById('demo-like-btn');
+      const demoPalette = document.getElementById('demo-reaction-palette');
+      const simComposer = document.getElementById('sim-composer');
+      const composerText = document.getElementById('composer-text');
+      const closeComposerBtn = document.getElementById('close-composer-btn');
+
+      demoLikeBtn.addEventListener('mouseenter', () => {
+        demoPalette.classList.add('visible');
+      });
+
+      demoLikeBtn.addEventListener('mouseleave', () => {
+        setTimeout(() => {
+          if (!demoPalette.matches(':hover')) {
+            demoPalette.classList.remove('visible');
+          }
+        }, 300);
+      });
+
+      demoPalette.addEventListener('mouseleave', () => {
+        demoPalette.classList.remove('visible');
+      });
+
+      // Emoji Selection Prefiller Demo
+      document.querySelectorAll('.palette-emoji').forEach(emojiEl => {
+        emojiEl.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const emoji = emojiEl.getAttribute('data-emoji');
+          demoPalette.classList.remove('visible');
+          composerText.value = `${emoji} `;
+          simComposer.classList.add('active');
+          composerText.focus();
+        });
+      });
+
+      closeComposerBtn.addEventListener('click', () => {
+        simComposer.classList.remove('active');
+      });
+
+      // Theme Studio Palette Swatches
+      const themes = {
+        lightsout: { bg: '#000000', card: '#16181C', border: '#2F3336', accent: '#1D9BF0' },
+        dracula: { bg: '#1E1F29', card: '#282A36', border: '#44475A', accent: '#BD93F9' },
+        nord: { bg: '#242933', card: '#2E3440', border: '#4C566A', accent: '#88C0D0' },
+        matrix: { bg: '#05080A', card: '#0D1117', border: '#1B242C', accent: '#00FF66' },
+        sunset: { bg: '#120B1C', card: '#1A1128', border: '#32234D', accent: '#FF7597' }
+      };
+
+      const mockupContainer = document.getElementById('simulator-container');
+
+      document.querySelectorAll('.theme-swatch').forEach(swatch => {
+        swatch.addEventListener('click', () => {
+          document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('active'));
+          swatch.classList.add('active');
+
+          const themeKey = swatch.getAttribute('data-theme');
+          const t = themes[themeKey];
+          if (t && mockupContainer) {
+            mockupContainer.style.backgroundColor = t.card;
+            mockupContainer.style.borderColor = t.border;
+            document.querySelectorAll('#live-mockup-feed .mockup-tweet').forEach(el => {
+              el.style.backgroundColor = t.bg;
+              el.style.borderColor = t.border;
+            });
+            const activeTab = document.querySelector('.feed-tab.active');
+            if (activeTab) {
+              activeTab.style.setProperty('--accent-blue', t.accent);
+            }
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

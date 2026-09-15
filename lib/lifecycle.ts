@@ -1,7 +1,9 @@
-export const UNINSTALL_FEEDBACK_URL = 'https://bettertwitter.featurebase.app/';
+export const UNINSTALL_FEEDBACK_URL = 'https://andronasef.github.io/better-twitter-extension/uninstall.html';
+export const FEATUREBASE_URL = 'https://bettertwitter.featurebase.app/';
 export const X_HOME_URL = 'https://x.com/home';
 export const GITHUB_REPO_URL = 'https://github.com/andronasef/better-twitter-extension';
 export const PRIVACY_POLICY_URL = 'https://github.com/andronasef/better-twitter-extension/blob/main/PRIVACY.md';
+export const PORTFOLIO_URL = 'https://andronasef.com';
 
 /**
  * Parses a semantic version string (e.g., "0.1.0" or "v1.2.3") into [major, minor, patch].

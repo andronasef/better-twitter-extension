@@ -17,7 +17,8 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "verify": "wxt build && node scripts/audit-build.mjs && vitest run",
-    "package:cws": "bun run scripts/package-cws.ts"
+    "package:cws": "bun run scripts/package-cws.ts",
+    "site:dev": "bun x serve site -p 3000"
   },
   "dependencies": {
     "@tailwindcss/vite": "4.3.3",
