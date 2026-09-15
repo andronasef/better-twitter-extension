@@ -74,9 +74,9 @@
     <!-- Interactive Live Simulator Section -->
     <section id="simulator" class="simulator-section site-container">
       <div style="margin-bottom: 1.5rem;">
-        <h2>Interactive timeline engine</h2>
+        <h2>Experience the difference</h2>
         <p style="margin-top: 0.35rem;">
-          Test the live DOM transforms below. Every toggle maps directly to an active observer or stylesheet rule in the extension:
+          Try the interactive demo below. Toggle features on and off to see how Better Twitter transforms your feed in real time:
         </p>
       </div>
 
@@ -87,7 +87,7 @@
             <div class="deck-status-dot"></div>
             <div>
               <div class="deck-title">Better Twitter Active</div>
-              <div class="deck-subtitle">Flip switches to test live DOM filtering:</div>
+              <div class="deck-subtitle">Flip switches to test live feed filtering:</div>
             </div>
           </div>
 
@@ -114,6 +114,16 @@
             <div class="switch-control active" id="sw-clean-metrics">
               <div class="switch-track"><div class="switch-thumb"></div></div>
               <span class="switch-label">Hide Vanity Counts</span>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.85rem; border-top: 1px solid var(--border-subtle); padding-top: 0.85rem;">
+            <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Themes:</span>
+            <div class="theme-picker-row" style="margin: 0; gap: 0.5rem;">
+              <button type="button" class="theme-swatch active" data-theme="lightsout" style="background: #000000;" title="Lights Out (AMOLED)">AMO</button>
+              <button type="button" class="theme-swatch" data-theme="dracula" style="background: #282A36; color: #BD93F9;" title="Dracula">DRA</button>
+              <button type="button" class="theme-swatch" data-theme="nord" style="background: #2E3440; color: #88C0D0;" title="Nord">NOR</button>
+              <button type="button" class="theme-swatch" data-theme="matrix" style="background: #0D1117; color: #00FF66;" title="Matrix">MTX</button>
             </div>
           </div>
         </div>
@@ -489,7 +499,7 @@
         <div class="footer-links">
           <a href="https://github.com/andronasef/better-twitter-extension" target="_blank" rel="noopener noreferrer">GitHub</a>
           <span>&bull;</span>
-          <a href="https://github.com/andronasef/better-twitter-extension/blob/main/PRIVACY.md" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+          <a href="./privacy.html">Privacy Policy</a>
           <span>&bull;</span>
           <a href="./uninstall.html">Uninstall Survey</a>
         </div>

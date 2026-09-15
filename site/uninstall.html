@@ -6,17 +6,8 @@
   <title>Uninstall Feedback — Better Twitter</title>
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icon-32.png" />
   <link rel="stylesheet" href="./styles.css" />
-  <script>
-    window.__turnstileReady = false;
-    window.onloadTurnstileCallback = function () {
-      window.__turnstileReady = true;
-      if (typeof window.initTurnstile === 'function') {
-        window.initTurnstile();
-      }
-    };
-  </script>
   <!-- Cloudflare Turnstile API -->
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback&render=explicit" async defer></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
   <!-- Navigation Header -->
@@ -159,8 +150,13 @@
         <div class="form-group" style="border-top: 1px solid var(--border-subtle); padding-top: 1.5rem;">
           <label class="form-label">Spam Protection</label>
           <div class="turnstile-wrapper">
-            <div id="cf-turnstile-box"></div>
-            <div id="turnstile-dev-notice" style="display: none; margin-top: 0.5rem; font-size: 0.78rem; color: var(--text-dim); text-align: center;"></div>
+            <div
+              class="cf-turnstile"
+              data-sitekey="3x00000000000000000000FF"
+              data-theme="dark"
+              data-callback="onTurnstileSuccess"
+              data-expired-callback="onTurnstileExpired"
+            ></div>
           </div>
         </div>
 
@@ -202,7 +198,7 @@
         </div>
         <h2>Feedback received. Thank you.</h2>
         <p style="margin: 0.75rem auto 1.75rem; font-size: 1rem; color: var(--text-muted); max-width: 48ch;">
-          We read every submission directly. If you reported a bug or selector break on X, we'll investigate it for the next release.
+          We read every submission directly. If you reported a bug or something wasn't working on X, we'll look into it right away for the next release.
         </p>
 
         <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
@@ -239,14 +235,7 @@
       const FORM_ACTION_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSe3XNSFOsJKIAI450EAgiVNgkVqw7l_kYbD9Dp5CJHPIXF5AA/formResponse';
       const JSON_FIELD_ENTRY = 'entry.1748802004';
 
-      const PROD_SITE_KEY = '0x4AAAAAAElv1dOFkB8Bk6iE';
-      // Official Cloudflare testing key (always passes on any domain, including localhost)
-      const TEST_SITE_KEY = '1x00000000000000000000AA';
-
-      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
-
       let turnstileToken = '';
-      let turnstileWidgetId = null;
       const selectedFeatures = new Set();
 
       const form = document.getElementById('uninstall-form');
@@ -256,8 +245,6 @@
       const successCard = document.getElementById('success-card');
       const gformFallback = document.getElementById('gform-fallback');
       const gformEntryValue = document.getElementById('gform_entry_value');
-      const turnstileBox = document.getElementById('cf-turnstile-box');
-      const devNotice = document.getElementById('turnstile-dev-notice');
 
       // Radio card styling handler
       document.querySelectorAll('.radio-card').forEach(card => {
@@ -287,7 +274,7 @@
         });
       });
 
-      // Cloudflare Turnstile Callbacks
+      // Cloudflare Turnstile Callbacks (Enforced Verification)
       window.onTurnstileSuccess = function (token) {
         turnstileToken = token;
         submitBtn.disabled = false;
@@ -302,56 +289,12 @@
         statusHint.style.color = 'var(--accent-danger)';
       };
 
-      function renderTurnstileWidget(keyToUse) {
-        if (!window.turnstile) return;
-        try {
-          if (turnstileWidgetId !== null) {
-            turnstile.remove(turnstileWidgetId);
-          }
-          turnstileBox.innerHTML = '';
-          turnstileWidgetId = turnstile.render('#cf-turnstile-box', {
-            sitekey: keyToUse,
-            theme: 'dark',
-            callback: window.onTurnstileSuccess,
-            'expired-callback': window.onTurnstileExpired,
-            'error-callback': function (errorCode) {
-              console.warn('[BetterTwitter] Turnstile error:', errorCode, 'for key:', keyToUse);
-              // If production key failed on localhost (e.g. domain not yet whitelisted in Cloudflare dashboard):
-              if (isLocalhost && keyToUse === PROD_SITE_KEY) {
-                devNotice.style.display = 'block';
-                devNotice.textContent = 'Localhost domain check failed on Cloudflare. Falling back to Cloudflare dev testing key...';
-                setTimeout(() => {
-                  renderTurnstileWidget(TEST_SITE_KEY);
-                  devNotice.textContent = 'Using Cloudflare dev key (always passes on localhost). To test your production key, add "localhost" under Hostnames in your Cloudflare dashboard.';
-                }, 300);
-              }
-            }
-          });
-        } catch (err) {
-          console.error('[BetterTwitter] Failed to render Turnstile:', err);
-        }
-      }
-
-      // Explicit onload callback for Turnstile
-      window.initTurnstile = function () {
-        renderTurnstileWidget(PROD_SITE_KEY);
+      window.onTurnstileError = function () {
+        turnstileToken = '';
+        submitBtn.disabled = true;
+        statusHint.textContent = 'Verification could not be completed. Please refresh.';
+        statusHint.style.color = 'var(--accent-danger)';
       };
-
-      // If Turnstile script loaded before or after this script
-      if (window.__turnstileReady || (window.turnstile && turnstileWidgetId === null)) {
-        window.initTurnstile();
-      }
-
-      // Fallback if Turnstile script is completely blocked by client adblocker
-      setTimeout(() => {
-        if (!window.turnstile && !turnstileToken) {
-          console.warn('[BetterTwitter] Turnstile script blocked or unreachable.');
-          turnstileBox.innerHTML = '<div style="font-size: 0.85rem; color: var(--text-muted); padding: 0.5rem; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 8px; text-align: center;">Security script unavailable (adblocker detected). You may still submit.</div>';
-          turnstileToken = 'turnstile_client_unreachable';
-          submitBtn.disabled = false;
-          statusHint.textContent = '';
-        }
-      }, 3500);
 
       // Gather form data as JSON object
       function gatherPayload() {
@@ -368,7 +311,7 @@
           feedback: feedback || null,
           wouldTryAgain: wouldReturnInput ? wouldReturnInput.value : 'unspecified',
           email: email || null,
-          turnstileToken: turnstileToken,
+          turnstileToken: turnstileToken || 'turnstile_submitted',
           submittedAt: new Date().toISOString(),
           client: {
             userAgent: navigator.userAgent,
@@ -383,7 +326,8 @@
         e.preventDefault();
 
         if (!turnstileToken) {
-          alert('Please complete the security verification before submitting.');
+          statusHint.textContent = 'Please complete the verification check before submitting.';
+          statusHint.style.color = 'var(--accent-danger)';
           return;
         }
 
@@ -432,5 +376,23 @@
       });
     })();
   </script>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="site-container">
+      <div class="footer-inner">
+        <div>Better Twitter &bull; Crafted by <a href="https://andronasef.com" target="_blank" rel="noopener noreferrer" style="color: var(--text-bright); text-decoration: underline;">Andro Nasef</a></div>
+        <div class="footer-links">
+          <a href="./index.html">Home</a>
+          <span>&bull;</span>
+          <a href="https://github.com/andronasef/better-twitter-extension" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <span>&bull;</span>
+          <a href="./privacy.html">Privacy Policy</a>
+          <span>&bull;</span>
+          <a href="./uninstall.html" style="color: var(--text-bright); font-weight: 700;">Uninstall Survey</a>
+        </div>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>
