@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation & Settings Popup** - Shared plumbing plus a working popup, proven end-to-end by a live ad-stripping toggle
 - [x] **Phase 2: Clean Timeline & Themes** - Clutter toggles and the full theme engine — read-only DOM/CSS features on top of the pipeline
 - [x] **Phase 3: Bookmarks (Capture, Management & Resurfacing)** - Multi-strategy capture, local storage/quota management, folder/tag organization, in-page search, and feed resurfacing
-- [ ] **Phase 4: Twemoji Reactions** - Hover/long-press palette that prefills X's native reply composer for the user to send
+- [x] **Phase 4: Twemoji Reactions** - Hover/long-press palette that prefills X's native reply composer for the user to send (completed 2026-09-15)
 - [ ] **Phase 5: Chrome Web Store Packaging** - Permission audit, privacy policy, single-purpose listing, and a submittable package
 
 ## Phase Details
@@ -90,18 +90,23 @@ Plans:
 
 Plans:
 **Wave 1**
+
 - [x] 02-01-PLAN.md — Timeline & Sidebar Declutter Engine: vanity metrics stripper, right sidebar clutter stripper, popup integration for Clean Timeline controls
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 02-02-PLAN.md — Tab Reordering & Auto-Selection Engine: CSS flex order tab swap, Following auto-activation on /home, popup controls
 
 **Wave 3** *(blocked on Wave 1 completion)*
+
 - [x] 02-03-PLAN.md — Theme Engine Core & Zero-FOUC Injection: Dracula, Nord, Matrix, custom accent picker, synchronous document_start stylesheet injection, popup thumbnail cards
 
 **Wave 4** *(blocked on Wave 3 completion)*
+
 - [x] 02-04-PLAN.md — Layout Engines: Minimal centered layout, Old Twitter 2015 3-column layout, horizontal top navbar, left mini profile card
 
 **Wave 5** *(blocked on Wave 2, Wave 4 completion)*
+
 - [x] 02-05-PLAN.md — Full Phase Integration: Playwright E2E verification, full unit test suite, and standing build/permission audit
 
 **UI hint**: yes
@@ -139,16 +144,20 @@ Plans:
 
 Plans:
 **Wave 1**
+
 - [x] 03-01-PLAN.md — Core Storage, Schema & Extraction Engine (BOOK-01, BOOK-02, BOOK-10, D-01..18)
 
 **Wave 2**
+
 - [x] 03-02-PLAN.md — MAIN Bridge, Background Sync, Action Row Dual-Save & Popover (BOOK-01, BOOK-03, D-05..10)
 - [x] 03-03-PLAN.md — In-Page Bookmarks Hub UI & Feed Filtering (BOOK-04, BOOK-05, BOOK-06, D-01..04)
 
 **Wave 3**
+
 - [x] 03-04-PLAN.md — Timeline Resurfacing Engine & Popup BookmarksPanel (BOOK-07, BOOK-08, BOOK-09, D-11..17)
 
 **Wave 4**
+
 - [x] 03-05-PLAN.md — Full Integration, E2E Playwright Verification, Build Security Audit (BOOK-01..10)
 
 **UI hint**: yes
@@ -176,17 +185,22 @@ Plans:
 
 Plans:
 **Wave 1**
+
 - [x] 04-01-PLAN.md — Asset Pipeline, Storage Definitions & Types (REACT-06, D-09, D-11, D-13, D-14)
 
 **Wave 2**
+
 - [x] 04-02-PLAN.md — Reply Composer Prefiller & Fallback Mechanism (REACT-03, REACT-04, D-05, D-06, D-07, D-08)
 
 **Wave 3**
+
 - [x] 04-03-PLAN.md — Floating Reaction Palette & Interaction Engine (REACT-01, REACT-02, D-01..04, D-15..18)
 - [x] 04-04-PLAN.md — Popup Reactions Panel & Hybrid Catalog Caching (REACT-05, D-10, D-12..14)
 
 **Wave 4**
+
 - [x] 04-05-PLAN.md — Playwright E2E Suite & Full Standing Verification Gate (REACT-01..06, D-01..18)
+
 **UI hint**: yes
 
 ### Phase 5: Chrome Web Store Packaging
@@ -215,7 +229,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Foundation & Settings Popup | 5/5 | Completed | 2026-09-13 |
 | 2. Clean Timeline & Themes | 5/5 | Completed | 2026-09-13 |
 | 3. Bookmarks (Capture, Management & Resurfacing) | 5/5 | Completed | 2026-09-14 |
-| 4. Twemoji Reactions | 5/5 | Completed | 2026-09-15 |
+| 4. Twemoji Reactions | 5/5 | Complete    | 2026-09-15 |
 | 5. Chrome Web Store Packaging | 0/TBD | Not started | - |
 
 ## Coverage

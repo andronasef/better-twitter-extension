@@ -52,12 +52,12 @@
 
 ### Reactions
 
-- [ ] **REACT-01**: Hovering the Like button on a tweet reveals a Twemoji reaction palette
-- [ ] **REACT-02**: Long-pressing the Like button reveals the same palette, as an alternate trigger
-- [ ] **REACT-03**: Picking a reaction opens X's native reply composer prefilled with that emoji, leaving the user to send it
-- [ ] **REACT-04**: The extension never posts, likes, or replies on the user's behalf without the user's own send action
-- [ ] **REACT-05**: User can choose which emoji appear in their reaction palette instead of a fixed set
-- [ ] **REACT-06**: Reaction glyphs render from bundled Twemoji assets, matching X's native emoji rendering, with no CDN hotlinking
+- [x] **REACT-01**: Hovering the Like button on a tweet reveals a Twemoji reaction palette
+- [x] **REACT-02**: Long-pressing the Like button reveals the same palette, as an alternate trigger
+- [x] **REACT-03**: Picking a reaction opens X's native reply composer prefilled with that emoji, leaving the user to send it
+- [x] **REACT-04**: The extension never posts, likes, or replies on the user's behalf without the user's own send action
+- [x] **REACT-05**: User can choose which emoji appear in their reaction palette instead of a fixed set
+- [x] **REACT-06**: Reaction glyphs render from bundled Twemoji assets, matching X's native emoji rendering, with no CDN hotlinking
 
 ### Settings UI
 
@@ -148,12 +148,12 @@ Which phases cover which requirements. Populated during roadmap creation.
 | BOOK-08 | Phase 3 | Pending |
 | BOOK-09 | Phase 3 | Pending |
 | BOOK-10 | Phase 3 | Pending |
-| REACT-01 | Phase 4 | Pending |
-| REACT-02 | Phase 4 | Pending |
-| REACT-03 | Phase 4 | Pending |
-| REACT-04 | Phase 4 | Pending |
-| REACT-05 | Phase 4 | Pending |
-| REACT-06 | Phase 4 | Pending |
+| REACT-01 | Phase 4 | Complete |
+| REACT-02 | Phase 4 | Complete |
+| REACT-03 | Phase 4 | Complete |
+| REACT-04 | Phase 4 | Complete |
+| REACT-05 | Phase 4 | Complete |
+| REACT-06 | Phase 4 | Complete |
 | STORE-01 | Phase 5 | Pending |
 | STORE-02 | Phase 5 | Pending |
 | STORE-03 | Phase 5 | Pending |
@@ -161,6 +161,7 @@ Which phases cover which requirements. Populated during roadmap creation.
 | STORE-05 | Phase 5 | Pending |
 
 **Coverage:**
+
 - v1 requirements: 47 total
 - Mapped to phases: 47
 - Unmapped: 0 ✓
