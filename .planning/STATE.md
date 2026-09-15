@@ -99,6 +99,9 @@ Items acknowledged and deferred at milestone close, most recent first:
 | ID | Task | Date |
 |----|------|------|
 | 260914-43b | Fix Minimal theme left-rail scrollbar and edge-clipping issues | 2026-09-14 |
+| 260915-rsd | Rate in Store & Share Extension Prompt + Popup Dev Tools | 2026-09-15 |
+| 260915-lif | Fix bookmark sync stopping early (dedupe bridge page fetches) | 2026-09-15 |
+
 
 ## Session Continuity
 
