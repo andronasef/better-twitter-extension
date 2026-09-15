@@ -20,9 +20,9 @@
         <div class="nav-links">
           <a href="#simulator" class="nav-link">Live Demo</a>
           <a href="#features" class="nav-link">Features</a>
-          <a href="#architecture" class="nav-link">Architecture</a>
+          <a href="#privacy" class="nav-link">Privacy</a>
           <a href="https://github.com/andronasef/better-twitter-extension" target="_blank" rel="noopener noreferrer" class="nav-link">GitHub</a>
-          <a href="https://github.com/andronasef/better-twitter-extension/releases" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">Download v0.1.0</a>
+          <a href="https://chromewebstore.google.com/detail/hiamigdhnadbjjpmcbiommoedakgdaea" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">Add to Chrome</a>
         </div>
       </div>
     </div>
@@ -33,23 +33,23 @@
     <section class="hero site-container">
       <div class="badge badge-green">
         <span style="width: 6px; height: 6px; border-radius: 50%; background-color: var(--accent-green); display: inline-block;"></span>
-        Open Source &bull; Manifest V3 Certified
+        Free &bull; Open Source &bull; 100% Private
       </div>
 
-      <h1>X without the bloat.</h1>
+      <h1>X without the noise.</h1>
 
       <p>
-        An open-source browser extension that strips sponsored posts, disables algorithmic feed hijacking, restores chronological tabs, and adds local bookmark folders. Zero tracking scripts. 100% client-side storage.
+        Browse Twitter the way it was meant to be experienced. Removes sponsored posts, stops algorithmic feed switching, restores chronological tabs, and organizes saved tweets into folders. Zero tracking, zero telemetry.
       </p>
 
       <div class="hero-actions">
-        <a href="https://github.com/andronasef/better-twitter-extension/releases" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">
+        <a href="https://chromewebstore.google.com/detail/hiamigdhnadbjjpmcbiommoedakgdaea" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="7 10 12 15 17 10"></polyline>
             <line x1="12" y1="15" x2="12" y2="3"></line>
           </svg>
-          <span>Get Better Twitter (v0.1.0)</span>
+          <span>Add to Chrome — It's Free</span>
         </a>
 
         <a href="https://github.com/andronasef/better-twitter-extension" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-lg">
@@ -60,14 +60,14 @@
         </a>
       </div>
 
-      <div class="spec-strip">
-        <span class="spec-item"><code>permissions: ['storage']</code></span>
+      <div class="trust-row">
+        <span class="trust-item"><span style="color: var(--accent-green); font-weight: 700;">✓</span> Blocks sponsored posts</span>
         <span>&bull;</span>
-        <span class="spec-item">0 host permissions beyond x.com</span>
+        <span class="trust-item"><span style="color: var(--accent-green); font-weight: 700;">✓</span> Chronological Following</span>
         <span>&bull;</span>
-        <span class="spec-item">2.68 MB standalone archive</span>
+        <span class="trust-item"><span style="color: var(--accent-green); font-weight: 700;">✓</span> Bookmark folders</span>
         <span>&bull;</span>
-        <span class="spec-item">Zero telemetry</span>
+        <span class="trust-item"><span style="color: var(--accent-green); font-weight: 700;">✓</span> 100% Private</span>
       </div>
     </section>
 
@@ -76,7 +76,7 @@
       <div style="margin-bottom: 1.5rem;">
         <h2>Experience the difference</h2>
         <p style="margin-top: 0.35rem;">
-          Try the interactive demo below. Toggle features on and off to see how Better Twitter transforms your feed in real time:
+          Try the interactive demo below. Toggle options on and off to see how Better Twitter transforms your feed in real time:
         </p>
       </div>
 
@@ -87,7 +87,7 @@
             <div class="deck-status-dot"></div>
             <div>
               <div class="deck-title">Better Twitter Active</div>
-              <div class="deck-subtitle">Flip switches to test live feed filtering:</div>
+              <div class="deck-subtitle">Toggle options to see your feed clean up:</div>
             </div>
           </div>
 
@@ -95,25 +95,25 @@
             <!-- Switch 1: Ad Stripper -->
             <div class="switch-control active" id="sw-ad-stripper">
               <div class="switch-track"><div class="switch-thumb"></div></div>
-              <span class="switch-label">Ad Stripper</span>
+              <span class="switch-label">Block Promoted Posts</span>
             </div>
 
             <!-- Switch 2: Following Tab First -->
             <div class="switch-control active" id="sw-following-first">
               <div class="switch-track"><div class="switch-thumb"></div></div>
-              <span class="switch-label">Following by Default</span>
+              <span class="switch-label">Default to Following</span>
             </div>
 
             <!-- Switch 3: Hide Who to Follow -->
             <div class="switch-control active" id="sw-hide-sidebar">
               <div class="switch-track"><div class="switch-thumb"></div></div>
-              <span class="switch-label">Hide "Who to follow"</span>
+              <span class="switch-label">Hide Suggested Accounts</span>
             </div>
 
             <!-- Switch 4: Clean Vanity Metrics -->
             <div class="switch-control active" id="sw-clean-metrics">
               <div class="switch-track"><div class="switch-thumb"></div></div>
-              <span class="switch-label">Hide Vanity Counts</span>
+              <span class="switch-label">Hide Likes & Views</span>
             </div>
           </div>
 
@@ -156,13 +156,13 @@
 
             <div class="x-tweet-main">
               <div class="x-meta-line">
-                <span class="x-author-name">Guillermo Rauch</span>
+                <span class="x-author-name">Sarah Dayan</span>
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="#1D9BF0"><path d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91c-1.31.67-2.2 1.91-2.2 3.34s.89 2.67 2.2 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.26 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.45 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34zm-11.71 4.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36-6.2 6.77z"/></svg>
-                <span class="x-author-handle">@rauchg &bull; 2h</span>
+                <span class="x-author-handle">@frontstuff_io &bull; 2h</span>
               </div>
 
               <div class="x-tweet-body">
-                The best web apps in 2026 aren't adding more AI fluff; they're deleting third-party tracking scripts and optimizing client-side memory. Fast beats clever every time.
+                The best tools respect your attention instead of demanding more of it. Simple, calm, and quiet beats noisy every single time.
               </div>
 
               <!-- Action Row with Authentic Vector SVGs -->
@@ -205,7 +205,7 @@
 
               <!-- Reply Prefiller Simulator -->
               <div class="x-reply-composer" id="x-reply-composer">
-                <div class="x-reply-note">Native Reply Composer prefilled:</div>
+                <div class="x-reply-note">Quick emoji reply:</div>
                 <textarea class="x-reply-input" id="sim-composer-input" readonly></textarea>
                 <div style="display: flex; justify-content: flex-end; margin-top: 0.35rem;">
                   <button type="button" class="btn btn-secondary btn-sm" id="btn-close-composer">Dismiss</button>
@@ -221,15 +221,15 @@
             </div>
             <div class="x-tweet-main">
               <div class="x-meta-line">
-                <span class="x-author-name">CloudMetrics AI</span>
-                <span class="x-author-handle">@cloudmetrics &bull; Promoted</span>
+                <span class="x-author-name">SponsorDesk</span>
+                <span class="x-author-handle">@sponsordesk &bull; Promoted</span>
               </div>
               <div class="x-promoted-tag">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19.5 3h-15C3.12 3 2 4.12 2 5.5v13C2 19.88 3.12 21 4.5 21h15c1.38 0 2.5-1.12 2.5-2.5v-13C22 4.12 20.88 3 19.5 3zm-7 14h-2v-4h2v4zm0-6h-2V7h2v4z"/></svg>
                 <span>Sponsored Ad</span>
               </div>
               <div class="x-tweet-body">
-                Stop debugging distributed microservices manually. Connect our APM agent in 5 minutes with zero configuration.
+                Upgrade your daily setup today! Sign up for our limited-time special offer and get 50% off your entire first purchase.
               </div>
               <div class="x-action-row">
                 <span class="x-action-btn"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-1.602.88 1.488 3.86a.75.75 0 0 1-.986.974l-4.993-2.61h-2.2c-4.421 0-8.005-3.58-8.005-8z"/></svg><span class="metric-val">2</span></span>
@@ -283,16 +283,16 @@
             <div class="x-tweet-main">
               <div style="font-size: 0.75rem; color: var(--accent-green); font-weight: 700; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.35rem;">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5z"/></svg>
-                <span>Resurfaced from your Bookmarks &bull; Saved 3 months ago</span>
+                <span>Resurfaced from your Bookmarks &bull; Saved 2 months ago</span>
               </div>
 
               <div class="x-meta-line">
-                <span class="x-author-name">Dan Abramov</span>
-                <span class="x-author-handle">@dan_abramov &bull; May 14</span>
+                <span class="x-author-name">David Perell</span>
+                <span class="x-author-handle">@david_perell &bull; May 14</span>
               </div>
 
               <div class="x-tweet-body">
-                Whenever you find yourself writing a complex state machine just to coordinate UI transitions, stop and ask if you can derive the state from your existing data instead.
+                The greatest ideas you save are lost if you never revisit them. Build a simple habit to resurface what inspires you.
               </div>
 
               <div class="x-action-row">
@@ -308,164 +308,179 @@
       </div>
     </section>
 
-    <!-- Features Section (Detailed, Concrete, Non-Vague) -->
-    <section id="features" class="features-container site-container">
-      <!-- Feature 1: Ad Stripper -->
-      <div class="feature-row">
-        <div class="feature-copy">
-          <span class="badge badge-blue" style="margin-bottom: 0.75rem;">Core Engine</span>
-          <h3>Zero-FOUC Promoted Ad Stripper</h3>
+    <!-- Features Showcase Section (Visual Mockups + Human Copy) -->
+    <section id="features" class="showcase-section site-container">
+      <div style="text-align: center; max-width: 680px; margin: 0 auto 4.5rem;">
+        <span class="badge badge-blue" style="margin-bottom: 0.75rem;">Crafted for your timeline</span>
+        <h2 style="font-size: 2.25rem; margin-bottom: 0.75rem; letter-spacing: -0.02em;">Every feature built to respect your attention</h2>
+        <p style="font-size: 1.05rem; color: var(--text-muted); line-height: 1.6;">
+          X has become louder, slower, and packed with algorithmic clutter. Better Twitter strips the noise and adds the features power users have been asking for.
+        </p>
+      </div>
+
+      <!-- Feature 1: Clean Feed (Promoted Ads & Clutter Hidden) -->
+      <div class="showcase-row">
+        <div class="showcase-copy">
+          <span class="badge badge-blue" style="margin-bottom: 0.75rem;">Clean Feed</span>
+          <h3>Say goodbye to sponsored ads and feed clutter</h3>
           <p>
-            X serves promoted tweets dynamically within its React virtual scroller. Better Twitter listens via a centralized <code>MutationObserver</code> and removes sponsored cells before paint. Promoted accounts in search and timelines are purged with zero layout shifts.
+            Your feed shouldn't feel like a noisy billboard. Better Twitter hides sponsored posts, promoted accounts, and distracting clutter before they appear on your screen, giving you back a calm reading experience.
           </p>
-          <div class="tech-spec-box">
-            <strong>Target Selectors:</strong> <code>div[data-testid="cellInnerDiv"]</code> matching promoted badge markers and sponsored user entities. Zero network request delays.
-          </div>
+          <ul class="benefit-list">
+            <li class="benefit-item">
+              <span class="benefit-check">✓</span>
+              <span>Automatically hides sponsored posts, trends, and suggested accounts</span>
+            </li>
+            <li class="benefit-item">
+              <span class="benefit-check">✓</span>
+              <span>Opens straight to the accounts you actually follow</span>
+            </li>
+            <li class="benefit-item">
+              <span class="benefit-check">✓</span>
+              <span>Smooth reading with no sudden jumps or flickering</span>
+            </li>
+          </ul>
         </div>
-        <div>
-          <div class="card">
-            <h4 style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--accent-blue);">Real-world result</h4>
-            <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
-              No "Promoted" badges in search results. No sponsored crypto accounts pinned to your timeline. No full-page takeover ads when refreshing feeds.
-            </p>
+        <div class="showcase-visual">
+          <div class="mockup-frame">
+            <img src="./assets/screenshots/clean-look.jpg" alt="Better Twitter clean chronological feed preview" class="mockup-image" loading="lazy" />
           </div>
         </div>
       </div>
 
-      <!-- Feature 2: Chronological Timeline -->
-      <div class="feature-row">
-        <div class="feature-copy">
-          <span class="badge badge-blue" style="margin-bottom: 0.75rem;">Feed Architecture</span>
-          <h3>Chronological Following by Default</h3>
+      <!-- Feature 2: Emoji Reactions (Reverse) -->
+      <div class="showcase-row reverse">
+        <div class="showcase-copy">
+          <span class="badge badge-blue" style="margin-bottom: 0.75rem;">Emoji Reactions</span>
+          <h3>Express yourself with one-click reactions</h3>
           <p>
-            X's web client defaults every session to the algorithmic "For You" feed. Better Twitter swaps tab ordering using CSS flex rules (<code>order: -1</code>) and auto-activates the Following feed on navigation without dispatching erratic synthetic click events.
+            Why settle for just a plain heart? Hover or hold the like button to react with expressive emojis — love, laugh, think, celebrate, and care. Better Twitter prepares your reaction with one click, leaving you in total control.
           </p>
-          <div class="tech-spec-box">
-            <strong>Implementation:</strong> CSS flex ordering on <code>div[role="tablist"]</code> + single-activation route listener with duplicate guard.
-          </div>
+          <ul class="benefit-list">
+            <li class="benefit-item">
+              <span class="benefit-check">✓</span>
+              <span>6 expressive emoji reactions right on every post</span>
+            </li>
+            <li class="benefit-item">
+              <span class="benefit-check">✓</span>
+              <span>You remain in control — nothing is posted automatically</span>
+            </li>
+            <li class="benefit-item">
+              <span class="benefit-check">✓</span>
+              <span>Crisp, beautiful emojis that match your theme</span>
+            </li>
+          </ul>
         </div>
-        <div>
-          <div class="card">
-            <h4 style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--accent-green);">No feed hijacking</h4>
-            <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
-              Every time you open <code>x.com/home</code>, you land on the accounts you actually chose to follow, in reverse chronological order.
-            </p>
+        <div class="showcase-visual">
+          <div class="mockup-frame">
+            <img src="./assets/screenshots/reactions.jpg" alt="Better Twitter emoji reaction palette preview" class="mockup-image" loading="lazy" />
           </div>
         </div>
       </div>
 
-      <!-- Feature 3: Themes -->
-      <div class="feature-row">
-        <div class="feature-copy">
-          <span class="badge badge-blue" style="margin-bottom: 0.75rem;">Custom CSS Engine</span>
-          <h3>Community Themes & Hex Accent Picker</h3>
+      <!-- Feature 3: Bookmark Folders -->
+      <div class="showcase-row">
+        <div class="showcase-copy">
+          <span class="badge badge-blue" style="margin-bottom: 0.75rem;">Bookmark Folders</span>
+          <h3>Organize your saved tweets into folders</h3>
           <p>
-            Built-in support for Dracula, Nord, Hacker Matrix, and Lights Out AMOLED. Stylesheets are injected synchronously at <code>document_start</code> to eliminate flash of unthemed content. Pick custom hex colors to replace X's default blue throughout the UI.
+            Twitter's default bookmarks are easy to lose in an endless list. Better Twitter lets you organize saved tweets into custom color-coded folders so you can find great threads whenever you need them.
           </p>
-          <div class="theme-picker-row">
-            <button type="button" class="theme-swatch active" data-theme="lightsout" style="background: #000000;" title="Lights Out (AMOLED)">AMO</button>
-            <button type="button" class="theme-swatch" data-theme="dracula" style="background: #282A36; color: #BD93F9;" title="Dracula">DRA</button>
-            <button type="button" class="theme-swatch" data-theme="nord" style="background: #2E3440; color: #88C0D0;" title="Nord">NOR</button>
-            <button type="button" class="theme-swatch" data-theme="matrix" style="background: #0D1117; color: #00FF66;" title="Matrix">MTX</button>
-          </div>
+          <ul class="benefit-list">
+            <li class="benefit-item">
+              <span class="benefit-check">✓</span>
+              <span>Create custom folders like Design, Reading, Inspiration, or Work</span>
+            </li>
+            <li class="benefit-item">
+              <span class="benefit-check">✓</span>
+              <span>Search saved posts instantly by keyword or username</span>
+            </li>
+            <li class="benefit-item">
+              <span class="benefit-check">✓</span>
+              <span>Easily export and back up your saved tweets anytime</span>
+            </li>
+          </ul>
         </div>
-        <div>
-          <div class="card">
-            <h4 style="font-size: 1rem; margin-bottom: 0.5rem; color: #BD93F9;">Zero FOUC injection</h4>
-            <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
-              Overrides X's hardcoded CSS variables directly. Timeline, composer, modals, and navigation sidebars all match your chosen palette consistently.
-            </p>
+        <div class="showcase-visual">
+          <div class="mockup-frame">
+            <img src="./assets/screenshots/bookmark-manager.jpg" alt="Better Twitter bookmark folder manager preview" class="mockup-image" loading="lazy" />
           </div>
         </div>
       </div>
 
-      <!-- Feature 4: Twemoji Reactions -->
-      <div class="feature-row">
-        <div class="feature-copy">
-          <span class="badge badge-blue" style="margin-bottom: 0.75rem;">Composer Integration</span>
-          <h3>Twemoji Reaction Palette</h3>
+      <!-- Feature 4: Smart Resurfacing (Reverse) -->
+      <div class="showcase-row reverse">
+        <div class="showcase-copy">
+          <span class="badge badge-blue" style="margin-bottom: 0.75rem;">Smart Resurfacing</span>
+          <h3>Rediscover your best bookmarks while you browse</h3>
           <p>
-            Hover or hold the Like button to select from 6 bundled Twemoji reactions. When selected, Better Twitter opens X's native reply modal and prefills the editor with your emoji. <strong>The extension never posts or likes tweets for you</strong> — the send action always remains in your hands.
+            Most bookmarks are saved once and never seen again. Better Twitter gently brings your favorite saved posts back into your feed every few tweets, so you actually get value from the great content you saved.
           </p>
-          <div class="tech-spec-box">
-            <strong>DraftJS Target:</strong> Synthetic <code>beforeinput</code> and caret positioning ensure emoji registers in X's internal React editor state without breaking drafts.
-          </div>
+          <ul class="benefit-list">
+            <li class="benefit-item">
+              <span class="benefit-check">✓</span>
+              <span>Choose how often saved tweets reappear (every 5, 10, or 20 posts)</span>
+            </li>
+            <li class="benefit-item">
+              <span class="benefit-check">✓</span>
+              <span>Clear bookmark badge so you always know it's a saved post</span>
+            </li>
+            <li class="benefit-item">
+              <span class="benefit-check">✓</span>
+              <span>100% private — your data stays on your computer and never touches outside servers</span>
+            </li>
+          </ul>
         </div>
-        <div>
-          <div class="card">
-            <h4 style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--accent-pink);">Safe by design</h4>
-            <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
-              Zero automation risk. No shadow likes, no automatic retweets, no background API tokens. Every interaction requires your explicit confirmation.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Feature 5: Bookmarks Hub -->
-      <div class="feature-row">
-        <div class="feature-copy">
-          <span class="badge badge-blue" style="margin-bottom: 0.75rem;">Local Storage Hub</span>
-          <h3>Bookmark Folders & Timeline Resurfacing</h3>
-          <p>
-            File saved tweets into color-coded folders directly inside <code>x.com/bookmarks</code>. Search bookmark text or author handles instantly from local indexed storage. Optionally weave saved bookmarks back into your home feed every N tweets so good threads don't rot forgotten.
-          </p>
-          <div class="tech-spec-box">
-            <strong>Storage Budget:</strong> Structured quota manager with automatic pruning and JSON export/import backup.
-          </div>
-        </div>
-        <div>
-          <div class="card">
-            <h4 style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--accent-green);">100% Offline & Private</h4>
-            <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
-              Your bookmarks never touch an external server or telemetry pipeline. Stored entirely in your browser's private extension storage.
-            </p>
+        <div class="showcase-visual">
+          <div class="mockup-frame">
+            <img src="./assets/screenshots/bookmarks-timeline.jpg" alt="Better Twitter bookmark resurfacing in timeline preview" class="mockup-image" loading="lazy" />
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Architecture & Comparison Section -->
-    <section id="architecture" class="site-container" style="padding-bottom: 5rem;">
-      <div style="margin-bottom: 1.5rem;">
-        <h2>Security & permission invariants</h2>
+    <!-- Privacy & Trust Section -->
+    <section id="privacy" class="site-container" style="padding-bottom: 5rem;">
+      <div style="margin-bottom: 2rem;">
+        <h2>Built with privacy and trust first</h2>
         <p style="margin-top: 0.35rem;">
-          How Better Twitter compares to typical social media extensions:
+          Unlike extensions that ask to access everything you do online, Better Twitter keeps your browsing private:
         </p>
       </div>
 
       <table class="comparison-table">
         <thead>
           <tr>
-            <th>Security Invariant</th>
-            <th>Standard Extensions</th>
+            <th>What We Care About</th>
+            <th>Typical Extensions</th>
             <th>Better Twitter</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><strong>Host Permissions</strong></td>
-            <td><span class="check-fail"><code>&lt;all_urls&gt;</code> or wildcard domains</span></td>
-            <td><span class="check-pass">Strictly <code>*://x.com/*</code> and <code>*://twitter.com/*</code></span></td>
+            <td><strong>Website Access</strong></td>
+            <td><span class="check-fail">Can read and track every site you visit</span></td>
+            <td><span class="check-pass">Strictly active on x.com and twitter.com</span></td>
           </tr>
           <tr>
-            <td><strong>Manifest Permissions</strong></td>
-            <td><span class="check-fail"><code>tabs</code>, <code>cookies</code>, <code>webRequest</code></span></td>
-            <td><span class="check-pass">Strictly <code>['storage']</code></span></td>
+            <td><strong>Personal Data</strong></td>
+            <td><span class="check-fail">Reads your browsing history and cookies</span></td>
+            <td><span class="check-pass">Never touches your cookies or history</span></td>
           </tr>
           <tr>
-            <td><strong>Third-Party Analytics</strong></td>
-            <td><span class="check-fail">Mixpanel, Google Analytics, Sentry</span></td>
-            <td><span class="check-pass">Zero external telemetry scripts</span></td>
+            <td><strong>Tracking & Analytics</strong></td>
+            <td><span class="check-fail">Sends usage data to third-party ad networks</span></td>
+            <td><span class="check-pass">Zero tracking. No analytics. No external servers.</span></td>
           </tr>
           <tr>
-            <td><strong>Remote Code Execution</strong></td>
-            <td><span class="check-fail">External CDN scripts / dynamic eval</span></td>
-            <td><span class="check-pass">100% local bundled code (MV3 enforced)</span></td>
+            <td><strong>Code Transparency</strong></td>
+            <td><span class="check-fail">Closed-source or loads unverified outside code</span></td>
+            <td><span class="check-pass">100% open-source local code you can inspect</span></td>
           </tr>
           <tr>
-            <td><strong>Automated Actions</strong></td>
-            <td><span class="check-fail">Automated bots / programmatic likes</span></td>
-            <td><span class="check-pass">Zero automated actions without user click</span></td>
+            <td><strong>Account Control</strong></td>
+            <td><span class="check-fail">Can like, post, or follow in the background</span></td>
+            <td><span class="check-pass">Never takes any action without your explicit click</span></td>
           </tr>
         </tbody>
       </table>
@@ -474,14 +489,14 @@
     <!-- Download / Install Section -->
     <section class="site-container" style="padding-bottom: 6rem;">
       <div style="background-color: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); padding: clamp(2rem, 4vw, 3.5rem); text-align: center;">
-        <h2>Install Better Twitter</h2>
+        <h2>Ready for a better X experience?</h2>
         <p style="margin: 0.75rem auto 2rem; font-size: 1.05rem;">
-          Download the latest release package directly or build from source with Bun:
+          Free, open source, and takes 30 seconds to install. No account or signup required.
         </p>
 
         <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
-          <a href="https://github.com/andronasef/better-twitter-extension/releases" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">
-            <span>Download Release Zip (v0.1.0)</span>
+          <a href="https://chromewebstore.google.com/detail/hiamigdhnadbjjpmcbiommoedakgdaea" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">
+            <span>Add to Chrome — It's Free</span>
           </a>
           <a href="https://github.com/andronasef/better-twitter-extension" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-lg">
             <span>View Source on GitHub</span>
