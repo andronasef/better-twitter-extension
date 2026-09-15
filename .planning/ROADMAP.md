@@ -176,17 +176,17 @@ Plans:
 
 Plans:
 **Wave 1**
-- [ ] 04-01-PLAN.md — Asset Pipeline, Storage Definitions & Types (REACT-06, D-09, D-11, D-13, D-14)
+- [x] 04-01-PLAN.md — Asset Pipeline, Storage Definitions & Types (REACT-06, D-09, D-11, D-13, D-14)
 
 **Wave 2**
-- [ ] 04-02-PLAN.md — Reply Composer Prefiller & Fallback Mechanism (REACT-03, REACT-04, D-05, D-06, D-07, D-08)
+- [x] 04-02-PLAN.md — Reply Composer Prefiller & Fallback Mechanism (REACT-03, REACT-04, D-05, D-06, D-07, D-08)
 
 **Wave 3**
-- [ ] 04-03-PLAN.md — Floating Reaction Palette & Interaction Engine (REACT-01, REACT-02, D-01..04, D-15..18)
-- [ ] 04-04-PLAN.md — Popup Reactions Panel & Hybrid Catalog Caching (REACT-05, D-10, D-12..14)
+- [x] 04-03-PLAN.md — Floating Reaction Palette & Interaction Engine (REACT-01, REACT-02, D-01..04, D-15..18)
+- [x] 04-04-PLAN.md — Popup Reactions Panel & Hybrid Catalog Caching (REACT-05, D-10, D-12..14)
 
 **Wave 4**
-- [ ] 04-05-PLAN.md — Playwright E2E Suite & Full Standing Verification Gate (REACT-01..06, D-01..18)
+- [x] 04-05-PLAN.md — Playwright E2E Suite & Full Standing Verification Gate (REACT-01..06, D-01..18)
 **UI hint**: yes
 
 ### Phase 5: Chrome Web Store Packaging
@@ -214,8 +214,8 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation & Settings Popup | 5/5 | Completed | 2026-09-13 |
 | 2. Clean Timeline & Themes | 5/5 | Completed | 2026-09-13 |
-| 3. Bookmarks (Capture, Management & Resurfacing) | 0/TBD | Not started | - |
-| 4. Twemoji Reactions | 0/TBD | Not started | - |
+| 3. Bookmarks (Capture, Management & Resurfacing) | 5/5 | Completed | 2026-09-14 |
+| 4. Twemoji Reactions | 5/5 | Completed | 2026-09-15 |
 | 5. Chrome Web Store Packaging | 0/TBD | Not started | - |
 
 ## Coverage
