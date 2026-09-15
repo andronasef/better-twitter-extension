@@ -247,7 +247,18 @@ export default function App({
 
         {/* Footer - 40px fixed */}
         <footer className="h-[40px] min-h-[40px] px-4 flex items-center justify-between border-t border-[var(--bt-border)] text-[12px] text-[var(--bt-fg-muted)]">
-          <span>{manifestVersion ? `v${manifestVersion}` : ''}</span>
+          <div className="flex items-center gap-2">
+            <span>{manifestVersion ? `v${manifestVersion}` : ''}</span>
+            {manifestVersion && <span className="text-[var(--bt-border)] select-none">&bull;</span>}
+            <a
+              href="https://github.com/andronasef/better-twitter-extension/blob/main/PRIVACY.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[11px] hover:text-[var(--bt-fg)] hover:underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bt-accent)] rounded cursor-pointer"
+            >
+              Privacy
+            </a>
+          </div>
           <div className="flex items-center gap-1">
             <Tooltip>
               <TooltipTrigger asChild>
